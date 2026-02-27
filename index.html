@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta name="google-site-verification" content="UR5KbsTWfnrtcgATL8jy1cbSTzDW_Aie3YXLvD_gCro-YUrtK1IC2mRZnXnGFaRQ9DagHvTe0vM" />
-    <meta name="google-site-verification" content="UR5KbsTWfnrtcgATL8jy1cbSTzDW_Aie3YXLvD_gCro            -YUrtK1IC2mRZnXnGFaRQ9DagHvTe0vM" />
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="UR5KbsTWfnrtcgATL8jy1cbSTzDW_Aie3YXLvD_gCro" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Truth or Dare For My Fans | truthordareformyfans.com</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -510,10 +510,10 @@
 
         <div class="buy-row">
             <button class="btn-buy" id="buy-truth" onclick="selectCard('truth')">
-                🤔 Buy Truth <span class="badge">$5</span>
+                🤔 Buy Truth <span class="badge">$15</span>
             </button>
             <button class="btn-buy" id="buy-dare" onclick="selectCard('dare')">
-                🔥 Buy Dare <span class="badge">$25</span>
+                🔥 Buy Dare <span class="badge">$45</span>
             </button>
         </div>
 
@@ -610,7 +610,7 @@
             <div class="room-box">
                 <div class="room-header">
                     <div class="room-title">🤔 Truth Room</div>
-                    <div class="room-badge">5 min · 2-way</div>
+                    <div class="room-badge">5 min · 2-way text</div>
                 </div>
                 <div class="room-video-area">
                     <div class="room-video-icon">📹</div>
@@ -626,7 +626,7 @@
                     </div>
                 </div>
                 <div class="room-info-strip">
-                    <span>📹 Video: 2-way</span>
+                    <span>📹 Video: 1-way</span>
                     <span>🎤 Audio: 2-way</span>
                     <span>💬 Chat: 2-way</span>
                 </div>
@@ -847,7 +847,7 @@ function validate() {
     document.getElementById('creatorName').classList.remove('error');
     document.getElementById('fanName').classList.remove('error');
     errEl.textContent = '';
-    if (!selectedCard) { showToast('Please select Truth ($5) or Dare ($25) first!', 'error'); ok = false; }
+    if (!selectedCard) { showToast('Please select Truth ($15) or Dare ($45) first!', 'error'); ok = false; }
     if (!creator) { document.getElementById('creatorName').classList.add('error'); ok = false; }
     if (!fan)     { document.getElementById('fanName').classList.add('error'); ok = false; }
     if (!ok && selectedCard) errEl.textContent = 'Please fill in both name fields.';
@@ -888,7 +888,7 @@ async function notifyCreator() {
     if (!validate()) return;
     const btn = document.getElementById('notifyBtn');
     btn.classList.add('loading'); btn.disabled = true;
-    const challenge = selectedCard === 'truth' ? 'Truth ($5 — 5 min)' : 'Dare ($25 — 15 min Live)';
+    const challenge = selectedCard === 'truth' ? 'Truth ($15 — 5 min)' : 'Dare ($45 — 15 min Live)';
     try {
         await emailjs.send(CONFIG.emailjsServiceId, CONFIG.emailjsTemplateId, {
             to_email:     CONFIG.creatorEmail,
