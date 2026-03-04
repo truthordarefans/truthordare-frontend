@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Creator Setup | Truth or Dare For My Fans</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #CC0000;
+            --dark-red: #990000;
+            --gold: #D4A574;
+            --gold-light: #F0C890;
+            --gold-dim: rgba(212,165,116,0.35);
+            --cream: #FDF6EC;
+            --text: #C9B99A;
+            --text-dim: #9A8A72;
+            --dark: #120500;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--red);
+            background-image:
+                radial-gradient(ellipse at 15% 10%, rgba(212,165,116,0.12) 0%, transparent 45%),
+                radial-gradient(ellipse at 85% 90%, rgba(100,0,0,0.5) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 24px 20px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .wrapper {
+            width: 100%;
+            max-width: 520px;
+            border: 3px solid var(--gold);
+            padding: 44px 40px;
+            background: rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .wrapper::before { content: '✦'; position: absolute; top: 10px; left: 12px; color: var(--gold); font-size: 18px; }
+        .wrapper::after  { content: '✦'; position: absolute; bottom: 10px; right: 12px; color: var(--gold); font-size: 18px; }
+        .site-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--cream);
+            text-align: center;
+            margin-bottom: 4px;
+            text-shadow: 1px 2px 0 var(--dark-red);
+        }
+        .site-sub {
+            text-align: center;
+            font-size: 11px;
+            color: var(--gold-light);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+        }
+        .welcome-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--cream);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .step-label {
+            text-align: center;
+            font-size: 12px;
+            color: var(--gold);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 28px;
+            align-items: center;
+        }
+        .step-dot {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--gold-dim);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+            color: var(--text-dim);
+        }
+        .step-dot.done  { background: var(--gold); border-color: var(--gold); color: #1A0800; }
+        .step-dot.active { border-color: var(--gold); color: var(--gold); }
+        .step-line { width: 40px; height: 2px; background: var(--gold-dim); }
+        .info-box {
+            background: rgba(212,165,116,0.08);
+            border: 1px solid var(--gold-dim);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .info-box h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .perk-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .perk-row:last-child { margin-bottom: 0; }
+        .perk-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .earnings-highlight {
+            background: rgba(0,0,0,0.3);
+            border: 1.5px solid var(--gold);
+            border-radius: 8px;
+            padding: 16px 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .earnings-highlight .big-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--gold-light);
+        }
+        .earnings-highlight .big-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+        .earnings-highlight .split-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        .earnings-highlight .split-row span { color: var(--gold); font-weight: 700; }
+        .btn-main {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #C49050, #D4A574);
+            color: #1A0800;
+            border: none;
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-main:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,165,116,0.3); }
+        .btn-main:disabled { opacity: 0.6; cursor: default; }
+        .skip-link {
+            display: block;
+            text-align: center;
+            margin-top: 14px;
+            font-size: 12px;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+        .skip-link:hover { color: var(--gold); }
+        .error-msg {
+            background: rgba(204,0,0,0.2);
+            border: 1px solid rgba(255,107,107,0.4);
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #FF9999;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .error-msg.show { display: block; }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+        .back-link a { color: var(--gold); text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="site-title">Truth or Dare For My Fans</div>
+    <div class="site-sub">Creator Onboarding</div>
+    <div class="steps">
+        <div class="step-dot done">✓</div>
+        <div class="step-line"></div>
+        <div class="step-dot active">2</div>
+        <div class="step-line"></div>
+        <div class="step-dot">3</div>
+    </div>
+    <div class="welcome-name" id="welcomeName">Welcome, Creator! 🌟</div>
+    <div class="step-label">Step 2 of 3 — Connect Your Stripe</div>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="earnings-highlight">
+        <div class="big-num">85%</div>
+        <div class="big-label">Your cut on every session</div>
+        <div class="split-row">
+            <div>Truth ($15) → You keep <span>$12.75</span></div>
+            <div>Dare ($45) → You keep <span>$38.25</span></div>
+        </div>
+    </div>
+    <div class="info-box">
+        <h3>Why connect Stripe?</h3>
+        <div class="perk-row"><span class="perk-icon">💳</span><span>Get paid directly to your bank account — fast, secure, and no middleman.</span></div>
+        <div class="perk-row"><span class="perk-icon">🔒</span><span>Stripe handles all payment security and compliance — you're fully protected.</span></div>
+        <div class="perk-row"><span class="perk-icon">⚡</span><span>Takes under 5 minutes. You'll need your ID and banking info ready.</span></div>
+        <div class="perk-row"><span class="perk-icon">🌍</span><span>Works in Canada, US, and most countries worldwide.</span></div>
+    </div>
+    <button class="btn-main" id="connectBtn" onclick="connectStripe()">Connect Stripe & Start Earning →</button>
+    <div class="skip-link" onclick="skipForNow()">Skip for now — I'll do this later</div>
+    <div class="back-link"><a href="/login.html">← Back to login</a></div>
+</div>
+<script>
+    const BACKEND = 'https://truthordare-backend.onrender.com';
+    const storedUser = localStorage.getItem('tod_user');
+    if (!storedUser) {
+        window.location.href = '/login.html';
+    } else {
+        const user = JSON.parse(storedUser);
+        if (user.role !== 'creator') window.location.href = '/fan-dashboard.html';
+        document.getElementById('welcomeName').textContent = `Welcome, ${user.name}! 🌟`;
+        if (user.stripeAccountId) window.location.href = '/onboard-complete.html?account=' + user.stripeAccountId;
+    }
+    function showError(msg) {
+        const el = document.getElementById('errorMsg');
+        el.textContent = msg;
+        el.classList.add('show');
+    }
+    async function connectStripe() {
+        const user = JSON.parse(localStorage.getItem('tod_user'));
+        const token = localStorage.getItem('tod_token');
+        const btn = document.getElementById('connectBtn');
+        btn.disabled = true;
+        btn.textContent = 'Connecting…';
+        try {
+            const res = await fetch(`${BACKEND}/onboard-creator`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ creatorEmail: user.email, creatorName: user.name })
+            });
+            const data = await res.json();
+            if (!res.ok) { showError(data.error || 'Could not connect Stripe. Please try again.'); btn.disabled = false; btn.textContent = 'Connect Stripe & Start Earning →'; return; }
+            user.stripeAccountId = data.accountId;
+            localStorage.setItem('tod_user', JSON.stringify(user));
+            window.location.href = data.onboardingUrl;
+        } catch (err) {
+            showError('Could not reach server. Try again in a moment.');
+            btn.disabled = false;
+            btn.textContent = 'Connect Stripe & Start Earning →';
+        }
+    }
+    function skipForNow() {
+        window.location.href = '/onboard-complete.html?account=';
+    }
+</script>
+</body>
+</html>
