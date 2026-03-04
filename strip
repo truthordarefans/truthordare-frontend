@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Creator Dashboard | Truth or Dare For My Fans</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #CC0000;
+            --dark-red: #990000;
+            --gold: #D4A574;
+            --gold-light: #F0C890;
+            --gold-dim: rgba(212,165,116,0.35);
+            --cream: #FDF6EC;
+            --text: #C9B99A;
+            --text-dim: #9A8A72;
+            --dark: #120500;
+            --panel: rgba(0,0,0,0.35);
+            --green: #2ECC71;
+            --green-dim: rgba(46,204,113,0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { overflow-x: hidden; max-width: 100%; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--red);
+            background-image:
+                radial-gradient(ellipse at 15% 10%, rgba(212,165,116,0.12) 0%, transparent 45%),
+                radial-gradient(ellipse at 85% 90%, rgba(100,0,0,0.5) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .page-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            border: 3px solid var(--gold);
+            padding: 36px;
+            background: rgba(0,0,0,0.12);
+            position: relative;
+        }
+        .page-wrapper::before { content: '✦'; position: absolute; top: 10px; left: 12px; color: var(--gold); font-size: 18px; }
+        .page-wrapper::after  { content: '✦'; position: absolute; bottom: 10px; right: 12px; color: var(--gold); font-size: 18px; }
+
+        /* HEADER */
+        .site-header { text-align: center; margin-bottom: 32px; }
+        .site-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 34px;
+            font-weight: 900;
+            color: var(--cream);
+            text-shadow: 2px 3px 0 var(--dark-red);
+            line-height: 1.15;
+        }
+        .site-header .tagline {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--gold-light);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .back-link:hover { color: var(--gold-light); }
+
+        /* SUCCESS BANNER */
+        .success-banner {
+            background: var(--green-dim);
+            border: 2px solid var(--green);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+        .success-banner .check { font-size: 36px; margin-bottom: 8px; }
+        .success-banner h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: var(--green);
+            margin-bottom: 6px;
+        }
+        .success-banner p { font-size: 14px; color: var(--text); }
+
+        /* STRIPE STATUS */
+        .stripe-status-box {
+            background: var(--panel);
+            border: 2px solid var(--gold-dim);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .stripe-status-left { display: flex; align-items: center; gap: 14px; }
+        .stripe-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            flex-shrink: 0;
+        }
+        .stripe-label { font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .stripe-value { font-size: 15px; font-weight: 700; color: var(--cream); font-family: monospace; }
+
+        /* SECTION TITLES */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: var(--gold-light);
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gold-dim);
+        }
+
+        /* INFO CARDS */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .info-card {
+            background: var(--panel);
+            border: 2px solid var(--gold-dim);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .info-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 6px; font-weight: 700; }
+        .info-card .value { font-size: 28px; font-weight: 700; color: var(--cream); font-family: 'Playfair Display', serif; }
+        .info-card .sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+        /* PENDING REQUESTS */
+        .requests-section { margin-bottom: 28px; }
+        .request-card {
+            background: var(--panel);
+            border: 2px solid var(--gold-dim);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+        }
+        .request-card.pending { border-color: var(--gold); }
+        .request-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .request-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .type-truth { background: rgba(99,91,255,0.2); color: #A09CFF; border: 1px solid rgba(99,91,255,0.4); }
+        .type-dare  { background: rgba(204,0,0,0.25); color: #FF6B6B; border: 1px solid rgba(204,0,0,0.5); }
+        .request-amount { font-size: 18px; font-weight: 700; color: var(--green); }
+        .request-meta { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+        .request-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        /* BUTTONS */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .btn:disabled { opacity: 0.5; cursor: default; }
+        .btn-accept {
+            background: linear-gradient(135deg, #1A7A3A, #2ECC71);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(46,204,113,0.25);
+        }
+        .btn-accept:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(46,204,113,0.35); }
+        .btn-decline {
+            background: rgba(0,0,0,0.35);
+            color: var(--text);
+            border: 1px solid var(--gold-dim);
+        }
+        .btn-decline:hover:not(:disabled) { border-color: var(--gold); color: var(--gold-light); }
+        .btn-gold {
+            background: linear-gradient(135deg, #C49050, #D4A574);
+            color: #1A0800;
+            box-shadow: 0 4px 12px rgba(212,165,116,0.25);
+        }
+        .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(212,165,116,0.35); }
+
+        /* NEXT STEPS */
+        .steps-section { margin-bottom: 28px; }
+        .step-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--gold-dim);
+        }
+        .step-item:last-child { border-bottom: none; }
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-num.done { background: var(--green); border-color: var(--green); color: #fff; }
+        .step-content h4 { color: var(--cream); font-size: 14px; margin-bottom: 3px; }
+        .step-content p { color: var(--text-dim); font-size: 13px; line-height: 1.5; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-dim);
+            font-size: 14px;
+            background: var(--panel);
+            border: 2px dashed var(--gold-dim);
+            border-radius: 10px;
+        }
+        .empty-state .icon { font-size: 32px; margin-bottom: 10px; }
+
+        /* ACCOUNT BOX */
+        .account-id-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--gold-dim);
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-family: monospace;
+            font-size: 13px;
+            color: var(--text-dim);
+            word-break: break-all;
+        }
+
+        /* FOOTER */
+        .footer-note {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid var(--gold-dim);
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        @media (max-width: 600px) {
+            .page-wrapper { padding: 20px 16px; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .stripe-status-box { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+    <div class="site-header">
+        <a href="/" class="back-link">← Back to Home</a>
+        <h1>Creator Dashboard</h1>
+        <div class="tagline">truthordareformyfans.com</div>
+    </div>
+
+    <!-- SUCCESS BANNER -->
+    <div class="success-banner">
+        <div class="check">🎉</div>
+        <h2>Stripe Account Connected!</h2>
+        <p>Your payout account is set up. You'll receive <strong style="color:#2ECC71">85% of every session</strong> automatically.</p>
+    </div>
+
+    <!-- STRIPE STATUS -->
+    <div class="stripe-status-box">
+        <div class="stripe-status-left">
+            <div class="stripe-dot"></div>
+            <div>
+                <div class="stripe-label">Stripe Account ID</div>
+                <div class="stripe-value" id="accountIdDisplay">Loading...</div>
+            </div>
+        </div>
+        <div style="text-align:right">
+            <div class="stripe-label">Payout Split</div>
+            <div class="stripe-value" style="color: #2ECC71">85% yours</div>
+        </div>
+    </div>
+
+    <!-- EARNINGS CARDS -->
+    <div class="section-title">Overview</div>
+    <div class="cards-grid">
+        <div class="info-card">
+            <div class="label">Total Earned</div>
+            <div class="value">$0.00</div>
+            <div class="sub">CAD · All time</div>
+        </div>
+        <div class="info-card">
+            <div class="label">Pending Sessions</div>
+            <div class="value" id="pendingCount">0</div>
+            <div class="sub">Awaiting your response</div>
+        </div>
+        <div class="info-card">
+            <div class="label">Truth Sessions</div>
+            <div class="value">0</div>
+            <div class="sub">$15 · 5 min · You keep $12.75</div>
+        </div>
+        <div class="info-card">
+            <div class="label">Dare Sessions</div>
+            <div class="value">0</div>
+            <div class="sub">$45 · 15 min · You keep $38.25</div>
+        </div>
+    </div>
+
+    <!-- PENDING REQUESTS -->
+    <div class="requests-section">
+        <div class="section-title">Incoming Session Requests</div>
+
+        <div id="requestsList">
+            <!-- Populated by JS -->
+            <div class="empty-state">
+                <div class="icon">📭</div>
+                <p>No pending requests yet.<br>Once fans book a session, you'll see them here to accept or decline.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETUP CHECKLIST -->
+    <div class="steps-section">
+        <div class="section-title">Setup Checklist</div>
+
+        <div class="step-item">
+            <div class="step-num done">✓</div>
+            <div class="step-content">
+                <h4>Stripe Account Connected</h4>
+                <p>Your payouts are configured. You're ready to get paid.</p>
+            </div>
+        </div>
+
+        <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">
+                <h4>Set Up Your Calendly</h4>
+                <p>Create two event types: <strong style="color:var(--gold)">Truth (5 min, $15)</strong> and <strong style="color:#FF6B6B">Dare (15 min, $45)</strong>. Share your Calendly link with fans.</p>
+            </div>
+        </div>
+
+        <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">
+                <h4>Promote Your Page</h4>
+                <p>Share your profile link on social media. Fans will book directly and you'll get notified here.</p>
+            </div>
+        </div>
+
+        <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">
+                <h4>Accept Sessions &amp; Get Paid</h4>
+                <p>When a fan books, accept or decline above. Funds release to your Stripe after the session completes.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCOUNT ID FOR REFERENCE -->
+    <div style="margin-bottom: 20px;">
+        <div class="section-title">Your Account</div>
+        <p style="font-size:13px; color:var(--text-dim); margin-bottom: 8px;">Save this — it's your Stripe creator ID:</p>
+        <div class="account-id-box" id="accountIdFull">—</div>
+    </div>
+
+    <div class="footer-note">
+        Questions? Contact <a href="mailto:truthordarefans@gmail.com" style="color:var(--gold)">truthordarefans@gmail.com</a>
+        &nbsp;·&nbsp; <a href="/" style="color:var(--gold)">← Back to main site</a>
+    </div>
+</div>
+
+<script>
+    const BACKEND = 'https://truthordare-backend.onrender.com';
+
+    // Read account ID from URL
+    const params   = new URLSearchParams(window.location.search);
+    const accountId = params.get('account') || '';
+
+    if (accountId) {
+        document.getElementById('accountIdDisplay').textContent = accountId.substring(0, 20) + '…';
+        document.getElementById('accountIdFull').textContent    = accountId;
+    } else {
+        document.getElementById('accountIdDisplay').textContent = 'Not found';
+        document.getElementById('accountIdFull').textContent    = 'Account ID missing — please re-register.';
+    }
+
+    // ── Demo: show a sample pending request so the creator sees how it looks ──
+    // In production this would be fetched from a database.
+    // Uncomment the block below to test the UI with a fake request:
+
+    /*
+    const sampleRequests = [
+        {
+            id: 'demo_1',
+            type: 'dare',
+            fanHandle: '@fan_demo',
+            amount: '$45.00',
+            timestamp: 'Today, 3:45 PM',
+            note: 'I dare you to do your best impression!'
+        }
+    ];
+
+    if (sampleRequests.length > 0) {
+        document.getElementById('pendingCount').textContent = sampleRequests.length;
+        const list = document.getElementById('requestsList');
+        list.innerHTML = '';
+        sampleRequests.forEach(req => {
+            list.innerHTML += `
+            <div class="request-card pending">
+                <div class="request-header">
+                    <span class="request-type type-${req.type}">${req.type.toUpperCase()}</span>
+                    <span class="request-amount">${req.amount}</span>
+                </div>
+                <div class="request-meta">
+                    From <strong style="color:var(--cream)">${req.fanHandle}</strong> · ${req.timestamp}
+                    ${req.note ? `<br>"${req.note}"` : ''}
+                </div>
+                <div class="request-actions">
+                    <button class="btn btn-accept" onclick="respondToRequest('${req.id}', 'accept')">✓ Accept Session</button>
+                    <button class="btn btn-decline" onclick="respondToRequest('${req.id}', 'decline')">✕ Decline</button>
+                </div>
+            </div>`;
+        });
+    }
+    */
+
+    async function respondToRequest(requestId, action) {
+        const btn = event.target;
+        btn.disabled = true;
+        btn.textContent = action === 'accept' ? 'Accepting…' : 'Declining…';
+
+        try {
+            const res = await fetch(`${BACKEND}/respond-to-request`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ requestId, action, accountId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                btn.closest('.request-card').innerHTML =
+                    `<div style="color:var(--text-dim); font-size:13px; padding:6px 0">
+                        ${action === 'accept' ? '✅ Accepted — fan notified.' : '✕ Declined — fan notified.'}
+                    </div>`;
+            }
+        } catch (err) {
+            btn.disabled = false;
+            btn.textContent = 'Error — try again';
+        }
+    }
+</script>
+</body>
+</html>
