@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Become a Featured Creator | Truth or Dare For My Fans</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --red: #CC0000; --dark-red: #990000; --gold: #D4A574; --gold-light: #F0C890; --gold-dim: rgba(212,165,116,0.35); --cream: #FDF6EC; --text: #C9B99A; --text-dim: #9A8A72; --dark: #120500; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--red); background-image: radial-gradient(ellipse at 15% 10%, rgba(212,165,116,0.12) 0%, transparent 45%), radial-gradient(ellipse at 85% 90%, rgba(100,0,0,0.5) 0%, transparent 50%); min-height: 100vh; padding: 24px 20px; color: var(--text); display: flex; align-items: center; justify-content: center; }
+        .wrapper { width: 100%; max-width: 540px; border: 3px solid var(--gold); padding: 44px 40px; background: rgba(0,0,0,0.2); position: relative; }
+        .wrapper::before { content: '✦'; position: absolute; top: 10px; left: 12px; color: var(--gold); font-size: 18px; }
+        .wrapper::after  { content: '✦'; position: absolute; bottom: 10px; right: 12px; color: var(--gold); font-size: 18px; }
+        .site-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--cream); text-align: center; margin-bottom: 4px; text-shadow: 1px 2px 0 var(--dark-red); }
+        .site-sub { text-align: center; font-size: 11px; color: var(--gold-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+        .page-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: var(--cream); text-align: center; margin-bottom: 6px; }
+        .page-sub { text-align: center; font-size: 13px; color: var(--text-dim); margin-bottom: 28px; line-height: 1.6; }
+        .free-badge { display: inline-block; background: linear-gradient(135deg, #C49050, #D4A574); color: #1A0800; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; }
+        .perks-row { display: flex; gap: 10px; margin-bottom: 28px; }
+        .perk { flex: 1; text-align: center; padding: 14px 10px; background: rgba(212,165,116,0.06); border: 1px solid var(--gold-dim); border-radius: 8px; font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+        .perk .perk-icon { font-size: 20px; display: block; margin-bottom: 6px; }
+        .perk strong { color: var(--gold-light); display: block; font-size: 11px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .label { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .optional-tag { color: var(--text-dim); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; }
+        .input-field { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.35); border: 1.5px solid var(--gold-dim); border-radius: 6px; color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 14px; margin-bottom: 16px; outline: none; transition: border-color 0.2s; }
+        .input-field::placeholder { color: var(--text-dim); }
+        .input-field:focus { border-color: var(--gold); }
+        textarea.input-field { resize: vertical; min-height: 90px; }
+        .photo-upload-area { border: 2px dashed var(--gold-dim); border-radius: 8px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 16px; position: relative; }
+        .photo-upload-area:hover { border-color: var(--gold); background: rgba(212,165,116,0.05); }
+        .photo-upload-area.has-photo { border-style: solid; border-color: var(--gold); }
+        .photo-upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+        .upload-icon { font-size: 32px; margin-bottom: 8px; }
+        .upload-label { font-size: 13px; color: var(--gold-light); font-weight: 700; margin-bottom: 4px; }
+        .upload-sub { font-size: 11px; color: var(--text-dim); }
+        .photo-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold); margin: 0 auto 8px; display: none; }
+        .photo-preview.show { display: block; }
+        .char-count { font-size: 11px; color: var(--text-dim); text-align: right; margin-top: -12px; margin-bottom: 16px; }
+        .btn-main { width: 100%; padding: 16px; background: linear-gradient(135deg, #C49050, #D4A574); color: #1A0800; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .btn-main:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,165,116,0.3); }
+        .btn-main:disabled { opacity: 0.6; cursor: default; }
+        .disclaimer { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 12px; line-height: 1.6; }
+        .error-msg { background: rgba(204,0,0,0.2); border: 1px solid rgba(255,107,107,0.4); border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #FF9999; margin-bottom: 14px; display: none; }
+        .error-msg.show { display: block; }
+        .success-screen { display: none; text-align: center; }
+        .success-screen.show { display: block; }
+        .success-icon { font-size: 56px; margin-bottom: 16px; }
+        .success-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--cream); margin-bottom: 10px; }
+        .success-sub { font-size: 14px; color: var(--text-dim); line-height: 1.7; margin-bottom: 24px; }
+        .back-link { display: block; text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-dim); }
+        .back-link a { color: var(--gold); text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="site-title">Truth or Dare For My Fans</div>
+    <div class="site-sub">Creator Program</div>
+    <div class="success-screen" id="successScreen">
+        <div class="success-icon">🌟</div>
+        <div class="success-title">Application Submitted!</div>
+        <div class="success-sub">Your profile is now under review.<br>You'll be featured on the homepage once approved — usually within 24 hours.<br><br>In the meantime, <a href="/login.html" style="color:var(--gold)">sign up or log in</a> to connect Stripe and start accepting sessions.</div>
+        <a href="/" style="display:inline-block; padding:12px 28px; background:linear-gradient(135deg,#C49050,#D4A574); color:#1A0800; border-radius:6px; font-weight:700; text-decoration:none; font-size:13px; letter-spacing:1px; text-transform:uppercase;">← Back to Homepage</a>
+    </div>
+    <div class="form-area" id="formArea">
+        <div style="text-align:center; margin-bottom:16px;"><span class="free-badge">✦ 100% Free ✦</span></div>
+        <div class="page-title">Become a Featured Creator</div>
+        <div class="page-sub">Get your profile on our homepage — fans browse and book you directly. No cost, no commitment, optional.</div>
+        <div class="perks-row">
+            <div class="perk"><span class="perk-icon">👁️</span><strong>Visibility</strong>Fans see you first when they land on the site</div>
+            <div class="perk"><span class="perk-icon">💰</span><strong>85% Cut</strong>Keep $12.75 per Truth · $38.25 per Dare</div>
+            <div class="perk"><span class="perk-icon">🔒</span><strong>You Control</strong>Accept or decline any session request</div>
+        </div>
+        <div class="error-msg" id="errorMsg"></div>
+        <label class="label">Your Name or Creator Handle</label>
+        <input type="text" class="input-field" id="creatorName" placeholder="e.g. Mia Rose or @miarose">
+        <label class="label">Email Address</label>
+        <input type="email" class="input-field" id="creatorEmail" placeholder="your@email.com">
+        <label class="label">Profile Photo <span class="optional-tag">(optional but recommended)</span></label>
+        <div class="photo-upload-area" id="uploadArea">
+            <input type="file" accept="image/*" id="photoInput" onchange="handlePhoto(event)">
+            <img class="photo-preview" id="photoPreview">
+            <div id="uploadPlaceholder">
+                <div class="upload-icon">📸</div>
+                <div class="upload-label">Click to upload your photo</div>
+                <div class="upload-sub">JPG, PNG · Max 5MB · Square crop looks best</div>
+            </div>
+        </div>
+        <label class="label">Short Bio <span class="optional-tag">(optional)</span></label>
+        <textarea class="input-field" id="creatorBio" placeholder="Tell fans a little about yourself and what kind of Truth or Dare sessions you offer..." maxlength="200" oninput="updateCharCount()"></textarea>
+        <div class="char-count"><span id="charCount">0</span>/200</div>
+        <label class="label">Platform you're coming from <span class="optional-tag">(optional)</span></label>
+        <input type="text" class="input-field" id="creatorPlatform" placeholder="e.g. OnlyFans, FansVue, Instagram...">
+        <button class="btn-main" id="submitBtn" onclick="submitApplication()">Submit My Profile for Review →</button>
+        <div class="disclaimer">By submitting you confirm you are 18+ and agree to our community guidelines.<br>Your profile will be reviewed before going live — usually within 24 hours.</div>
+    </div>
+    <div class="back-link"><a href="/">← Back to truthordareformyfans.com</a></div>
+</div>
+<script>
+    const BACKEND = 'https://truthordare-backend.onrender.com';
+    let photoBase64 = null;
+    function handlePhoto(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) { showError('Photo must be under 5MB.'); return; }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            photoBase64 = ev.target.result;
+            const preview = document.getElementById('photoPreview');
+            preview.src = photoBase64;
+            preview.classList.add('show');
+            document.getElementById('uploadPlaceholder').style.display = 'none';
+            document.getElementById('uploadArea').classList.add('has-photo');
+        };
+        reader.readAsDataURL(file);
+    }
+    function updateCharCount() { document.getElementById('charCount').textContent = document.getElementById('creatorBio').value.length; }
+    function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('show'); }
+    async function submitApplication() {
+        const name = document.getElementById('creatorName').value.trim();
+        const email = document.getElementById('creatorEmail').value.trim();
+        const bio = document.getElementById('creatorBio').value.trim();
+        const platform = document.getElementById('creatorPlatform').value.trim();
+        if (!name) { showError('Please enter your name or handle.'); return; }
+        if (!email) { showError('Please enter your email address.'); return; }
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true; btn.textContent = 'Submitting…';
+        try {
+            const res = await fetch(`${BACKEND}/featured-apply`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, bio, platform, photo: photoBase64 }) });
+            const data = await res.json();
+            if (!res.ok) { showError(data.error || 'Submission failed. Please try again.'); btn.disabled = false; btn.textContent = 'Submit My Profile for Review →'; return; }
+            document.getElementById('formArea').style.display = 'none';
+            document.getElementById('successScreen').classList.add('show');
+        } catch (err) {
+            showError('Could not reach server. Try again in a moment.');
+            btn.disabled = false; btn.textContent = 'Submit My Profile for Review →';
+        }
+    }
+</script>
+</body>
+</html>
