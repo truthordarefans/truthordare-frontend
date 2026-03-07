@@ -475,6 +475,21 @@
             btn.textContent = 'Error — try again';
         }
     }
+
+    /* ── Heartbeat — keep creator shown as online ── */
+    (function startHeartbeat() {
+        const token    = localStorage.getItem('tod_token');
+        const userJson = localStorage.getItem('tod_user');
+        if (!token || !userJson) return;
+        let role;
+        try { role = JSON.parse(userJson).role; } catch(e) { return; }
+        if (role !== 'creator') return;
+        async function ping() {
+            try { await fetch(`${BACKEND}/heartbeat`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } }); } catch(e) {}
+        }
+        ping();
+        setInterval(ping, 60 * 1000);
+    })();
 </script>
 </body>
 </html>
