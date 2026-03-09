@@ -141,7 +141,7 @@
         .featured-creators-section { margin-top: 60px; text-align: center; }
         .featured-creators-section h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--cream); margin-bottom: 30px; }
         .creator-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .creator-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 20px; width: 100%; max-width: 200px; text-align: center; }
+        .creator-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 25px; width: 100%; max-width: 280px; text-align: center; }
         .creator-card .avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--gold-dim); margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; font-size: 30px; color: var(--cream); overflow: hidden; }
         .creator-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .creator-card h3 { font-size: 18px; color: var(--gold-light); margin-bottom: 5px; }
@@ -183,9 +183,6 @@
             .room-cards { flex-direction: column; align-items: center; }
             .room-card { max-width: 100%; }
             .creator-grid { flex-direction: column; align-items: center; }
-            /* Mobile Room Fix */
-            .room-card .chat-box { height: 180px; }
-            .room-card .chat-input-group input { font-size: 16px; }
         }
     </style>
 </head>
@@ -200,14 +197,12 @@
         <section class="hero-section">
             <div class="hero-card">
                 <img src="https://truthordareformyfans.com/assets/creator-hero.webp" alt="Creator Hero Image">
-                <div class="caption">CREATOR HERO IMAGE</div>
             </div>
             <div class="hero-card">
                 <video controls poster="https://truthordareformyfans.com/assets/video-poster.webp">
                     <source src="https://truthordareformyfans.com/assets/video-demo.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
-                <div class="caption">SHORT VIDEO DEMO</div>
             </div>
         </section>
 
@@ -275,7 +270,7 @@
                     <input type="text" id="handleInput" placeholder="Your handle or number">
                     <div class="checkbox-group">
                         <input type="checkbox" id="creatorAgeCheck">
-                        <label for="creatorAgeCheck">I confirm I am 18 years of age or older and agree to the Terms & Community Guidelines.</label>
+                        <label for="creatorAgeCheck">I confirm I am 18 years of age or older and agree to the terms.</label>
                     </div>
                     <button class="btn btn-subscribe" id="creatorSubscribeBtn" onclick="subscribeCreator()">SUBSCRIBE AS CREATOR — FREE</button>
                 </div>
@@ -349,7 +344,7 @@
         // Configuration object
         const CONFIG = {
             backendUrl: 'https://truthordare-backend.onrender.com',
-            stripePublishableKey: 'pk_test_51Quz8YRsS2Wp9z6TfV1z8y9z6TfV1z8y9z6TfV1z8y9z6TfV1z8y9z6TfV1z8y9z', // REPLACE WITH YOUR LIVE KEY
+            stripePublishableKey: 'pk_live_51SsEz9ATBuyYNn5YB8bSJEfsvLtOvRpasc9wEzQ6Asg0d7wBclcLF0uaYx60nIByWlVeSCiVna6gr0jnInJbjylU00aA39A4Yv',
             emailjsServiceId: 'YOUR_EMAILJS_SERVICE_ID',
             emailjsTemplateId: 'YOUR_EMAILJS_TEMPLATE_ID',
             creatorEmail: 'YOUR_CREATOR_EMAIL_FOR_NOTIFICATIONS' // For testing notify creator without backend
@@ -389,7 +384,7 @@
             if (!validate()) return;
             const btn = document.getElementById('payBtn');
             btn.classList.add('loading'); btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Processing...';
+            btn.innerHTML = '<span class="spinner"></span> Processing...'; // Add spinner
 
             try {
                 const res = await fetch(`${CONFIG.backendUrl}/create-checkout-session`, {
@@ -410,7 +405,7 @@
             } catch (err) {
                 showToast(`Payment error: ${err.message}`, 'error');
                 btn.classList.remove('loading'); btn.disabled = false;
-                btn.innerHTML = '💳 PAY WITH STRIPE';
+                btn.innerHTML = '💳 PAY WITH STRIPE'; // Reset button text
             }
         }
 
@@ -419,10 +414,11 @@
             if (!validate()) return;
             const btn = document.getElementById('notifyBtn');
             btn.classList.add('loading'); btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Sending...';
+            btn.innerHTML = '<span class="spinner"></span> Sending...'; // Add spinner
 
             const challenge = selectedCard === 'truth' ? 'Truth ($15 USD — 5 min)' : 'Dare ($45 USD — 15 min Live)';
             try {
+                // Ensure EmailJS is loaded and configured
                 if (typeof emailjs === 'undefined' || !CONFIG.emailjsServiceId || !CONFIG.emailjsTemplateId) {
                     throw new Error('EmailJS not configured. Please check CONFIG.emailjsServiceId and CONFIG.emailjsTemplateId.');
                 }
@@ -438,7 +434,7 @@
                 showToast(`Notification failed: ${e.message}`, 'error');
             }
             btn.classList.remove('loading'); btn.disabled = false;
-            btn.innerHTML = '🔔 NOTIFY CREATOR';
+            btn.innerHTML = '🔔 NOTIFY CREATOR'; // Reset button text
         }
 
         // Notification preference toggle
@@ -488,12 +484,14 @@
                 return;
             }
 
+            // Simulate API call
             const btn = document.getElementById('fanSubscribeBtn');
             btn.classList.add('loading'); btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Subscribing...';
 
             try {
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // In a real app, send data to backend
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
                 showToast('✓ Fan subscribed successfully!', 'success');
                 btn.innerHTML = 'SUBSCRIBE AS FAN — FREE';
             } catch (e) {
@@ -519,12 +517,14 @@
                 return;
             }
 
+            // Simulate API call
             const btn = document.getElementById('creatorSubscribeBtn');
             btn.classList.add('loading'); btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Subscribing...';
 
             try {
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // In a real app, send data to backend
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
                 showToast('✓ Creator subscribed successfully!', 'success');
                 btn.innerHTML = 'SUBSCRIBE AS CREATOR — FREE';
             } catch (e) {
@@ -542,7 +542,7 @@
                 if (!res.ok) throw new Error('Failed to fetch featured creators.');
                 const { creators } = await res.json();
 
-                grid.innerHTML = '';
+                grid.innerHTML = ''; // Clear loading cards
 
                 if (creators.length === 0) {
                     grid.innerHTML = '<p class="text-center mt-20" style="color: var(--text-dim);">No featured creators yet. Be the first to apply!</p>';
@@ -569,6 +569,7 @@
         // Initial calls
         document.addEventListener('DOMContentLoaded', () => {
             fetchFeaturedCreators();
+            // Check for success/cancel from Stripe redirect
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('success')) {
                 showToast('Payment successful! Your session is booked.', 'success');
