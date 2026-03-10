@@ -48,8 +48,12 @@
 
         /* --- HEADER --- */
         .site-header { text-align: center; margin-bottom: 32px; position: relative; }
-        .login-btn-header { position: absolute; top: 0; right: 0; padding: 8px 18px; background: transparent; border: 1.5px solid rgba(212,165,116,0.35); border-radius: 6px; color: #D4A574; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .login-btns-header { position: absolute; top: 0; right: 0; display: flex; gap: 8px; }
+        .login-btn-header { padding: 8px 14px; background: transparent; border: 1.5px solid rgba(212,165,116,0.35); border-radius: 6px; color: #D4A574; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.2s; white-space: nowrap; }
         .login-btn-header:hover { border-color: #D4A574; background: rgba(212,165,116,0.1); }
+        .login-btn-header.creator { background: rgba(204,0,0,0.2); border-color: rgba(204,0,0,0.6); color: #FF6B6B; }
+        .login-btn-header.creator:hover { background: rgba(204,0,0,0.35); border-color: #CC0000; }
+        @media (max-width: 480px) { .login-btns-header { position: static; justify-content: center; margin-bottom: 12px; } .site-header { padding-top: 0; } }
 
         .site-header h1 {
             font-family: 'Playfair Display', serif;
@@ -141,14 +145,21 @@
         /* --- FEATURED CREATORS --- */
         .featured-creators-section { margin-top: 60px; text-align: center; }
         .featured-creators-section h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--cream); margin-bottom: 30px; }
-        .creator-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .creator-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 25px; width: 100%; max-width: 280px; text-align: center; }
-        .creator-card .avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--gold-dim); margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; font-size: 30px; color: var(--cream); overflow: hidden; }
+        .creator-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        @media (max-width: 768px) { .creator-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 400px) { .creator-grid { grid-template-columns: 1fr 1fr; } }
+        .creator-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 20px 15px; text-align: center; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .creator-card.available { border: 1.5px dashed rgba(212,165,116,0.25); background: rgba(0,0,0,0.15); cursor: pointer; transition: all 0.2s; }
+        .creator-card.available:hover { border-color: var(--gold-dim); background: rgba(212,165,116,0.05); }
+        .creator-card .avatar { width: 70px; height: 70px; border-radius: 50%; background: var(--gold-dim); margin: 0 auto 12px auto; display: flex; justify-content: center; align-items: center; font-size: 26px; color: var(--cream); overflow: hidden; }
         .creator-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .creator-card h3 { font-size: 18px; color: var(--gold-light); margin-bottom: 5px; }
-        .creator-card p { font-size: 14px; color: var(--text); }
-        .creator-card .btn-book { background: var(--red); color: #fff; padding: 8px 15px; border-radius: 4px; font-size: 14px; margin-top: 15px; cursor: pointer; transition: all 0.2s; border: none; }
+        .creator-card h3 { font-size: 15px; color: var(--gold-light); margin-bottom: 4px; }
+        .creator-card p { font-size: 12px; color: var(--text); line-height: 1.4; }
+        .creator-card .slot-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .creator-card .btn-book { background: var(--red); color: #fff; padding: 6px 14px; border-radius: 4px; font-size: 13px; margin-top: 12px; cursor: pointer; transition: all 0.2s; border: none; }
         .creator-card .btn-book:hover { background: var(--dark-red); transform: translateY(-1px); }
+        .creator-card .btn-apply { background: transparent; color: var(--gold); border: 1px solid var(--gold-dim); padding: 6px 14px; border-radius: 4px; font-size: 12px; margin-top: 10px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+        .creator-card .btn-apply:hover { border-color: var(--gold); background: rgba(212,165,116,0.1); }
 
         /* --- FOOTER --- */
         .site-footer { text-align: center; margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--gold-dim); font-size: 14px; color: var(--text-dim); }
@@ -190,7 +201,10 @@
 <body>
     <div class="page-wrapper">
         <header class="site-header">
-            <a href="#" class="login-btn-header">LOG IN</a>
+            <div class="login-btns-header">
+                <a href="#fan-login" class="login-btn-header" onclick="openLoginModal('fan'); return false;">👤 Fan Login</a>
+                <a href="#creator-login" class="login-btn-header creator" onclick="openLoginModal('creator'); return false;">🌟 Creator Login</a>
+            </div>
             <h1>Truth or Dare <br>For My Fans</h1>
             <p class="tagline">The ultimate fan-creator challenge experience</p>
         </header>
@@ -314,14 +328,11 @@
         </section>
 
         <section class="featured-creators-section">
-            <h2>⭐ Become a Featured Creator</h2>
-            <p style="font-size: 15px; color: var(--text); margin-bottom: 30px;">Upload your photo & bio · Get seen by fans · Keep 85% of every session · <strong>100% Free — Optional</strong></p>
-            <a href="featured-apply.html" class="btn btn-subscribe" style="width: auto; display: inline-block; margin-bottom: 40px;">APPLY NOW →</a>
-
             <h2>⭐ Featured Creators</h2>
-            <p style="font-size: 15px; color: var(--text); margin-bottom: 30px;">Browse our creators and book a private Truth or Dare session.</p>
+            <p style="font-size: 15px; color: var(--text); margin-bottom: 10px;">Browse our creators and book a private Truth or Dare session.</p>
+            <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 30px;">Creators: featuring yourself is <strong style="color: var(--gold);">100% optional</strong> — opt in from your Creator Dashboard anytime.</p>
             <div class="creator-grid" id="featured-creators-grid">
-                
+                <!-- 12 slots rendered by JS -->
             </div>
         </section>
 
@@ -532,36 +543,90 @@
             btn.classList.remove('loading'); btn.disabled = false;
         }
 
-        // Fetch Featured Creators
+        // Fetch Featured Creators — always show 12 slots
         async function fetchFeaturedCreators() {
             const grid = document.getElementById('featured-creators-grid');
+            const TOTAL_SLOTS = 12;
+            let approvedCreators = [];
+
             try {
                 const res = await fetch(`${CONFIG.backendUrl}/featured-creators`);
-                if (!res.ok) throw new Error('Failed to fetch featured creators.');
-                const { creators } = await res.json();
-
-                grid.innerHTML = ''; // Clear loading cards
-
-                if (creators.length === 0) {
-                    grid.innerHTML = '<p class="text-center mt-20" style="color: var(--text-dim);">No featured creators yet. Be the first to apply!</p>';
-                    return;
+                if (res.ok) {
+                    const data = await res.json();
+                    approvedCreators = data.creators || [];
                 }
-
-                creators.forEach(creator => {
-                    const creatorCard = document.createElement('div');
-                    creatorCard.classList.add('creator-card');
-                    creatorCard.innerHTML = `
-                        <div class="avatar">${creator.photo ? `<img src="${creator.photo}" alt="${creator.name}">` : '👤'}</div>
-                        <h3>${creator.name}</h3>
-                        <p>${creator.bio || 'No bio provided.'}</p>
-                        <button class="btn btn-book">Book Now</button>
-                    `;
-                    grid.appendChild(creatorCard);
-                });
             } catch (e) {
-                console.error('Error fetching featured creators:', e);
-                grid.innerHTML = '<p class="text-center mt-20" style="color: var(--red);">Failed to load featured creators. Please try again later.</p>';
+                console.warn('Could not fetch featured creators:', e);
             }
+
+            grid.innerHTML = '';
+
+            for (let i = 0; i < TOTAL_SLOTS; i++) {
+                const card = document.createElement('div');
+                if (i < approvedCreators.length) {
+                    const c = approvedCreators[i];
+                    card.classList.add('creator-card');
+                    card.innerHTML = `
+                        <div class="avatar">${c.photo ? `<img src="${c.photo}" alt="${c.name}">` : '👤'}</div>
+                        <h3>${c.name}</h3>
+                        <p>${c.bio || ''}</p>
+                        <button class="btn-book" onclick="selectCreator('${c.name}')">Book Now</button>
+                    `;
+                } else {
+                    card.classList.add('creator-card', 'available');
+                    card.innerHTML = `
+                        <div class="avatar" style="background: rgba(212,165,116,0.1); font-size: 22px;">✨</div>
+                        <div class="slot-label">Slot Available</div>
+                        <p style="font-size: 11px; color: var(--text-dim);">Creator spot open</p>
+                        <a href="#creator-login" class="btn-apply" onclick="openLoginModal('creator'); return false;">Get Featured</a>
+                    `;
+                }
+                grid.appendChild(card);
+            }
+        }
+
+        // Select creator from featured grid
+        function selectCreator(name) {
+            const input = document.getElementById('creatorName');
+            if (input) { input.value = name; input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+        }
+
+        // Login Modal
+        function openLoginModal(type) {
+            const existing = document.getElementById('login-modal');
+            if (existing) existing.remove();
+
+            const isCreator = type === 'creator';
+            const modal = document.createElement('div');
+            modal.id = 'login-modal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.innerHTML = `
+                <div style="background:#1a0000;border:2px solid var(--gold-dim);border-radius:10px;padding:36px;max-width:400px;width:100%;position:relative;">
+                    <button onclick="document.getElementById('login-modal').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;">✕</button>
+                    <h3 style="font-family:'Playfair Display',serif;color:var(--cream);font-size:22px;margin-bottom:6px;">${isCreator ? '🌟 Creator Login' : '👤 Fan Login'}</h3>
+                    <p style="font-size:13px;color:var(--text-dim);margin-bottom:24px;">${isCreator ? 'Access your creator dashboard, sessions & earnings.' : 'View your booked sessions and history.'}</p>
+                    <input id="modal-email" type="email" placeholder="Email address" style="width:100%;padding:11px;margin-bottom:12px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:4px;color:var(--cream);font-size:15px;">
+                    <input id="modal-password" type="password" placeholder="Password" style="width:100%;padding:11px;margin-bottom:20px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:4px;color:var(--cream);font-size:15px;">
+                    <button onclick="handleLogin('${type}')" style="width:100%;padding:12px;background:${isCreator ? 'var(--red)' : 'var(--gold)'};color:${isCreator ? '#fff' : 'var(--dark)'};border:none;border-radius:6px;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">LOG IN</button>
+                    <p style="font-size:12px;color:var(--text-dim);margin-top:16px;text-align:center;">Don't have an account? <a href="#" style="color:var(--gold-light);" onclick="document.getElementById('login-modal').remove(); document.getElementById('${isCreator ? 'creatorSubName' : 'fanSubName'}').scrollIntoView({behavior:'smooth'}); return false;">Sign up free →</a></p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+            setTimeout(() => document.getElementById('modal-email').focus(), 100);
+        }
+
+        // Handle Login
+        async function handleLogin(type) {
+            const email = document.getElementById('modal-email').value.trim();
+            const password = document.getElementById('modal-password').value;
+            if (!email || !password) { showToast('Please enter your email and password.', 'error'); return; }
+            showToast('Logging in...', 'info');
+            // TODO: Connect to backend auth endpoint
+            setTimeout(() => {
+                showToast('Login coming soon! Please sign up below to be notified.', 'info');
+                document.getElementById('login-modal').remove();
+            }, 1000);
         }
 
         // Initial calls
