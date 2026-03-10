@@ -621,12 +621,42 @@
             const email = document.getElementById('modal-email').value.trim();
             const password = document.getElementById('modal-password').value;
             if (!email || !password) { showToast('Please enter your email and password.', 'error'); return; }
+
+            const loginBtn = document.querySelector('#login-modal button:last-of-type');
+            if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = 'Logging in...'; }
             showToast('Logging in...', 'info');
-            // TODO: Connect to backend auth endpoint
-            setTimeout(() => {
-                showToast('Login coming soon! Please sign up below to be notified.', 'info');
+
+            try {
+                const res = await fetch(`${backendUrl}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showToast(data.error || 'Invalid email or password.', 'error');
+                    if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'LOG IN'; }
+                    return;
+                }
+
+                // Save auth token and role
+                localStorage.setItem('tod_token', data.token);
+                localStorage.setItem('tod_role', data.role);
+
                 document.getElementById('login-modal').remove();
-            }, 1000);
+
+                if (data.role === 'creator') {
+                    showToast('Welcome back! Redirecting to your dashboard...', 'success');
+                    setTimeout(() => window.location.href = '/dashboard.html', 1200);
+                } else {
+                    showToast(`Welcome back! You are logged in as a fan.`, 'success');
+                }
+
+            } catch (err) {
+                showToast('Network error. Please check your connection.', 'error');
+                if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'LOG IN'; }
+            }
         }
 
         // Initial calls
