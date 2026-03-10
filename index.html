@@ -223,12 +223,12 @@
             <div class="challenge-options">
                 <div class="challenge-card" id="truth-card" onclick="selectCard('truth')">
                     <h3>🤔 Buy Truth</h3>
-                    <p class="price">$15 USD</p>
+                    <p class="price">$15 CAD</p>
                     <p class="description">5 min · 2-way text</p>
                 </div>
                 <div class="challenge-card" id="dare-card" onclick="selectCard('dare')">
                     <h3>🔥 Buy Dare</h3>
-                    <p class="price">$45 USD</p>
+                    <p class="price">$45 CAD</p>
                     <p class="description">15 min · Live</p>
                 </div>
             </div>
@@ -425,7 +425,7 @@
             btn.classList.add('loading'); btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Sending...'; // Add spinner
 
-            const challenge = selectedCard === 'truth' ? 'Truth ($15 USD — 5 min)' : 'Dare ($45 USD — 15 min Live)';
+            const challenge = selectedCard === 'truth' ? 'Truth ($15 CAD — 5 min)' : 'Dare ($45 CAD — 15 min Live)';
             try {
                 // Ensure EmailJS is loaded and configured
                 if (typeof emailjs === 'undefined' || !CONFIG.emailjsServiceId || !CONFIG.emailjsTemplateId) {
