@@ -225,8 +225,11 @@
         .creator-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 20px 15px; text-align: center; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .creator-card.available { border: 1.5px dashed rgba(212,165,116,0.25); background: rgba(0,0,0,0.15); cursor: pointer; transition: all 0.2s; }
         .creator-card.available:hover { border-color: var(--gold-dim); background: rgba(212,165,116,0.05); }
-        .creator-card .avatar { width: 70px; height: 70px; border-radius: 50%; background: var(--gold-dim); margin: 0 auto 12px auto; display: flex; justify-content: center; align-items: center; font-size: 26px; color: var(--cream); overflow: hidden; }
+        .creator-card .avatar-wrap { position: relative; width: 70px; margin: 0 auto 12px auto; }
+        .creator-card .avatar { width: 70px; height: 70px; border-radius: 50%; background: var(--gold-dim); display: flex; justify-content: center; align-items: center; font-size: 26px; color: var(--cream); overflow: hidden; }
         .creator-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .online-dot { position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px; background: #22c55e; border-radius: 50%; border: 2px solid var(--red); box-shadow: 0 0 6px rgba(34,197,94,0.7); animation: pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 6px rgba(34,197,94,0.7); } 50% { box-shadow: 0 0 12px rgba(34,197,94,1); } }
         .creator-card h3 { font-size: 15px; color: var(--gold-light); margin-bottom: 4px; }
         .creator-card p { font-size: 12px; color: var(--text); line-height: 1.4; }
         .creator-card .slot-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
@@ -234,6 +237,29 @@
         .creator-card .btn-book:hover { background: var(--dark-red); transform: translateY(-1px); }
         .creator-card .btn-apply { background: transparent; color: var(--gold); border: 1px solid var(--gold-dim); padding: 6px 14px; border-radius: 4px; font-size: 12px; margin-top: 10px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
         .creator-card .btn-apply:hover { border-color: var(--gold); background: rgba(212,165,116,0.1); }
+
+        /* --- BOOKING MODAL --- */
+        .booking-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.82); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .booking-modal { background: #1a0000; border: 2px solid var(--gold); border-radius: 12px; padding: 32px; max-width: 480px; width: 100%; position: relative; }
+        .booking-modal h3 { font-family: 'Playfair Display', serif; color: var(--cream); font-size: 22px; margin-bottom: 6px; }
+        .booking-modal .booking-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 24px; }
+        .booking-step { display: none; }
+        .booking-step.active { display: block; }
+        .booking-step h4 { font-size: 15px; color: var(--gold-light); margin-bottom: 14px; font-weight: 600; }
+        .date-btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+        .time-btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+        .slot-btn { background: rgba(0,0,0,0.3); border: 1px solid var(--gold-dim); border-radius: 6px; padding: 10px 6px; font-size: 13px; color: var(--text); cursor: pointer; transition: all 0.15s; text-align: center; }
+        .slot-btn:hover { border-color: var(--gold); color: var(--gold-light); background: rgba(212,165,116,0.08); }
+        .slot-btn.selected { background: rgba(212,165,116,0.18); border-color: var(--gold); color: var(--cream); font-weight: 700; }
+        .booking-note { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--gold-dim); border-radius: 6px; color: var(--cream); font-size: 14px; resize: none; margin-bottom: 16px; font-family: 'DM Sans', sans-serif; }
+        .booking-note::placeholder { color: var(--text-dim); }
+        .booking-actions { display: flex; gap: 10px; margin-top: 18px; }
+        .booking-actions .btn-back { flex: 1; padding: 11px; background: transparent; border: 1px solid var(--gold-dim); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 14px; }
+        .booking-actions .btn-next { flex: 2; padding: 11px; background: var(--gold); border: none; border-radius: 6px; color: #120500; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .booking-actions .btn-next:hover { background: var(--gold-light); }
+        .booking-actions .btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
+        .booking-confirm-box { background: rgba(212,165,116,0.1); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 16px; margin-bottom: 18px; font-size: 14px; color: var(--text); line-height: 1.8; }
+        .booking-confirm-box strong { color: var(--cream); }
 
         /* --- FOOTER --- */
         .site-footer { text-align: center; margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--gold-dim); font-size: 14px; color: var(--text-dim); }
@@ -373,7 +399,8 @@
                 <div class="subscribe-card" id="creator-signup">
                     <h3>🌟 For Creators</h3>
                     <p>List yourself on truthordareformyfans.com, earn 85% of every session, and get notified your way. Create your unique @handle on our platform and unlock your Featured Creator profile slot.</p>
-                    <input type="text" id="creatorSubName" placeholder="Your creator name or handle">
+                    <input type="text" id="creatorSubName" placeholder="Your stage / display name (shown publicly)">
+                    <input type="text" id="creatorLegalName" placeholder="Your legal name (private — for Stripe payouts only)">
                     <input type="text" id="creatorPlatformHandle" placeholder="Create your @handle on our platform (e.g. @yourname)">
                     <input type="email" id="creatorSubEmail" placeholder="Your email address">
                     <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light);">How should we notify you?</p>
@@ -440,9 +467,58 @@
             <p style="font-size: 15px; color: var(--text); margin-bottom: 10px;">Browse our creators and book a private Truth or Dare session.</p>
             <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 30px;">Creators: featuring yourself is <strong style="color: var(--gold);">100% optional</strong> — opt in from your Creator Dashboard anytime.</p>
             <div class="creator-grid" id="featured-creators-grid">
-                <!-- 12 slots rendered by JS -->
+                <!-- 24 slots rendered by JS -->
             </div>
         </section>
+
+        <!-- BOOKING MODAL -->
+        <div id="bookingModalOverlay" class="booking-modal-overlay" style="display:none;">
+            <div class="booking-modal">
+                <h3>📅 Schedule Your Session</h3>
+                <p class="booking-sub" id="bookingModalSub">Choose a date and time for your session</p>
+
+                <!-- Step 1: Pick Date -->
+                <div class="booking-step active" id="booking-step-1">
+                    <h4>Step 1 of 3 — Choose a date</h4>
+                    <div class="date-btn-grid" id="date-btn-grid"></div>
+                    <div class="booking-actions">
+                        <button class="btn-back" onclick="closeBookingModal()">✕ Cancel</button>
+                        <button class="btn-next" id="date-next-btn" onclick="bookingNextStep(2)" disabled>Next →</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Pick Time -->
+                <div class="booking-step" id="booking-step-2">
+                    <h4>Step 2 of 3 — Choose a time</h4>
+                    <div class="time-btn-grid" id="time-btn-grid"></div>
+                    <div class="booking-actions">
+                        <button class="btn-back" onclick="bookingNextStep(1)">← Back</button>
+                        <button class="btn-next" id="time-next-btn" onclick="bookingNextStep(3)" disabled>Next →</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Confirm -->
+                <div class="booking-step" id="booking-step-3">
+                    <h4>Step 3 of 3 — Confirm your booking</h4>
+                    <div class="booking-confirm-box" id="booking-confirm-box"></div>
+                    <textarea class="booking-note" id="booking-note" placeholder="Optional short note to creator (max 100 chars)" maxlength="100" rows="2"></textarea>
+                    <div class="booking-actions">
+                        <button class="btn-back" onclick="bookingNextStep(2)">← Back</button>
+                        <button class="btn-next" onclick="submitBooking()">✅ Send Request</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Sent -->
+                <div class="booking-step" id="booking-step-4">
+                    <div style="text-align:center; padding: 20px 0;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+                        <h4 style="font-size: 18px; color: var(--cream);">Request Sent!</h4>
+                        <p style="color: var(--text); margin-top: 10px;">The creator has been notified and will confirm your time slot. You'll receive an email once confirmed.</p>
+                        <button class="btn-next" style="margin-top: 24px; width: 100%;" onclick="closeBookingModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <footer class="site-footer">
             <p>&copy; 2025 <a href="https://www.truthordareformyfans.com">truthordareformyfans.com</a> &nbsp;·&nbsp; All rights reserved &nbsp;·&nbsp; For adults 18+ only</p>
@@ -621,11 +697,12 @@
         // Creator Subscription
         async function subscribeCreator() {
             const creatorSubName = document.getElementById('creatorSubName').value.trim();
+            const creatorLegalName = document.getElementById('creatorLegalName').value.trim();
             const creatorPlatformHandle = document.getElementById('creatorPlatformHandle').value.trim();
             const creatorSubEmail = document.getElementById('creatorSubEmail').value.trim();
             const creatorAgeCheck = document.getElementById('creatorAgeCheck').checked;
 
-            if (!creatorSubName || !creatorPlatformHandle || !creatorSubEmail) {
+            if (!creatorSubName || !creatorLegalName || !creatorPlatformHandle || !creatorSubEmail) {
                 showToast('Please fill in all required creator fields.', 'error');
                 return;
             }
@@ -634,27 +711,151 @@
                 return;
             }
 
-            // Simulate API call
             const btn = document.getElementById('creatorSubscribeBtn');
             btn.classList.add('loading'); btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Subscribing...';
+            btn.innerHTML = '<span class="spinner"></span> Creating account...';
 
             try {
-                // In a real app, send data to backend
-                await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-                showToast('✓ Creator subscribed successfully!', 'success');
-                btn.innerHTML = 'SUBSCRIBE AS CREATOR — FREE';
+                // Generate a temporary password (creator sets it later via email)
+                const tempPassword = 'TempPass' + Math.random().toString(36).slice(2, 10) + '!';
+                const res = await fetch(`${CONFIG.backendUrl}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: creatorSubName,
+                        legalName: creatorLegalName,
+                        email: creatorSubEmail,
+                        password: tempPassword,
+                        role: 'creator',
+                        handle: creatorPlatformHandle,
+                    }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Registration failed.');
+                // Store token for immediate dashboard access
+                localStorage.setItem('creatorToken', data.token);
+                localStorage.setItem('creatorHandle', data.handle || creatorPlatformHandle);
+                showToast('\u2713 Creator account created! Check your email to set your password.', 'success');
+                btn.innerHTML = '\u2713 Account Created!';
+                // Show Stripe Connect prompt after short delay
+                setTimeout(() => {
+                    if (confirm('\ud83d\udcb3 Connect your Stripe account to receive payouts (takes 5 minutes). Do this now?')) {
+                        onboardCreatorStripe(creatorSubEmail, creatorSubName);
+                    }
+                }, 1500);
             } catch (e) {
-                showToast('Subscription failed. Please try again.', 'error');
-                btn.innerHTML = 'SUBSCRIBE AS CREATOR — FREE';
+                showToast('Registration failed: ' + e.message, 'error');
+                btn.innerHTML = 'SUBSCRIBE AS CREATOR \u2014 FREE';
+                btn.classList.remove('loading'); btn.disabled = false;
             }
-            btn.classList.remove('loading'); btn.disabled = false;
         }
 
-        // Fetch Featured Creators — always show 12 slots
+        // Stripe Connect Onboarding for Creator
+        async function onboardCreatorStripe(email, name) {
+            try {
+                const res = await fetch(`${CONFIG.backendUrl}/onboard-creator`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ creatorEmail: email, creatorName: name }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Stripe onboarding failed.');
+                window.location.href = data.onboardingUrl;
+            } catch (e) {
+                showToast('Stripe setup failed: ' + e.message, 'error');
+            }
+        }
+
+        // ── BOOKING MODAL ─────────────────────────────────────────────────────────
+        let bookingState = { creatorHandle: null, sessionType: null, selectedDate: null, selectedTime: null };
+
+        function openBookingModal(creatorHandle, sessionType) {
+            bookingState = { creatorHandle, sessionType, selectedDate: null, selectedTime: null };
+            document.getElementById('bookingModalSub').textContent =
+                `${sessionType === 'truth' ? 'Truth Session ($15)' : 'Dare Session ($45)'} with ${creatorHandle}`;
+            // Build date buttons (next 7 days)
+            const grid = document.getElementById('date-btn-grid');
+            grid.innerHTML = '';
+            const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(); d.setDate(d.getDate() + i);
+                const label = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : `${days[d.getDay()]} ${d.getMonth()+1}/${d.getDate()}`;
+                const dateStr = d.toISOString().split('T')[0];
+                const btn = document.createElement('button');
+                btn.className = 'slot-btn'; btn.textContent = label;
+                btn.onclick = () => { document.querySelectorAll('#date-btn-grid .slot-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); bookingState.selectedDate = dateStr; document.getElementById('date-next-btn').disabled = false; };
+                grid.appendChild(btn);
+            }
+            // Show step 1
+            document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('booking-step-1').classList.add('active');
+            document.getElementById('bookingModalOverlay').style.display = 'flex';
+        }
+
+        function bookingNextStep(step) {
+            if (step === 2) {
+                // Build time buttons (8am-11pm in 30-min slots)
+                const grid = document.getElementById('time-btn-grid');
+                grid.innerHTML = '';
+                for (let h = 8; h <= 23; h++) {
+                    ['00','30'].forEach(m => {
+                        const ampm = h < 12 ? 'am' : 'pm';
+                        const h12 = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+                        const label = `${h12}:${m}${ampm}`;
+                        const timeStr = `${String(h).padStart(2,'0')}:${m}`;
+                        const btn = document.createElement('button');
+                        btn.className = 'slot-btn'; btn.textContent = label;
+                        btn.onclick = () => { document.querySelectorAll('#time-btn-grid .slot-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); bookingState.selectedTime = timeStr; document.getElementById('time-next-btn').disabled = false; };
+                        grid.appendChild(btn);
+                    });
+                }
+            }
+            if (step === 3) {
+                document.getElementById('booking-confirm-box').innerHTML = `
+                    <strong>Creator:</strong> ${bookingState.creatorHandle}<br>
+                    <strong>Session:</strong> ${bookingState.sessionType === 'truth' ? 'Truth ($15 CAD — 5 min)' : 'Dare ($45 CAD — 15 min)'}<br>
+                    <strong>Date:</strong> ${bookingState.selectedDate}<br>
+                    <strong>Time:</strong> ${bookingState.selectedTime}
+                `;
+            }
+            document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`booking-step-${step}`).classList.add('active');
+        }
+
+        async function submitBooking() {
+            const fanName = localStorage.getItem('fanName') || 'Fan';
+            const fanEmail = localStorage.getItem('fanEmail') || '';
+            const note = document.getElementById('booking-note').value.trim();
+            try {
+                const res = await fetch(`${CONFIG.backendUrl}/booking`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fanName, fanEmail,
+                        creatorHandle: bookingState.creatorHandle,
+                        sessionType: bookingState.sessionType,
+                        requestedDate: bookingState.selectedDate,
+                        requestedTime: bookingState.selectedTime,
+                        note,
+                    }),
+                });
+                if (!res.ok) throw new Error('Booking failed.');
+                document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+                document.getElementById('booking-step-4').classList.add('active');
+            } catch (e) {
+                showToast('Booking failed: ' + e.message, 'error');
+            }
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModalOverlay').style.display = 'none';
+        }
+        // ── END BOOKING MODAL ─────────────────────────────────────────────────────
+
+        // Fetch Featured Creators — always show 24 slots
         async function fetchFeaturedCreators() {
             const grid = document.getElementById('featured-creators-grid');
-            const TOTAL_SLOTS = 12;
+            const TOTAL_SLOTS = 24;
             let approvedCreators = [];
 
             try {
@@ -674,8 +875,12 @@
                 if (i < approvedCreators.length) {
                     const c = approvedCreators[i];
                     card.classList.add('creator-card');
+                    const isOnline = c.online || false;
                     card.innerHTML = `
-                        <div class="avatar">${c.photo ? `<img src="${c.photo}" alt="${c.name}">` : '👤'}</div>
+                        <div class="avatar-wrap">
+                            <div class="avatar">${c.photo ? `<img src="${c.photo}" alt="${c.name}">` : '👤'}</div>
+                            ${isOnline ? '<span class="online-dot" title="Online now"></span>' : ''}
+                        </div>
                         <h3>${c.name}</h3>
                         <p>${c.bio || ''}</p>
                         <button class="btn-book" onclick="selectCreator('${c.name}')">Book Now</button>
