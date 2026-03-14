@@ -12,7 +12,16 @@
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="UR5KbsTWfnrtcgATL8jy1cbSTzdW_Aie3YXLvD_gCro" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Truth or Dare For My Fans | truthordareformyfans.com</title>
+    <title>Truth or Dare For My Fans | Earn 85% — Fan Interaction Platform for Creators</title>
+    <meta name="description" content="Truth or Dare For My Fans lets OnlyFans and adult content creators earn 85% from live fan sessions. $15 Truth sessions and $45 Dare sessions — free to join, paid via Stripe. New platform for creators looking to diversify income.">
+    <meta name="keywords" content="OnlyFans creator platform, earn more from fans, fan interaction platform, adult creator income, new platform for creators, 85% payout creator, truth or dare fans">
+    <meta property="og:title" content="Truth or Dare For My Fans — Creators Keep 85%">
+    <meta property="og:description" content="A new fan-interaction platform where creators earn 85% of every session. Free to join. $15 Truth · $45 Dare. Paid instantly via Stripe.">
+    <meta property="og:url" content="https://www.truthordareformyfans.com">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Truth or Dare For My Fans — Creators Keep 85%">
+    <meta name="twitter:description" content="New fan-interaction platform. Creators earn 85% per session. Free to join.">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap">
     <style>
         :root {
@@ -53,6 +62,63 @@
 
         .page-wrapper::before { content: '♦'; position: absolute; top: 10px; left: 12px; color: var(--gold); font-size: 18px; }
         .page-wrapper::after { content: '♦'; position: absolute; bottom: 10px; right: 12px; color: var(--gold); font-size: 18px; }
+
+        /* --- CREATOR BANNER --- */
+        .creator-top-banner {
+            background: linear-gradient(135deg, rgba(212,165,116,0.18) 0%, rgba(204,0,0,0.25) 100%);
+            border: 1.5px solid var(--gold);
+            border-radius: 10px;
+            padding: 18px 24px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .creator-top-banner .banner-text { flex: 1; min-width: 200px; }
+        .creator-top-banner .banner-text strong { display: block; font-size: 17px; color: var(--cream); font-weight: 700; margin-bottom: 4px; }
+        .creator-top-banner .banner-text span { font-size: 13px; color: var(--gold-light); }
+        .creator-top-banner .banner-btn {
+            background: var(--gold);
+            color: #120500;
+            padding: 11px 22px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+        .creator-top-banner .banner-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+        /* --- EARNINGS CALCULATOR --- */
+        .earnings-calc {
+            background: var(--panel);
+            border: 1px solid var(--gold-dim);
+            border-radius: 10px;
+            padding: 28px 30px;
+            margin-top: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+        .earnings-calc h3 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--cream); margin-bottom: 8px; }
+        .earnings-calc .calc-subtitle { font-size: 14px; color: var(--text); margin-bottom: 24px; }
+        .calc-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+        .calc-row label { font-size: 14px; color: var(--gold-light); text-align: left; min-width: 160px; }
+        .calc-row input[type=range] { flex: 1; min-width: 120px; accent-color: var(--gold); }
+        .calc-row .calc-val { font-size: 16px; font-weight: 700; color: var(--cream); min-width: 50px; text-align: right; }
+        .calc-result { background: rgba(212,165,116,0.12); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 18px; margin-top: 20px; }
+        .calc-result .result-amount { font-size: 38px; font-weight: 900; color: var(--gold-light); font-family: 'Playfair Display', serif; }
+        .calc-result .result-label { font-size: 13px; color: var(--text); margin-top: 4px; }
+        .calc-breakdown { display: flex; justify-content: center; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
+        .calc-breakdown .breakdown-item { font-size: 13px; color: var(--text-dim); }
+        .calc-breakdown .breakdown-item strong { color: var(--gold-light); }
 
         /* --- HEADER --- */
         .site-header { text-align: center; margin-bottom: 32px; position: relative; }
@@ -208,6 +274,15 @@
 </head>
 <body>
     <div class="page-wrapper">
+        <!-- Creator Banner -->
+        <div class="creator-top-banner">
+            <div class="banner-text">
+                <strong>🌟 Are you a creator? Join for free — keep 85% of every session</strong>
+                <span>OnlyFans · Fansly · FansVue · Instagram creators welcome · Paid instantly via Stripe</span>
+            </div>
+            <button class="banner-btn" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'})">Join as Creator →</button>
+        </div>
+
         <header class="site-header">
             <div class="login-btns-header">
                 <a href="#fan-login" class="login-btn-header" onclick="openLoginModal('fan'); return false;">👤 Fan Login</a>
@@ -250,6 +325,31 @@
             </div>
         </section>
 
+        <!-- Earnings Calculator -->
+        <div class="earnings-calc">
+            <h3>💰 How Much Can You Earn?</h3>
+            <p class="calc-subtitle">Drag the sliders to see your potential weekly earnings</p>
+            <div class="calc-row">
+                <label>Truth sessions / week</label>
+                <input type="range" id="calc-truth" min="0" max="50" value="10" oninput="updateCalc()">
+                <span class="calc-val" id="calc-truth-val">10</span>
+            </div>
+            <div class="calc-row">
+                <label>Dare sessions / week</label>
+                <input type="range" id="calc-dare" min="0" max="30" value="5" oninput="updateCalc()">
+                <span class="calc-val" id="calc-dare-val">5</span>
+            </div>
+            <div class="calc-result">
+                <div class="result-amount" id="calc-weekly">$276.25</div>
+                <div class="result-label">estimated weekly earnings (CAD) — you keep 85%</div>
+            </div>
+            <div class="calc-breakdown">
+                <div class="breakdown-item">Truth: <strong id="calc-truth-earn">$127.50</strong></div>
+                <div class="breakdown-item">Dare: <strong id="calc-dare-earn">$191.25</strong></div>
+                <div class="breakdown-item">Monthly est: <strong id="calc-monthly">$1,105.00</strong></div>
+            </div>
+        </div>
+
         <section class="stripe-connect-section">
             <h4>💸 Creator Payouts — 85% / 15% Split via Stripe Connect</h4>
             <p>When a fan pays for a session, <strong>85% goes directly to the creator</strong> and 15% goes to the platform — automatically, every time. Creators will need to connect their own free Stripe Express account to receive payouts. Setup takes about 5 minutes. See the README for full setup instructions.</p>
@@ -270,7 +370,7 @@
                     </div>
                     <button class="btn btn-subscribe" id="fanSubscribeBtn" onclick="subscribeFan()">SUBSCRIBE AS FAN — FREE</button>
                 </div>
-                <div class="subscribe-card">
+                <div class="subscribe-card" id="creator-signup">
                     <h3>🌟 For Creators</h3>
                     <p>List yourself on truthordareformyfans.com, earn 85% of every session, and get notified your way. Create your unique @handle on our platform and unlock your Featured Creator profile slot.</p>
                     <input type="text" id="creatorSubName" placeholder="Your creator name or handle">
@@ -667,8 +767,25 @@
             }
         }
 
+        // Earnings Calculator
+        function updateCalc() {
+            const truthSessions = parseInt(document.getElementById('calc-truth').value);
+            const dareSessions = parseInt(document.getElementById('calc-dare').value);
+            document.getElementById('calc-truth-val').textContent = truthSessions;
+            document.getElementById('calc-dare-val').textContent = dareSessions;
+            const truthEarn = truthSessions * 15 * 0.85;
+            const dareEarn = dareSessions * 45 * 0.85;
+            const weeklyTotal = truthEarn + dareEarn;
+            const monthlyTotal = weeklyTotal * 4;
+            document.getElementById('calc-truth-earn').textContent = '$' + truthEarn.toFixed(2);
+            document.getElementById('calc-dare-earn').textContent = '$' + dareEarn.toFixed(2);
+            document.getElementById('calc-weekly').textContent = '$' + weeklyTotal.toFixed(2);
+            document.getElementById('calc-monthly').textContent = '$' + monthlyTotal.toFixed(2);
+        }
+
         // Initial calls
         document.addEventListener('DOMContentLoaded', () => {
+            updateCalc();
             fetchFeaturedCreators();
             // Check for success/cancel from Stripe redirect
             const urlParams = new URLSearchParams(window.location.search);
