@@ -1,7 +1,12 @@
 {
   "rewrites": [
     { "source": "/dashboard", "destination": "/dashboard.html" },
-    { "source": "/dashboard.html", "destination": "/dashboard.html" }
+    { "source": "/dashboard.html", "destination": "/dashboard.html" },
+    { "source": "/creator/:handle", "destination": "/creator.html" },
+    { "source": "/room", "destination": "/room.html" },
+    { "source": "/room/:path", "destination": "/room.html" },
+    { "source": "/onboard-complete", "destination": "/onboard-complete.html" },
+    { "source": "/creator-setup", "destination": "/creator-setup.html" }
   ],
   "headers": [
     {
