@@ -900,13 +900,43 @@ function showToast(msg, type = '') {
     setTimeout(() => t.classList.remove('show'), 4200);
 }
 
+/* ── Backend URL ── */
+const BACKEND = 'https://truthordare-backend.onrender.com';
+
 /* ── Stripe return ── */
 const params = new URLSearchParams(window.location.search);
 if (params.get('success')  === '1') showToast('✅ Payment confirmed! Your session room is ready.', 'success');
 if (params.get('canceled') === '1') showToast('Payment canceled — you have not been charged.', 'error');
 
+/* ── Stripe Connect onboarding completion ── */
+const onboardAccount = params.get('account');
+if (onboardAccount) {
+    // Creator returned from Stripe onboarding — verify their account status
+    (async () => {
+        const token = localStorage.getItem('tod_token');
+        if (!token) return; // Not logged in, skip
+        try {
+            const res = await fetch(`${BACKEND}/stripe-account-status`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.connected) {
+                showToast('🎉 Stripe connected! You will now receive 85% of every session automatically.', 'success');
+                // Redirect to dashboard after a moment
+                setTimeout(() => { window.location.href = '/dashboard.html?stripe=connected'; }, 3000);
+            } else if (data.detailsSubmitted) {
+                showToast('⏳ Stripe verification pending — Stripe is reviewing your account. Check your dashboard soon.', 'info');
+                setTimeout(() => { window.location.href = '/dashboard.html'; }, 3000);
+            } else {
+                showToast('⚠️ Stripe setup incomplete — please finish connecting your account in your dashboard.', 'error');
+            }
+        } catch (e) {
+            // Silently ignore — not logged in or network error
+        }
+    })();
+}
+
 /* ── Load Featured Creators ── */
-const BACKEND = 'https://truthordare-backend.onrender.com';
 
 async function loadFeaturedCreators() {
     try {

@@ -397,6 +397,99 @@
         .toast.success { border-color: var(--green-online); color: var(--green-online); }
         .toast.error { border-color: var(--dare-color); color: var(--dare-color); }
 
+        /* ── LIVE BANNER ── */
+        .live-banner {
+            background: linear-gradient(135deg, #1a0000 0%, #2d0000 50%, #1a0000 100%);
+            border: 2px solid #ff3333;
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin: 0 auto 32px;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: livePulse 2s ease-in-out infinite;
+        }
+        @keyframes livePulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,51,51,0.3), 0 0 40px rgba(255,51,51,0.1); }
+            50% { box-shadow: 0 0 30px rgba(255,51,51,0.5), 0 0 60px rgba(255,51,51,0.2); }
+        }
+        .live-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,51,51,0.05), transparent);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer { to { left: 100%; } }
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ff3333;
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .live-dot {
+            width: 8px; height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            animation: blink 1s ease-in-out infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .live-banner h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .live-banner p {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .live-session-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 480px) { .live-session-cards { grid-template-columns: 1fr; } }
+        .btn-join-live {
+            width: 100%;
+            padding: 14px 12px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+            position: relative;
+        }
+        .btn-join-live.truth {
+            background: linear-gradient(135deg, #4a9eff, #2a7edf);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(74,158,255,0.4);
+        }
+        .btn-join-live.truth:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,158,255,0.5); }
+        .btn-join-live.dare {
+            background: linear-gradient(135deg, #ff4a6e, #df2a4e);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255,74,110,0.4);
+        }
+        .btn-join-live.dare:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,74,110,0.5); }
+        .btn-join-live .join-label { display: block; font-size: 12px; font-weight: 600; opacity: 0.85; margin-bottom: 2px; }
+        .btn-join-live .join-price { display: block; font-size: 18px; font-weight: 900; }
+        .btn-join-live .join-type { display: block; font-size: 11px; opacity: 0.75; margin-top: 2px; }
+
         /* ── LOADING ── */
         .loading-state {
             text-align: center;
@@ -444,6 +537,23 @@
             <div class="modal-actions">
                 <button class="btn-modal-cancel" onclick="closeBookingModal()">Cancel</button>
                 <button class="btn-modal-confirm" id="confirmBookingBtn" onclick="submitBooking()">Confirm Booking →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Instant Join Modal -->
+    <div class="modal-overlay" id="liveModal">
+        <div class="modal-box" style="border-color: #ff3333;">
+            <h3 id="liveModalTitle" style="color:#ff6666;">Join Live Session</h3>
+            <p class="modal-subtitle" id="liveModalSubtitle">Enter your details to join instantly.</p>
+            <div class="fan-info-row">
+                <input type="text" class="modal-input" id="liveFanName" placeholder="Your name">
+                <input type="email" class="modal-input" id="liveFanEmail" placeholder="Your email">
+            </div>
+            <p style="font-size:12px;color:var(--text-secondary);margin-top:12px;text-align:center;">You will be redirected to secure Stripe checkout. After payment, the creator will connect with you immediately.</p>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" onclick="closeLiveModal()">Cancel</button>
+                <button class="btn-modal-confirm" id="confirmLiveBtn" onclick="submitLiveJoin()" style="background:linear-gradient(135deg,#ff4a6e,#df2a4e);">Pay &amp; Join Now →</button>
             </div>
         </div>
     </div>
@@ -515,6 +625,26 @@
 
             const onlineClass = c.isLive ? 'visible' : '';
 
+            // Live banner — shown only when creator is online
+            const liveBannerHtml = c.isLive ? `
+                <div class="live-banner">
+                    <div class="live-badge"><span class="live-dot"></span> LIVE NOW</div>
+                    <h2>${escHtml(c.name)} is Online!</h2>
+                    <p>Skip the wait — join an instant session right now. Pay and connect immediately.</p>
+                    <div class="live-session-cards">
+                        <button class="btn-join-live truth" onclick="joinLive('truth')">
+                            <span class="join-label">🎯 TRUTH SESSION</span>
+                            <span class="join-price">$15 USD</span>
+                            <span class="join-type">5 minutes • Join Instantly</span>
+                        </button>
+                        <button class="btn-join-live dare" onclick="joinLive('dare')">
+                            <span class="join-label">🔥 DARE SESSION</span>
+                            <span class="join-price">$45 USD</span>
+                            <span class="join-type">15 minutes • Join Instantly</span>
+                        </button>
+                    </div>
+                </div>` : '';
+
             document.getElementById('profile-root').innerHTML = `
                 <div class="profile-hero">
                     ${avatarHtml}
@@ -527,7 +657,11 @@
                     ${c.bio ? `<p class="creator-bio">${escHtml(c.bio)}</p>` : ''}
                     ${socialLinks ? `<div class="social-links">${socialLinks}</div>` : ''}
 
-                    <!-- Session Cards -->
+                    ${liveBannerHtml}
+
+                    <div style="font-size:12px;color:var(--text-secondary);text-align:center;margin-bottom:12px;letter-spacing:1px;text-transform:uppercase;">${c.isLive ? 'Or schedule a future session:' : 'Book a session:'}</div>
+
+                    <!-- Session Cards (scheduled booking) -->
                     <div class="session-cards">
                         <div class="session-card truth">
                             <div class="emoji">🎯</div>
@@ -564,7 +698,59 @@
             return links.join('');
         }
 
-        // ── BOOKING MODAL ─────────────────────────────────────────────────────────
+        // ── LIVE INSTANT JOIN ──────────────────────────────────────────────────────────
+        function joinLive(sessionType) {
+            // Open the instant join modal (no date/time picker needed)
+            pendingSessionType = sessionType;
+            const isTruth = sessionType === 'truth';
+            document.getElementById('liveModalTitle').textContent = isTruth ? '🎯 Join Truth Session — $15 USD' : '🔥 Join Dare Session — $45 USD';
+            document.getElementById('liveModalSubtitle').textContent =
+                `${currentCreator.name} is live right now. Enter your details and pay to join instantly.`;
+            document.getElementById('liveModal').classList.add('active');
+        }
+
+        function closeLiveModal() {
+            document.getElementById('liveModal').classList.remove('active');
+            pendingSessionType = null;
+        }
+
+        async function submitLiveJoin() {
+            const fanName = document.getElementById('liveFanName').value.trim();
+            const fanEmail = document.getElementById('liveFanEmail').value.trim();
+            if (!fanName) { showToast('Please enter your name.', 'error'); return; }
+            if (!fanEmail) { showToast('Please enter your email.', 'error'); return; }
+
+            const btn = document.getElementById('confirmLiveBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            try {
+                const now = new Date();
+                const res = await fetch(`${CONFIG.backendUrl}/create-checkout-session`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        selectedCard: pendingSessionType,
+                        creatorName: currentCreator.name,
+                        creatorStripeAccountId: currentCreator.stripeAccountId || null,
+                        fanName,
+                        fanEmail,
+                        bookingDate: now.toISOString().split('T')[0],
+                        bookingTime: 'LIVE NOW',
+                        note: 'Instant live session',
+                    }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Payment setup failed.');
+                window.location.href = data.url;
+            } catch (e) {
+                showToast('Could not start session: ' + e.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Pay & Join Now →';
+            }
+        }
+
+        // ── BOOKING MODAL ──────────────────────────────────────────────────────────
         function openBooking(sessionType) {
             pendingSessionType = sessionType;
             const title = sessionType === 'truth' ? '🎯 Book a Truth Session — $15 USD' : '🔥 Book a Dare Session — $45 USD';
@@ -712,6 +898,9 @@
         });
         document.getElementById('notifyModal').addEventListener('click', function(e) {
             if (e.target === this) closeNotifyModal();
+        });
+        document.getElementById('liveModal').addEventListener('click', function(e) {
+            if (e.target === this) closeLiveModal();
         });
 
         // Load on page start

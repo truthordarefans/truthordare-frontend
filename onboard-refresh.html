@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconnect Stripe | Truth or Dare For My Fans</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #CC0000;
+            --dark-red: #990000;
+            --gold: #D4A574;
+            --gold-light: #F0C890;
+            --gold-dim: rgba(212,165,116,0.35);
+            --cream: #FDF6EC;
+            --text: #C9B99A;
+            --text-dim: #9A8A72;
+            --dark: #120500;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--red);
+            background-image: radial-gradient(ellipse at 15% 10%, rgba(212,165,116,0.12) 0%, transparent 45%);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+            color: var(--text);
+        }
+        .card {
+            max-width: 480px; width: 100%;
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            padding: 40px 32px;
+            background: rgba(0,0,0,0.25);
+            text-align: center;
+        }
+        .icon { font-size: 48px; margin-bottom: 16px; }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px; font-weight: 900;
+            color: var(--cream);
+            margin-bottom: 12px;
+        }
+        p { color: var(--text); font-size: 15px; line-height: 1.7; margin-bottom: 24px; }
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: #635BFF;
+            color: #fff;
+            border: none; border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px; font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin: 6px;
+        }
+        .btn:hover { background: #5248d8; transform: translateY(-2px); }
+        .btn-secondary {
+            background: transparent;
+            border: 1.5px solid var(--gold-dim);
+            color: var(--gold);
+        }
+        .btn-secondary:hover { border-color: var(--gold); background: rgba(212,165,116,0.1); }
+        #status { font-size: 13px; color: var(--text-dim); margin-top: 16px; min-height: 20px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="icon">🔗</div>
+    <h1>Stripe Link Expired</h1>
+    <p>Your Stripe onboarding link has expired or was already used. Click below to generate a fresh link and complete your payout setup.</p>
+    <p style="font-size:13px; color:var(--text-dim);">This only takes a few minutes. You need to connect Stripe once to receive your 85% earnings automatically.</p>
+    <button class="btn" id="refresh-btn" onclick="refreshOnboarding()">Generate New Link →</button>
+    <a href="/dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+    <div id="status"></div>
+</div>
+
+<script>
+const BACKEND = 'https://truthordare-backend.onrender.com';
+
+async function refreshOnboarding() {
+    const btn = document.getElementById('refresh-btn');
+    const status = document.getElementById('status');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    status.textContent = '';
+
+    const token = localStorage.getItem('tod_token');
+    if (!token) {
+        status.textContent = 'Please log in first.';
+        window.location.href = '/dashboard.html';
+        return;
+    }
+
+    try {
+        // Get profile first to get email/name
+        const profileRes = await fetch(`${BACKEND}/creator/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!profileRes.ok) {
+            status.textContent = 'Session expired. Please log in again.';
+            setTimeout(() => window.location.href = '/', 2000);
+            return;
+        }
+        const { user } = await profileRes.json();
+
+        const res = await fetch(`${BACKEND}/onboard-creator`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ creatorEmail: user.email, creatorName: user.name }),
+        });
+        const data = await res.json();
+        if (res.ok && data.onboardingUrl) {
+            status.textContent = 'Redirecting to Stripe...';
+            window.location.href = data.onboardingUrl;
+        } else {
+            status.textContent = data.error || 'Failed to generate link. Please try again.';
+            btn.disabled = false;
+            btn.textContent = 'Generate New Link →';
+        }
+    } catch (err) {
+        status.textContent = 'Network error. Please try again.';
+        btn.disabled = false;
+        btn.textContent = 'Generate New Link →';
+    }
+}
+</script>
+</body>
+</html>

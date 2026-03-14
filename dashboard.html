@@ -300,10 +300,11 @@
         // ── LOAD DASHBOARD ────────────────────────────────────────────────────
         async function loadDashboard() {
             try {
-                const [profileRes, earningsRes, sessionsRes] = await Promise.all([
+                const [profileRes, earningsRes, sessionsRes, stripeRes] = await Promise.all([
                     fetch(`${BACKEND}/creator/profile`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
                     fetch(`${BACKEND}/creator/earnings`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
                     fetch(`${BACKEND}/creator/sessions`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
+                    fetch(`${BACKEND}/stripe-account-status`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
                 ]);
 
                 if (!profileRes.ok) { logout(); return; }
@@ -311,13 +312,22 @@
                 const { user } = await profileRes.json();
                 const earnings = earningsRes.ok ? await earningsRes.json() : null;
                 const sessionsData = sessionsRes.ok ? await sessionsRes.json() : null;
+                const stripeStatus = stripeRes.ok ? await stripeRes.json() : null;
 
                 creatorProfile = user;
                 renderProfile(user);
                 renderAvailability(user.isLive);
                 renderFeatured(user.featuredRequested);
                 if (earnings) renderEarnings(earnings);
+                if (stripeStatus) renderStripeStatus(stripeStatus);
                 if (sessionsData) renderSessions(sessionsData.sessions);
+
+                // Check if returning from Stripe onboarding
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('stripe') === 'connected') {
+                    showToast('🎉 Stripe connected! You will now receive 85% of every session.', 'success');
+                    window.history.replaceState({}, '', '/dashboard.html');
+                }
 
                 document.getElementById('loading-state').style.display = 'none';
                 document.getElementById('dashboard-content').style.display = 'block';
@@ -415,22 +425,38 @@
             }
         }
 
-        // ── EARNINGS ──────────────────────────────────────────────────────────
+        // ── EARNINGS ────────────────────────────────────────────────────────────
         function renderEarnings(data) {
             document.getElementById('stat-sessions').textContent = data.totalSessions;
             document.getElementById('stat-gross').textContent = `$${data.totalGrossUSD}`;
             document.getElementById('stat-earnings').textContent = `$${data.totalEarningsUSD}`;
+        }
+
+        function renderStripeStatus(status) {
             const statusEl = document.getElementById('stripe-status');
             const btnEl = document.getElementById('stripe-connect-btn');
-            if (data.stripeConnected) {
-                statusEl.textContent = '✅ Connected — You will receive 85% of each session automatically.';
+            if (status.connected) {
+                statusEl.innerHTML = '✅ <strong>Connected</strong> — You will receive 85% of each session automatically.';
                 statusEl.className = 'stripe-status connected';
                 btnEl.textContent = 'Manage Stripe →';
+                btnEl.title = 'Open your Stripe Express dashboard';
+            } else if (status.detailsSubmitted && !status.chargesEnabled) {
+                statusEl.innerHTML = '⏳ <strong>Verification pending</strong> — Stripe is reviewing your account. Check back soon.';
+                statusEl.className = 'stripe-status';
+                statusEl.style.color = '#F0C890';
+                btnEl.textContent = 'Check Status →';
+            } else {
+                statusEl.innerHTML = '⚠️ <strong>Not connected</strong> — Connect Stripe to receive your 85% payouts.';
+                statusEl.className = 'stripe-status';
+                statusEl.style.color = '#FF9999';
+                btnEl.textContent = 'Connect Stripe →';
             }
         }
 
         async function connectStripe() {
-            showToast('Connecting to Stripe...', 'info');
+            const btn = document.getElementById('stripe-connect-btn');
+            btn.disabled = true;
+            btn.textContent = 'Connecting...';
             try {
                 const res = await fetch(`${BACKEND}/onboard-creator`, {
                     method: 'POST',
@@ -439,12 +465,21 @@
                 });
                 const data = await res.json();
                 if (res.ok && data.onboardingUrl) {
-                    window.location.href = data.onboardingUrl;
+                    if (data.alreadyConnected) {
+                        showToast('✅ Already connected! Opening your Stripe dashboard...', 'success');
+                    } else {
+                        showToast('Redirecting to Stripe...', 'info');
+                    }
+                    setTimeout(() => { window.location.href = data.onboardingUrl; }, 800);
                 } else {
                     showToast(data.error || 'Failed to connect Stripe.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Connect Stripe →';
                 }
             } catch (err) {
                 showToast('Network error. Please try again.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Connect Stripe →';
             }
         }
 
