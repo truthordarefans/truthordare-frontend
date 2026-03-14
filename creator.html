@@ -644,12 +644,13 @@
 
             try {
                 // First create a Stripe checkout session
-                const priceRes = await fetch(`${CONFIG.backendUrl}/create-checkout`, {
+                const priceRes = await fetch(`${CONFIG.backendUrl}/create-checkout-session`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        sessionType: pendingSessionType,
-                        creatorHandle: currentCreator.handle,
+                        selectedCard: pendingSessionType,
+                        creatorName: currentCreator.displayName || currentCreator.handle,
+                        creatorStripeAccountId: currentCreator.stripeAccountId || null,
                         fanName,
                         fanEmail,
                         bookingDate: selectedDate,
