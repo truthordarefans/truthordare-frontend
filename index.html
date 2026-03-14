@@ -98,27 +98,116 @@
         /* --- EARNINGS CALCULATOR --- */
         .earnings-calc {
             background: var(--panel);
-            border: 1px solid var(--gold-dim);
-            border-radius: 10px;
-            padding: 28px 30px;
+            border: 2px solid var(--gold-dim);
+            border-radius: 14px;
+            padding: 36px 36px 28px;
             margin-top: 50px;
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
             text-align: center;
         }
-        .earnings-calc h3 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--cream); margin-bottom: 8px; }
-        .earnings-calc .calc-subtitle { font-size: 14px; color: var(--text); margin-bottom: 24px; }
-        .calc-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
-        .calc-row label { font-size: 14px; color: var(--gold-light); text-align: left; min-width: 160px; }
-        .calc-row input[type=range] { flex: 1; min-width: 120px; accent-color: var(--gold); }
-        .calc-row .calc-val { font-size: 16px; font-weight: 700; color: var(--cream); min-width: 50px; text-align: right; }
-        .calc-result { background: rgba(212,165,116,0.12); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 18px; margin-top: 20px; }
-        .calc-result .result-amount { font-size: 38px; font-weight: 900; color: var(--gold-light); font-family: 'Playfair Display', serif; }
-        .calc-result .result-label { font-size: 13px; color: var(--text); margin-top: 4px; }
-        .calc-breakdown { display: flex; justify-content: center; gap: 24px; margin-top: 14px; flex-wrap: wrap; }
+        .earnings-calc h3 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--cream); margin-bottom: 8px; }
+        .earnings-calc .calc-subtitle { font-size: 17px; font-weight: 700; color: var(--gold-light); margin-bottom: 32px; letter-spacing: 0.2px; }
+
+        /* Slider rows */
+        .calc-row {
+            margin-bottom: 28px;
+            text-align: left;
+        }
+        .calc-row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+        .calc-row-header label {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold-light);
+            letter-spacing: 0.3px;
+        }
+        .calc-val {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--cream);
+            font-family: 'Playfair Display', serif;
+            min-width: 40px;
+            text-align: right;
+        }
+        /* Custom range slider */
+        .calc-row input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(212,165,116,0.18);
+            outline: none;
+            cursor: pointer;
+        }
+        .calc-row input[type=range]::-webkit-slider-runnable-track {
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(212,165,116,0.18);
+        }
+        .calc-row input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 0 4px rgba(212,165,116,0.25), 0 2px 8px rgba(0,0,0,0.5);
+            cursor: pointer;
+            margin-top: -10px;
+            transition: box-shadow 0.2s, transform 0.15s;
+        }
+        .calc-row input[type=range]::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 0 6px rgba(212,165,116,0.35), 0 2px 12px rgba(0,0,0,0.6);
+            transform: scale(1.1);
+        }
+        .calc-row input[type=range]::-moz-range-thumb {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 0 4px rgba(212,165,116,0.25);
+            cursor: pointer;
+            border: none;
+        }
+        .calc-row input[type=range]::-moz-range-track {
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(212,165,116,0.18);
+        }
+        .calc-row .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .calc-result {
+            background: linear-gradient(135deg, rgba(212,165,116,0.15), rgba(212,165,116,0.08));
+            border: 1.5px solid var(--gold-dim);
+            border-radius: 10px;
+            padding: 22px;
+            margin-top: 8px;
+        }
+        .calc-result .result-amount {
+            font-size: 52px;
+            font-weight: 900;
+            color: var(--gold-light);
+            font-family: 'Playfair Display', serif;
+            line-height: 1;
+        }
+        .calc-result .result-label { font-size: 13px; color: var(--text); margin-top: 6px; }
+        .calc-result .result-monthly { font-size: 15px; color: var(--text-dim); margin-top: 4px; }
+        .calc-breakdown { display: flex; justify-content: center; gap: 28px; margin-top: 16px; flex-wrap: wrap; }
         .calc-breakdown .breakdown-item { font-size: 13px; color: var(--text-dim); }
-        .calc-breakdown .breakdown-item strong { color: var(--gold-light); }
+        .calc-breakdown .breakdown-item strong { color: var(--gold-light); font-size: 15px; }
 
         /* --- HEADER --- */
         .site-header { text-align: center; margin-bottom: 32px; position: relative; }
@@ -222,18 +311,19 @@
         .creator-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
         @media (max-width: 768px) { .creator-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 400px) { .creator-grid { grid-template-columns: 1fr 1fr; } }
-        .creator-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 20px 15px; text-align: center; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .creator-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 12px; padding: 24px 16px 20px; text-align: center; min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; transition: transform 0.2s, box-shadow 0.2s; }
+        .creator-card:not(.available):hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
         .creator-card.available { border: 1.5px dashed rgba(212,165,116,0.25); background: rgba(0,0,0,0.15); cursor: pointer; transition: all 0.2s; }
         .creator-card.available:hover { border-color: var(--gold-dim); background: rgba(212,165,116,0.05); }
-        .creator-card .avatar-wrap { position: relative; width: 70px; margin: 0 auto 12px auto; }
-        .creator-card .avatar { width: 70px; height: 70px; border-radius: 50%; background: var(--gold-dim); display: flex; justify-content: center; align-items: center; font-size: 26px; color: var(--cream); overflow: hidden; }
+        .creator-card .avatar-wrap { position: relative; width: 90px; margin: 0 auto 14px auto; flex-shrink: 0; }
+        .creator-card .avatar { width: 90px; height: 90px; border-radius: 50%; background: var(--gold-dim); display: flex; justify-content: center; align-items: center; font-size: 32px; color: var(--cream); overflow: hidden; border: 2px solid rgba(212,165,116,0.3); }
         .creator-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .online-dot { position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px; background: #22c55e; border-radius: 50%; border: 2px solid var(--red); box-shadow: 0 0 6px rgba(34,197,94,0.7); animation: pulse-dot 2s infinite; }
+        .online-dot { position: absolute; bottom: 3px; right: 3px; width: 16px; height: 16px; background: #22c55e; border-radius: 50%; border: 2px solid var(--red); box-shadow: 0 0 6px rgba(34,197,94,0.7); animation: pulse-dot 2s infinite; }
         @keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 6px rgba(34,197,94,0.7); } 50% { box-shadow: 0 0 12px rgba(34,197,94,1); } }
-        .creator-card h3 { font-size: 15px; color: var(--gold-light); margin-bottom: 4px; }
-        .creator-card p { font-size: 12px; color: var(--text); line-height: 1.4; }
+        .creator-card h3 { font-size: 15px; color: var(--gold-light); margin-bottom: 6px; font-weight: 700; }
+        .creator-card p { font-size: 12px; color: var(--text); line-height: 1.5; flex: 1; }
         .creator-card .slot-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .creator-card .btn-book { background: var(--red); color: #fff; padding: 6px 14px; border-radius: 4px; font-size: 13px; margin-top: 12px; cursor: pointer; transition: all 0.2s; border: none; }
+        .creator-card .btn-book { background: var(--red); color: #fff; padding: 7px 16px; border-radius: 5px; font-size: 13px; margin-top: 14px; cursor: pointer; transition: all 0.2s; border: none; font-weight: 600; }
         .creator-card .btn-book:hover { background: var(--dark-red); transform: translateY(-1px); }
         .creator-card .btn-apply { background: transparent; color: var(--gold); border: 1px solid var(--gold-dim); padding: 6px 14px; border-radius: 4px; font-size: 12px; margin-top: 10px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
         .creator-card .btn-apply:hover { border-color: var(--gold); background: rgba(212,165,116,0.1); }
@@ -354,24 +444,33 @@
         <div class="earnings-calc">
             <h3>💰 How Much Can You Earn?</h3>
             <p class="calc-subtitle">Drag the sliders to see your potential weekly earnings</p>
+
             <div class="calc-row">
-                <label>Truth sessions / week</label>
+                <div class="calc-row-header">
+                    <label>🎯 Truth sessions / week</label>
+                    <span class="calc-val" id="calc-truth-val">10</span>
+                </div>
                 <input type="range" id="calc-truth" min="0" max="50" value="10" oninput="updateCalc()">
-                <span class="calc-val" id="calc-truth-val">10</span>
+                <div class="range-labels"><span>0</span><span>25</span><span>50</span></div>
             </div>
+
             <div class="calc-row">
-                <label>Dare sessions / week</label>
+                <div class="calc-row-header">
+                    <label>🔥 Dare sessions / week</label>
+                    <span class="calc-val" id="calc-dare-val">5</span>
+                </div>
                 <input type="range" id="calc-dare" min="0" max="30" value="5" oninput="updateCalc()">
-                <span class="calc-val" id="calc-dare-val">5</span>
+                <div class="range-labels"><span>0</span><span>15</span><span>30</span></div>
             </div>
+
             <div class="calc-result">
                 <div class="result-amount" id="calc-weekly">$276.25</div>
                 <div class="result-label">estimated weekly earnings (USD) — you keep 85%</div>
+                <div class="result-monthly">~&thinsp;<strong id="calc-monthly" style="color:var(--gold-light);">$1,105.00</strong> / month</div>
             </div>
             <div class="calc-breakdown">
                 <div class="breakdown-item">Truth: <strong id="calc-truth-earn">$127.50</strong></div>
                 <div class="breakdown-item">Dare: <strong id="calc-dare-earn">$191.25</strong></div>
-                <div class="breakdown-item">Monthly est: <strong id="calc-monthly">$1,105.00</strong></div>
             </div>
         </div>
 
@@ -899,7 +998,7 @@
                             ${isOnline ? '<span class="online-dot" title="Online now"></span>' : ''}
                         </div>
                         <h3>${c.name}</h3>
-                        <p>${c.bio ? c.bio.substring(0,60) + (c.bio.length > 60 ? '...' : '') : ''}</p>
+                        <p>${c.bio ? c.bio.substring(0,100) + (c.bio.length > 100 ? '...' : '') : ''}</p>
                         <button class="btn-book" onclick="event.stopPropagation(); window.location.href='${profileUrl}'">Book Session</button>
                     `;
                 } else {
