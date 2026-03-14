@@ -332,12 +332,12 @@
             <div class="challenge-options">
                 <div class="challenge-card" id="truth-card" onclick="selectCard('truth')">
                     <h3>🤔 Buy Truth</h3>
-                    <p class="price">$15 CAD</p>
+                    <p class="price">$15 USD</p>
                     <p class="description">5 min · 2-way text</p>
                 </div>
                 <div class="challenge-card" id="dare-card" onclick="selectCard('dare')">
                     <h3>🔥 Buy Dare</h3>
-                    <p class="price">$45 CAD</p>
+                    <p class="price">$45 USD</p>
                     <p class="description">15 min · Live</p>
                 </div>
             </div>
@@ -346,7 +346,6 @@
                 <input type="text" id="creatorName" placeholder="Creator's name or handle">
                 <input type="text" id="fanName" placeholder="Your fan name or nickname">
                 <button class="btn btn-stripe" id="payBtn" onclick="handlePayment()">💳 PAY WITH STRIPE</button>
-                <button class="btn btn-notify" id="notifyBtn" onclick="notifyCreator()">🔔 NOTIFY CREATOR</button>
                 <p class="mt-20" style="font-size: 13px; color: var(--text-dim);">Creator reserves the right to accept or refuse any challenge. If a challenge is refused, the fan receives a full credit. Sessions are time-limited once started.</p>
             </div>
         </section>
@@ -367,7 +366,7 @@
             </div>
             <div class="calc-result">
                 <div class="result-amount" id="calc-weekly">$276.25</div>
-                <div class="result-label">estimated weekly earnings (CAD) — you keep 85%</div>
+                <div class="result-label">estimated weekly earnings (USD) — you keep 85%</div>
             </div>
             <div class="calc-breakdown">
                 <div class="breakdown-item">Truth: <strong id="calc-truth-earn">$127.50</strong></div>
@@ -398,28 +397,31 @@
                 </div>
                 <div class="subscribe-card" id="creator-signup">
                     <h3>🌟 For Creators</h3>
-                    <p>List yourself on truthordareformyfans.com, earn 85% of every session, and get notified your way. Create your unique @handle on our platform and unlock your Featured Creator profile slot.</p>
+                    <p>Sign up free and get your own featured profile slot automatically. Earn 85% of every session paid directly to your Stripe account.</p>
                     <input type="text" id="creatorSubName" placeholder="Your stage / display name (shown publicly)">
                     <input type="text" id="creatorLegalName" placeholder="Your legal name (private — for Stripe payouts only)">
                     <input type="text" id="creatorPlatformHandle" placeholder="Create your @handle on our platform (e.g. @yourname)">
                     <input type="email" id="creatorSubEmail" placeholder="Your email address">
-                    <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light);">How should we notify you?</p>
+                    <input type="password" id="creatorPassword" placeholder="Create a password">
+                    <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light); font-size: 13px;">Your social handles (optional — shown on your profile page):</p>
+                    <input type="text" id="creatorInstagram" placeholder="Instagram handle (e.g. @yourname)">
+                    <input type="text" id="creatorOnlyFans" placeholder="OnlyFans handle (e.g. @yourname)">
+                    <input type="text" id="creatorFansly" placeholder="Fansly handle (e.g. @yourname)">
+                    <input type="text" id="creatorFansVue" placeholder="FansVue handle (e.g. @yourname)">
+                    <input type="text" id="creatorLuvlyFans" placeholder="LuvlyFans handle (e.g. @yourname)">
+                    <input type="text" id="creatorTikTok" placeholder="TikTok handle (e.g. @yourname)">
+                    <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light);">How should we notify you when a fan books?</p>
                     <div class="creator-notify-options">
                         <div><input type="radio" name="notifyMethod" value="email" checked> <label>Email</label></div>
                         <div><input type="radio" name="notifyMethod" value="text"> <label>Text / SMS</label></div>
-                        <div><input type="radio" name="notifyMethod" value="fansvue"> <label>FansVue Handle</label></div>
-                        <div><input type="radio" name="notifyMethod" value="onlyfans"> <label>OnlyFans Handle</label></div>
-                        <div><input type="radio" name="notifyMethod" value="instagram"> <label>Instagram Handle</label></div>
-                        <div><input type="radio" name="notifyMethod" value="twitter"> <label>Twitter / X Handle</label></div>
-                        <div><input type="radio" name="notifyMethod" value="tiktok"> <label>TikTok Handle</label></div>
                         <div><input type="radio" name="notifyMethod" value="other"> <label>Other</label></div>
                     </div>
-                    <input type="text" id="handleInput" placeholder="Your handle or number">
+                    <input type="text" id="handleInput" placeholder="Your phone number or other contact">
                     <div class="checkbox-group">
                         <input type="checkbox" id="creatorAgeCheck">
                         <label for="creatorAgeCheck">I confirm I am 18 years of age or older and agree to the terms.</label>
                     </div>
-                    <button class="btn btn-subscribe" id="creatorSubscribeBtn" onclick="subscribeCreator()">SUBSCRIBE AS CREATOR — FREE</button>
+                    <button class="btn btn-subscribe" id="creatorSubscribeBtn" onclick="subscribeCreator()">JOIN AS CREATOR — FREE</button>
                 </div>
             </div>
         </section>
@@ -609,7 +611,7 @@
             btn.classList.add('loading'); btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Sending...'; // Add spinner
 
-            const challenge = selectedCard === 'truth' ? 'Truth ($15 CAD — 5 min)' : 'Dare ($45 CAD — 15 min Live)';
+            const challenge = selectedCard === 'truth' ? 'Truth ($15 USD — 5 min)' : 'Dare ($45 USD — 15 min Live)';
             try {
                 // Ensure EmailJS is loaded and configured
                 if (typeof emailjs === 'undefined' || !CONFIG.emailjsServiceId || !CONFIG.emailjsTemplateId) {
@@ -700,10 +702,22 @@
             const creatorLegalName = document.getElementById('creatorLegalName').value.trim();
             const creatorPlatformHandle = document.getElementById('creatorPlatformHandle').value.trim();
             const creatorSubEmail = document.getElementById('creatorSubEmail').value.trim();
+            const creatorPassword = document.getElementById('creatorPassword').value.trim();
             const creatorAgeCheck = document.getElementById('creatorAgeCheck').checked;
+            // Social handles (optional)
+            const instagram = document.getElementById('creatorInstagram').value.trim();
+            const onlyfans = document.getElementById('creatorOnlyFans').value.trim();
+            const fansly = document.getElementById('creatorFansly').value.trim();
+            const fansvue = document.getElementById('creatorFansVue').value.trim();
+            const luvelyfans = document.getElementById('creatorLuvlyFans').value.trim();
+            const tiktok = document.getElementById('creatorTikTok').value.trim();
 
-            if (!creatorSubName || !creatorLegalName || !creatorPlatformHandle || !creatorSubEmail) {
+            if (!creatorSubName || !creatorLegalName || !creatorPlatformHandle || !creatorSubEmail || !creatorPassword) {
                 showToast('Please fill in all required creator fields.', 'error');
+                return;
+            }
+            if (creatorPassword.length < 8) {
+                showToast('Password must be at least 8 characters.', 'error');
                 return;
             }
             if (!creatorAgeCheck) {
@@ -716,8 +730,6 @@
             btn.innerHTML = '<span class="spinner"></span> Creating account...';
 
             try {
-                // Generate a temporary password (creator sets it later via email)
-                const tempPassword = 'TempPass' + Math.random().toString(36).slice(2, 10) + '!';
                 const res = await fetch(`${CONFIG.backendUrl}/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -725,9 +737,10 @@
                         name: creatorSubName,
                         legalName: creatorLegalName,
                         email: creatorSubEmail,
-                        password: tempPassword,
+                        password: creatorPassword,
                         role: 'creator',
                         handle: creatorPlatformHandle,
+                        socials: { instagram, onlyfans, fansly, fansvue, luvelyfans, tiktok },
                     }),
                 });
                 const data = await res.json();
@@ -735,17 +748,17 @@
                 // Store token for immediate dashboard access
                 localStorage.setItem('creatorToken', data.token);
                 localStorage.setItem('creatorHandle', data.handle || creatorPlatformHandle);
-                showToast('\u2713 Creator account created! Check your email to set your password.', 'success');
+                showToast('\u2713 Account created! You can now log in as a creator.', 'success');
                 btn.innerHTML = '\u2713 Account Created!';
                 // Show Stripe Connect prompt after short delay
                 setTimeout(() => {
-                    if (confirm('\ud83d\udcb3 Connect your Stripe account to receive payouts (takes 5 minutes). Do this now?')) {
+                    if (confirm('\ud83d\udcb3 Connect your Stripe account to receive your 85% payouts (takes 5 minutes). Do this now?')) {
                         onboardCreatorStripe(creatorSubEmail, creatorSubName);
                     }
                 }, 1500);
             } catch (e) {
                 showToast('Registration failed: ' + e.message, 'error');
-                btn.innerHTML = 'SUBSCRIBE AS CREATOR \u2014 FREE';
+                btn.innerHTML = 'JOIN AS CREATOR \u2014 FREE';
                 btn.classList.remove('loading'); btn.disabled = false;
             }
         }
@@ -813,7 +826,7 @@
             if (step === 3) {
                 document.getElementById('booking-confirm-box').innerHTML = `
                     <strong>Creator:</strong> ${bookingState.creatorHandle}<br>
-                    <strong>Session:</strong> ${bookingState.sessionType === 'truth' ? 'Truth ($15 CAD — 5 min)' : 'Dare ($45 CAD — 15 min)'}<br>
+                    <strong>Session:</strong> ${bookingState.sessionType === 'truth' ? 'Truth ($15 USD — 5 min)' : 'Dare ($45 USD — 15 min)'}<br>
                     <strong>Date:</strong> ${bookingState.selectedDate}<br>
                     <strong>Time:</strong> ${bookingState.selectedTime}
                 `;
@@ -875,23 +888,27 @@
                 if (i < approvedCreators.length) {
                     const c = approvedCreators[i];
                     card.classList.add('creator-card');
-                    const isOnline = c.online || false;
+                    const isOnline = c.online || c.isLive || false;
+                    const handle = c.handle ? c.handle.replace('@','') : '';
+                    const profileUrl = handle ? `/creator/${handle}` : '#';
+                    card.style.cursor = 'pointer';
+                    card.onclick = () => { if (handle) window.location.href = profileUrl; };
                     card.innerHTML = `
                         <div class="avatar-wrap">
                             <div class="avatar">${c.photo ? `<img src="${c.photo}" alt="${c.name}">` : '👤'}</div>
                             ${isOnline ? '<span class="online-dot" title="Online now"></span>' : ''}
                         </div>
                         <h3>${c.name}</h3>
-                        <p>${c.bio || ''}</p>
-                        <button class="btn-book" onclick="selectCreator('${c.name}')">Book Now</button>
+                        <p>${c.bio ? c.bio.substring(0,60) + (c.bio.length > 60 ? '...' : '') : ''}</p>
+                        <button class="btn-book" onclick="event.stopPropagation(); window.location.href='${profileUrl}'">Book Session</button>
                     `;
                 } else {
                     card.classList.add('creator-card', 'available');
                     card.innerHTML = `
                         <div class="avatar" style="background: rgba(212,165,116,0.1); font-size: 22px;">✨</div>
                         <div class="slot-label">Slot Available</div>
-                        <p style="font-size: 11px; color: var(--text-dim);">Creator spot open</p>
-                        <a href="#creator-login" class="btn-apply" onclick="openLoginModal('creator'); return false;">Get Featured</a>
+                        <p style="font-size: 11px; color: var(--text-dim);">Your spot is waiting</p>
+                        <a href="#creator-signup" class="btn-apply" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'}); return false;">Join Free →</a>
                     `;
                 }
                 grid.appendChild(card);
