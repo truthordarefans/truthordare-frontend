@@ -862,7 +862,12 @@
             const parts = path.split('/').filter(Boolean);
             let handle = parts[parts.length - 1];
             if (!handle) { showNotFound(); return; }
-            handle = handle.replace('@', '');
+            // Decode URL encoding (e.g. %40 -> @) but do NOT strip the @ from name@truthordare
+            handle = decodeURIComponent(handle);
+            // Only strip a leading @ if present (legacy format), not the @ inside name@truthordare
+            if (handle.startsWith('@') && !handle.includes('@', 1)) {
+                handle = handle.slice(1);
+            }
 
             try {
                 const res = await fetch(`${CONFIG.backendUrl}/creator/${handle}`);
