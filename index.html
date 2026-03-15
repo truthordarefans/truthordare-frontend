@@ -1155,7 +1155,7 @@
             showToast('Logging in...', 'info');
 
             try {
-                const res = await fetch(`${backendUrl}/login`, {
+                const res = await fetch(`${CONFIG.backendUrl}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password }),
