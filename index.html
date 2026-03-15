@@ -1008,8 +1008,8 @@
                     const c = approvedCreators[i];
                     card.classList.add('creator-card');
                     const isOnline = c.online || c.isLive || false;
-                    const handle = c.handle ? c.handle.replace('@','') : '';
-                    const profileUrl = handle ? `/creator/${handle}` : '#';
+                    const handle = c.handle || '';
+                    const profileUrl = handle ? `/creator/${encodeURIComponent(handle)}` : '#';
                     card.style.cursor = 'pointer';
                     card.onclick = () => { if (handle) window.location.href = profileUrl; };
                     card.innerHTML = `
@@ -1081,7 +1081,7 @@
                             </div>
                         </div>
                     `;
-                    card.onclick = () => { if (handle) window.location.href = `/creator/${handle}`; };
+                    card.onclick = () => { if (handle) window.location.href = `/creator/${encodeURIComponent(handle)}`; };
                 } else {
                     card.className = 'browse-card slot-card';
                     card.onclick = () => document.getElementById('creator-signup').scrollIntoView({ behavior: 'smooth' });
