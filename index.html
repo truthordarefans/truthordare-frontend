@@ -242,25 +242,45 @@
         .hero-card .play-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(204,0,0,0.8); border-radius: 50%; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .hero-card .play-button svg { fill: #fff; width: 30px; height: 30px; }
 
-        /* --- CHALLENGE SELECTION --- */
-        .challenge-section { text-align: center; margin-top: 60px; }
-        .challenge-section h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--cream); margin-bottom: 30px; }
-        .challenge-options { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .challenge-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 25px; width: 100%; max-width: 280px; cursor: pointer; transition: all 0.2s; }
-        .challenge-card:hover { border-color: var(--gold); box-shadow: 0 0 15px var(--gold-dim); }
-        .challenge-card.selected { background: rgba(212,165,116,0.1); border-color: var(--gold); }
-        .challenge-card h3 { font-size: 24px; color: var(--gold-light); margin-bottom: 10px; }
-        .challenge-card .price { font-size: 28px; font-weight: 700; color: var(--cream); }
-        .challenge-card .description { font-size: 14px; color: var(--text); margin-top: 10px; }
+        /* --- BROWSE CREATORS SECTION --- */
+        .browse-creators-section { margin-top: 50px; text-align: center; }
+        .browse-creators-section h2 { font-family: 'Playfair Display', serif; font-size: 34px; color: var(--cream); margin-bottom: 8px; }
+        .browse-creators-section .section-sub { font-size: 15px; color: var(--text); margin-bottom: 30px; }
+        .browse-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 700px) { .browse-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+        @media (max-width: 400px) { .browse-grid { grid-template-columns: 1fr; } }
 
-        .challenge-form { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 30px; margin-top: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        /* Big creator booking card */
+        .browse-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+        .browse-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.5); border-color: rgba(212,165,116,0.5); }
+        .browse-card-photo { width: 100%; aspect-ratio: 3/4; background: rgba(0,0,0,0.3); overflow: hidden; position: relative; }
+        .browse-card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .browse-card-photo .no-photo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 64px; background: linear-gradient(160deg, rgba(212,165,116,0.12), rgba(0,0,0,0.4)); }
+        .browse-card-live-badge { position: absolute; top: 10px; left: 10px; background: #CC0000; color: #fff; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.8px; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(204,0,0,0.5); }
+        .browse-card-live-badge .live-dot { width: 7px; height: 7px; background: #fff; border-radius: 50%; animation: blink-dot 1.2s infinite; }
+        @keyframes blink-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        .browse-card-info { padding: 14px 14px 16px; }
+        .browse-card-info h3 { font-size: 16px; color: var(--gold-light); font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .browse-card-info p { font-size: 12px; color: var(--text); line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 36px; }
+        .browse-card-btns { display: flex; gap: 8px; }
+        .browse-card-btns .btn-truth { flex: 1; background: rgba(212,165,116,0.15); border: 1px solid var(--gold-dim); color: var(--gold-light); padding: 8px 4px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .browse-card-btns .btn-truth:hover { background: rgba(212,165,116,0.28); border-color: var(--gold); }
+        .browse-card-btns .btn-dare { flex: 1; background: var(--red); border: none; color: #fff; padding: 8px 4px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .browse-card-btns .btn-dare:hover { background: var(--dark-red); }
+
+        /* Available slot card */
+        .browse-card.slot-card { border: 1.5px dashed rgba(212,165,116,0.22); background: rgba(0,0,0,0.12); cursor: pointer; }
+        .browse-card.slot-card:hover { border-color: rgba(212,165,116,0.45); background: rgba(212,165,116,0.04); }
+        .browse-card.slot-card .browse-card-photo { background: linear-gradient(160deg, rgba(212,165,116,0.06), rgba(0,0,0,0.25)); }
+        .browse-card.slot-card .browse-card-info h3 { color: var(--text-dim); font-size: 13px; font-weight: 500; }
+        .browse-card.slot-card .btn-join-slot { width: 100%; background: transparent; border: 1px solid var(--gold-dim); color: var(--gold); padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .browse-card.slot-card .btn-join-slot:hover { background: rgba(212,165,116,0.1); border-color: var(--gold); }
+
+        /* Keep old challenge-form hidden but functional for payment flow */
+        .challenge-form { display: none; }
         .challenge-form input[type="text"], .challenge-form input[type="email"] { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--gold-dim); border-radius: 4px; color: var(--cream); font-size: 16px; }
-        .challenge-form input[type="text"]::placeholder, .challenge-form input[type="email"]::placeholder { color: var(--text-dim); }
         .challenge-form .btn { display: inline-block; padding: 12px 25px; border-radius: 6px; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s; border: none; }
-        .challenge-form .btn-stripe { background: linear-gradient(135deg, #635BFF, #7B73FF); color: #fff; box-shadow: 0 4px 15px rgba(99,91,255,0.3); }
-        .challenge-form .btn-stripe:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,91,255,0.4); }
-        .challenge-form .btn-notify { background: var(--gold); color: var(--dark); box-shadow: 0 4px 15px rgba(212,165,116,0.3); margin-left: 15px; }
-        .challenge-form .btn-notify:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212,165,116,0.4); }
+        .challenge-form .btn-stripe { background: linear-gradient(135deg, #635BFF, #7B73FF); color: #fff; }
         .challenge-form .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* --- STRIPE CONNECT --- */
@@ -417,26 +437,20 @@
             </div>
         </section>
 
-        <section class="challenge-section">
-            <h2>Choose Your Challenge</h2>
-            <div class="challenge-options">
-                <div class="challenge-card" id="truth-card" onclick="selectCard('truth')">
-                    <h3>🤔 Buy Truth</h3>
-                    <p class="price">$15 USD</p>
-                    <p class="description">5 min · 2-way text</p>
-                </div>
-                <div class="challenge-card" id="dare-card" onclick="selectCard('dare')">
-                    <h3>🔥 Buy Dare</h3>
-                    <p class="price">$45 USD</p>
-                    <p class="description">15 min · Live</p>
-                </div>
-            </div>
+        <!-- Hidden payment form — still used by JS payment flow -->
+        <div class="challenge-form" id="challenge-form-hidden">
+            <input type="text" id="creatorName" placeholder="Creator's name or handle">
+            <input type="text" id="fanName" placeholder="Your fan name or nickname">
+            <input type="hidden" id="selectedChallenge" value="">
+            <button class="btn btn-stripe" id="payBtn" onclick="handlePayment()">💳 PAY WITH STRIPE</button>
+        </div>
 
-            <div class="challenge-form">
-                <input type="text" id="creatorName" placeholder="Creator's name or handle">
-                <input type="text" id="fanName" placeholder="Your fan name or nickname">
-                <button class="btn btn-stripe" id="payBtn" onclick="handlePayment()">💳 PAY WITH STRIPE</button>
-                <p class="mt-20" style="font-size: 13px; color: var(--text-dim);">Creator reserves the right to accept or refuse any challenge. If a challenge is refused, the fan receives a full credit. Sessions are time-limited once started.</p>
+        <!-- Browse Creators Section -->
+        <section class="browse-creators-section">
+            <h2>🎭 Choose a Creator</h2>
+            <p class="section-sub">Pick a creator, select Truth or Dare, and pay instantly to start your session.</p>
+            <div class="browse-grid" id="browse-creators-grid">
+                <!-- Populated by JS -->
             </div>
         </section>
 
@@ -531,8 +545,8 @@
             <div class="room-cards">
                 <div class="room-card">
                     <h3>🤔 Truth Room</h3>
-                    <p class="duration">5 min · 2-way text</p>
-                    <p style="font-size: 14px; color: var(--cream); margin-top: 20px;">📹 1-Way Video + 2-Way Text <br>Creator on camera · fan chats live</p>
+                    <p class="duration">5 min · Live Audio + Video</p>
+                    <p style="font-size: 14px; color: var(--cream); margin-top: 20px;">📹 Video + 🎤 2-Way Audio + 💬 Chat<br>Both creator and fan on mic · creator on camera</p>
                     <div class="chat-box">Chat appears here during your session...</div>
                     <div class="chat-input-group">
                         <input type="text" id="truth-chat-input" placeholder="Type a message...">
@@ -540,15 +554,15 @@
                     </div>
                     <div class="features">
                         <span class="feature">📹 Video: 1-way</span>
-                        <span class="feature">🎤 Audio: 1-way</span>
+                        <span class="feature">🎤 Audio: 2-way</span>
                         <span class="feature">💬 Chat: 2-way</span>
                     </div>
                 </div>
                 <div class="room-card">
                     <h3>🔥 Dare Room</h3>
-                    <p class="duration">15 min · Live</p>
+                    <p class="duration">15 min · Live Audio + Video</p>
                     <span class="live-badge">● LIVE</span>
-                    <p style="font-size: 14px; color: var(--cream); margin-top: 20px;">🎥 1-Way Video + 2-Way Text <br>Creator on camera · fan chats live</p>
+                    <p style="font-size: 14px; color: var(--cream); margin-top: 20px;">📹 Video + 🎤 2-Way Audio + 💬 Chat<br>Both creator and fan on mic · creator on camera</p>
                     <div class="chat-box">Chat with the creator during the dare...</div>
                     <div class="chat-input-group">
                         <input type="text" id="dare-chat-input" placeholder="Type a message...">
@@ -556,7 +570,7 @@
                     </div>
                     <div class="features">
                         <span class="feature">📹 Video: 1-way</span>
-                        <span class="feature">🎤 Audio: 1-way</span>
+                        <span class="feature">🎤 Audio: 2-way</span>
                         <span class="feature">💬 Chat: 2-way</span>
                     </div>
                 </div>
@@ -1020,6 +1034,110 @@
             if (input) { input.value = name; input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
         }
 
+        // ── BROWSE CREATORS GRID ─────────────────────────────────────────────────
+        const BROWSE_SLOTS = 12;
+
+        async function fetchBrowseCreators() {
+            const grid = document.getElementById('browse-creators-grid');
+            if (!grid) return;
+            let creators = [];
+            try {
+                const res = await fetch(`${CONFIG.backendUrl}/featured-creators`);
+                if (res.ok) { const d = await res.json(); creators = d.creators || []; }
+            } catch (e) { console.warn('Browse creators fetch failed:', e); }
+
+            grid.innerHTML = '';
+            for (let i = 0; i < BROWSE_SLOTS; i++) {
+                const card = document.createElement('div');
+                if (i < creators.length) {
+                    const c = creators[i];
+                    const isLive = c.online || c.isLive || false;
+                    const handle = (c.handle || '').replace('@', '');
+                    card.className = 'browse-card';
+                    card.innerHTML = `
+                        <div class="browse-card-photo">
+                            ${c.photo
+                                ? `<img src="${c.photo}" alt="${c.name}" loading="lazy">`
+                                : `<div class="no-photo">👤</div>`}
+                            ${isLive ? `<div class="browse-card-live-badge"><span class="live-dot"></span> LIVE NOW</div>` : ''}
+                        </div>
+                        <div class="browse-card-info">
+                            <h3>${c.name}</h3>
+                            <p>${c.bio ? c.bio.substring(0, 90) + (c.bio.length > 90 ? '…' : '') : 'Available for Truth or Dare sessions.'}</p>
+                            <div class="browse-card-btns">
+                                <button class="btn-truth" onclick="event.stopPropagation(); openQuickPay('${handle}','${c.name}','truth')">🤔 Truth — $15</button>
+                                <button class="btn-dare" onclick="event.stopPropagation(); openQuickPay('${handle}','${c.name}','dare')">🔥 Dare — $45</button>
+                            </div>
+                        </div>
+                    `;
+                    card.onclick = () => { if (handle) window.location.href = `/creator/${handle}`; };
+                } else {
+                    card.className = 'browse-card slot-card';
+                    card.onclick = () => document.getElementById('creator-signup').scrollIntoView({ behavior: 'smooth' });
+                    card.innerHTML = `
+                        <div class="browse-card-photo">
+                            <div class="no-photo" style="font-size:40px; opacity:0.35;">✨</div>
+                        </div>
+                        <div class="browse-card-info">
+                            <h3>Slot Available</h3>
+                            <p>Your profile could be here. Join free and start earning 85% per session.</p>
+                            <button class="btn-join-slot" onclick="event.stopPropagation(); document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'})">Join as Creator →</button>
+                        </div>
+                    `;
+                }
+                grid.appendChild(card);
+            }
+        }
+
+        // Quick-pay modal — fan enters name/email then goes straight to Stripe
+        function openQuickPay(handle, creatorName, sessionType) {
+            const existing = document.getElementById('quick-pay-modal');
+            if (existing) existing.remove();
+            const price = sessionType === 'truth' ? '$15' : '$45';
+            const emoji = sessionType === 'truth' ? '🤔' : '🔥';
+            const label = sessionType === 'truth' ? 'Truth Session' : 'Dare Session';
+            const modal = document.createElement('div');
+            modal.id = 'quick-pay-modal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.82);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.innerHTML = `
+                <div style="background:#1a0000;border:2px solid var(--gold);border-radius:14px;padding:32px;max-width:420px;width:100%;position:relative;">
+                    <button onclick="document.getElementById('quick-pay-modal').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text-dim);font-size:20px;cursor:pointer;">✕</button>
+                    <h3 style="font-family:'Playfair Display',serif;color:var(--cream);font-size:22px;margin-bottom:4px;">${emoji} ${label}</h3>
+                    <p style="font-size:13px;color:var(--text-dim);margin-bottom:6px;">with <strong style="color:var(--gold-light);">${creatorName}</strong></p>
+                    <p style="font-size:24px;font-weight:700;color:var(--cream);margin-bottom:22px;">${price} USD</p>
+                    <input id="qp-fan-name" type="text" placeholder="Your name or nickname" style="width:100%;padding:11px;margin-bottom:12px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:6px;color:var(--cream);font-size:15px;">
+                    <input id="qp-fan-email" type="email" placeholder="Your email address" style="width:100%;padding:11px;margin-bottom:20px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:6px;color:var(--cream);font-size:15px;">
+                    <button id="qp-pay-btn" onclick="submitQuickPay('${handle}','${sessionType}')" style="width:100%;padding:13px;background:linear-gradient(135deg,#635BFF,#7B73FF);color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:0.5px;">💳 Pay with Stripe</button>
+                    <p style="font-size:11px;color:var(--text-dim);margin-top:14px;text-align:center;">Creator reserves the right to accept or refuse. Full credit if refused.</p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+            setTimeout(() => document.getElementById('qp-fan-name').focus(), 80);
+        }
+
+        async function submitQuickPay(handle, sessionType) {
+            const fanName = document.getElementById('qp-fan-name').value.trim();
+            const fanEmail = document.getElementById('qp-fan-email').value.trim();
+            if (!fanName) { showToast('Please enter your name.', 'error'); return; }
+            if (!fanEmail || !fanEmail.includes('@')) { showToast('Please enter a valid email.', 'error'); return; }
+            const btn = document.getElementById('qp-pay-btn');
+            btn.disabled = true; btn.textContent = 'Processing...';
+            try {
+                const res = await fetch(`${CONFIG.backendUrl}/create-checkout-session`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ selectedCard: sessionType, creatorName: handle, fanName, fanEmail }),
+                });
+                if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Payment failed.'); }
+                const { url } = await res.json();
+                window.location.href = url;
+            } catch (err) {
+                showToast('Payment error: ' + err.message, 'error');
+                btn.disabled = false; btn.textContent = '💳 Pay with Stripe';
+            }
+        }
+
         // Login Modal
         function openLoginModal(type) {
             const existing = document.getElementById('login-modal');
@@ -1108,6 +1226,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateCalc();
             fetchFeaturedCreators();
+            fetchBrowseCreators();
             // Check for success/cancel from Stripe redirect
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('success')) {

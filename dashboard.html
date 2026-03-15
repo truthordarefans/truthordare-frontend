@@ -260,6 +260,18 @@
                 </div>
             </div>
 
+            <!-- Danger Zone -->
+            <div class="section-card" style="border-color: rgba(204,0,0,0.4);">
+                <h2 style="color:#FF6B6B;">&#9888; Account Settings</h2>
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-top:12px;">
+                    <div>
+                        <div style="font-size:14px; color:var(--cream); font-weight:600; margin-bottom:4px;">Close My Account</div>
+                        <div style="font-size:12px; color:var(--text-dim);">Permanently deletes your profile, sessions, and featured listing. This cannot be undone.</div>
+                    </div>
+                    <button onclick="confirmDeleteAccount()" style="background:transparent; border:1.5px solid rgba(204,0,0,0.6); color:#FF6B6B; padding:9px 20px; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all 0.2s;" onmouseover="this.style.background='rgba(204,0,0,0.15)'" onmouseout="this.style.background='transparent'">Delete Account</button>
+                </div>
+            </div>
+
         </div><!-- end dashboard-content -->
     </div>
 
@@ -280,6 +292,29 @@
             localStorage.removeItem('tod_token');
             localStorage.removeItem('tod_role');
             window.location.href = '/';
+        }
+
+        async function confirmDeleteAccount() {
+            const confirmed = confirm(
+                'Are you sure you want to permanently delete your account?\n\n' +
+                'This will remove your profile, all sessions, and your featured listing. ' +
+                'This action CANNOT be undone.'
+            );
+            if (!confirmed) return;
+            const doubleCheck = confirm('Last chance — click OK to permanently delete your account.');
+            if (!doubleCheck) return;
+            try {
+                const res = await fetch(`${BACKEND}/account`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${getToken()}` },
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Deletion failed.');
+                showToast('Your account has been deleted.', 'success');
+                setTimeout(() => { logout(); }, 1800);
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
         }
 
         async function checkAuth() {
