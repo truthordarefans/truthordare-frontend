@@ -522,11 +522,30 @@
                 <div class="subscribe-card" id="creator-signup">
                     <h3>🌟 For Creators</h3>
                     <p>Sign up free and get your own profile page instantly. Earn 85% of every session paid directly to your Stripe account.</p>
-                    <input type="text" id="creatorSubName" placeholder="Your stage / display name (shown publicly)">
-                    <input type="text" id="creatorLegalName" placeholder="Your legal name (private — for Stripe payouts only)">
-                    <input type="text" id="creatorPlatformHandle" placeholder="Create your @handle on our platform (e.g. @yourname)">
-                    <input type="email" id="creatorSubEmail" placeholder="Your email address">
-                    <input type="password" id="creatorPassword" placeholder="Create a password">
+
+                    <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;">Stage / Display Name <span style="color:#ff6b6b;">*</span></label>
+                    <input type="text" id="creatorSubName" placeholder="e.g. Jessica Wild, Zara, MissDare..." oninput="updateHandlePreview()" style="margin-bottom:4px;">
+                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">This is the name fans will see on your profile card.</p>
+
+                    <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;">Legal Name (private) <span style="color:#ff6b6b;">*</span></label>
+                    <input type="text" id="creatorLegalName" placeholder="Your real name — only used for Stripe payouts" style="margin-bottom:4px;">
+                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">Never shown publicly. Required by Stripe to send you money.</p>
+
+                    <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:block;">Your Platform Handle</label>
+                    <div style="background:rgba(0,0,0,0.35);border:1.5px solid rgba(212,165,116,0.5);border-radius:6px;padding:12px 16px;margin-bottom:4px;">
+                        <div style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">Fans will find and book you at:</div>
+                        <div style="font-size:17px;font-weight:700;color:var(--gold);letter-spacing:0.3px;" id="handle-preview">yourname@truthordare</div>
+                        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Auto-generated from your stage name above — no typing needed.</div>
+                    </div>
+                    <input type="hidden" id="creatorPlatformHandle">
+
+                    <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;margin-top:14px;">Email Address <span style="color:#ff6b6b;">*</span></label>
+                    <input type="email" id="creatorSubEmail" placeholder="you@example.com" style="margin-bottom:4px;">
+                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">Used to log in and receive booking notifications.</p>
+
+                    <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;">Password <span style="color:#ff6b6b;">*</span></label>
+                    <input type="password" id="creatorPassword" placeholder="At least 8 characters" style="margin-bottom:4px;">
+                    <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">Minimum 8 characters. Keep it safe!</p>
                     <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light); font-size: 13px;">Your social handles (optional — shown on your profile page):</p>
                     <input type="text" id="creatorInstagram" placeholder="Instagram handle (e.g. @yourname)">
                     <input type="text" id="creatorOnlyFans" placeholder="OnlyFans handle (e.g. @yourname)">
@@ -785,11 +804,22 @@
             btn.classList.remove('loading'); btn.disabled = false;
         }
 
+        // Auto-generate handle from display name
+        function updateHandlePreview() {
+            const name = document.getElementById('creatorSubName').value.trim();
+            const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
+            const handle = slug ? `${slug}@truthordare` : 'yourname@truthordare';
+            document.getElementById('handle-preview').textContent = handle;
+            document.getElementById('creatorPlatformHandle').value = slug || '';
+        }
+
         // Creator Subscription
         async function subscribeCreator() {
             const creatorSubName = document.getElementById('creatorSubName').value.trim();
             const creatorLegalName = document.getElementById('creatorLegalName').value.trim();
-            const creatorPlatformHandle = document.getElementById('creatorPlatformHandle').value.trim();
+            // Auto-generate handle from display name
+            const slug = creatorSubName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
+            const creatorPlatformHandle = slug;
             const creatorSubEmail = document.getElementById('creatorSubEmail').value.trim();
             const creatorPassword = document.getElementById('creatorPassword').value.trim();
             const creatorAgeCheck = document.getElementById('creatorAgeCheck').checked;
@@ -801,7 +831,7 @@
             const luvelyfans = document.getElementById('creatorLuvlyFans').value.trim();
             const tiktok = document.getElementById('creatorTikTok').value.trim();
 
-            if (!creatorSubName || !creatorLegalName || !creatorPlatformHandle || !creatorSubEmail || !creatorPassword) {
+            if (!creatorSubName || !creatorLegalName || !creatorSubEmail || !creatorPassword) {
                 showToast('Please fill in all required creator fields.', 'error');
                 return;
             }
