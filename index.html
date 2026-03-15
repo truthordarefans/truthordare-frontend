@@ -268,6 +268,25 @@
         .browse-card-btns .btn-dare { flex: 1; background: var(--red); border: none; color: #fff; padding: 8px 4px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
         .browse-card-btns .btn-dare:hover { background: var(--dark-red); }
 
+        /* Favourite star button */
+        .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.55); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: all 0.2s; z-index: 2; backdrop-filter: blur(4px); }
+        .fav-btn:hover { background: rgba(0,0,0,0.75); transform: scale(1.15); }
+        .fav-btn.active { background: rgba(212,165,116,0.25); }
+        .fav-btn .star-icon { line-height: 1; }
+
+        /* My Favourites bar */
+        .favourites-bar { background: rgba(0,0,0,0.3); border: 1px solid var(--gold-dim); border-radius: 12px; padding: 18px 20px; margin-bottom: 28px; display: none; }
+        .favourites-bar.has-items { display: block; }
+        .favourites-bar h4 { font-size: 14px; color: var(--gold); font-weight: 700; letter-spacing: 0.5px; margin-bottom: 12px; text-transform: uppercase; }
+        .fav-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+        .fav-chip { display: flex; align-items: center; gap: 8px; background: rgba(212,165,116,0.1); border: 1px solid var(--gold-dim); border-radius: 30px; padding: 6px 12px 6px 8px; cursor: pointer; transition: all 0.2s; }
+        .fav-chip:hover { background: rgba(212,165,116,0.2); border-color: var(--gold); }
+        .fav-chip img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .fav-chip .fav-chip-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(212,165,116,0.2); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .fav-chip span { font-size: 13px; color: var(--cream); font-weight: 600; }
+        .fav-chip .fav-chip-remove { font-size: 11px; color: var(--text-dim); margin-left: 2px; }
+        .fav-chip .fav-chip-remove:hover { color: #FF6B6B; }
+
         /* Available slot card */
         .browse-card.slot-card { border: 1.5px dashed rgba(212,165,116,0.22); background: rgba(0,0,0,0.12); cursor: pointer; }
         .browse-card.slot-card:hover { border-color: rgba(212,165,116,0.45); background: rgba(212,165,116,0.04); }
@@ -449,6 +468,13 @@
         <section class="browse-creators-section">
             <h2>🎭 Choose a Creator</h2>
             <p class="section-sub">Pick a creator, select Truth or Dare, and pay instantly to start your session.</p>
+
+            <!-- My Favourites bar (shown when fan has saved creators) -->
+            <div class="favourites-bar" id="favourites-bar">
+                <h4>⭐ My Favourites</h4>
+                <div class="fav-chips" id="fav-chips"></div>
+            </div>
+
             <div class="browse-grid" id="browse-creators-grid">
                 <!-- Populated by JS -->
             </div>
@@ -1054,12 +1080,16 @@
                     const isLive = c.online || c.isLive || false;
                     const handle = (c.handle || '').replace('@', '');
                     card.className = 'browse-card';
+                    const isFav = isFavourite(handle);
                     card.innerHTML = `
                         <div class="browse-card-photo">
                             ${c.photo
                                 ? `<img src="${c.photo}" alt="${c.name}" loading="lazy">`
                                 : `<div class="no-photo">👤</div>`}
                             ${isLive ? `<div class="browse-card-live-badge"><span class="live-dot"></span> LIVE NOW</div>` : ''}
+                            <button class="fav-btn ${isFav ? 'active' : ''}" id="fav-btn-${handle}" onclick="event.stopPropagation(); toggleFavourite('${handle}','${c.name.replace(/'/g,"\\'")}',${ c.photo ? `'${c.photo}'` : 'null' })" title="${isFav ? 'Remove from favourites' : 'Add to favourites'}">
+                                <span class="star-icon">${isFav ? '⭐' : '☆'}</span>
+                            </button>
                         </div>
                         <div class="browse-card-info">
                             <h3>${c.name}</h3>
@@ -1222,11 +1252,71 @@
             document.getElementById('calc-monthly').textContent = '$' + monthlyTotal.toFixed(2);
         }
 
+        // ── FAVOURITES ───────────────────────────────────────────────────────────────────
+        const FAV_KEY = 'tod_favourites';
+
+        function getFavourites() {
+            try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; }
+            catch (e) { return []; }
+        }
+
+        function saveFavourites(favs) {
+            localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+        }
+
+        function isFavourite(handle) {
+            return getFavourites().some(f => f.handle === handle);
+        }
+
+        function toggleFavourite(handle, name, photo) {
+            let favs = getFavourites();
+            const idx = favs.findIndex(f => f.handle === handle);
+            if (idx >= 0) {
+                favs.splice(idx, 1);
+                showToast(`Removed ${name} from favourites.`, 'info');
+            } else {
+                favs.push({ handle, name, photo: photo || null });
+                showToast(`⭐ ${name} added to favourites!`, 'success');
+            }
+            saveFavourites(favs);
+            // Update the star button in place without full re-render
+            const btn = document.getElementById(`fav-btn-${handle}`);
+            if (btn) {
+                const nowFav = isFavourite(handle);
+                btn.className = `fav-btn ${nowFav ? 'active' : ''}`;
+                btn.querySelector('.star-icon').textContent = nowFav ? '⭐' : '☆';
+                btn.title = nowFav ? 'Remove from favourites' : 'Add to favourites';
+            }
+            renderFavouritesBar();
+        }
+
+        function renderFavouritesBar() {
+            const bar = document.getElementById('favourites-bar');
+            const chips = document.getElementById('fav-chips');
+            if (!bar || !chips) return;
+            const favs = getFavourites();
+            if (favs.length === 0) {
+                bar.classList.remove('has-items');
+                return;
+            }
+            bar.classList.add('has-items');
+            chips.innerHTML = favs.map(f => `
+                <div class="fav-chip" onclick="window.location.href='/creator/${encodeURIComponent(f.handle)}'">
+                    ${f.photo
+                        ? `<img src="${f.photo}" alt="${f.name}">`
+                        : `<div class="fav-chip-avatar">👤</div>`}
+                    <span>${f.name}</span>
+                    <span class="fav-chip-remove" onclick="event.stopPropagation(); toggleFavourite('${f.handle}','${f.name.replace(/'/g,"\\'")}',${ f.photo ? `'${f.photo}'` : 'null' })" title="Remove">✕</span>
+                </div>
+            `).join('');
+        }
+
         // Initial calls
         document.addEventListener('DOMContentLoaded', () => {
             updateCalc();
             fetchFeaturedCreators();
             fetchBrowseCreators();
+            renderFavouritesBar();
             // Check for success/cancel from Stripe redirect
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('success')) {
