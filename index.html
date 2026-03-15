@@ -1059,7 +1059,7 @@
                 if (i < creators.length) {
                     const c = creators[i];
                     const isLive = c.online || c.isLive || false;
-                    const handle = (c.handle || '').replace('@', '');
+                    const handle = c.handle || '';
                     card.className = 'browse-card';
                     const isFav = isFavourite(handle);
                     card.innerHTML = `
