@@ -536,7 +536,7 @@
                 </div>
                 <div class="subscribe-card" id="creator-signup">
                     <h3>🌟 For Creators</h3>
-                    <p>Sign up free and get your own featured profile slot automatically. Earn 85% of every session paid directly to your Stripe account.</p>
+                    <p>Sign up free and get your own profile page instantly. Earn 85% of every session paid directly to your Stripe account.</p>
                     <input type="text" id="creatorSubName" placeholder="Your stage / display name (shown publicly)">
                     <input type="text" id="creatorLegalName" placeholder="Your legal name (private — for Stripe payouts only)">
                     <input type="text" id="creatorPlatformHandle" placeholder="Create your @handle on our platform (e.g. @yourname)">
@@ -603,14 +603,7 @@
             </div>
         </section>
 
-        <section class="featured-creators-section">
-            <h2>⭐ Featured Creators</h2>
-            <p style="font-size: 15px; color: var(--text); margin-bottom: 10px;">Browse our creators and book a private Truth or Dare session.</p>
-            <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 30px;">Creators: featuring yourself is <strong style="color: var(--gold);">100% optional</strong> — opt in from your Creator Dashboard anytime.</p>
-            <div class="creator-grid" id="featured-creators-grid">
-                <!-- 24 slots rendered by JS -->
-            </div>
-        </section>
+
 
         <!-- BOOKING MODAL -->
         <div id="bookingModalOverlay" class="booking-modal-overlay" style="display:none;">
@@ -662,6 +655,14 @@
         </div>
 
         <footer class="site-footer">
+            <p style="font-size:13px; color: var(--gold); font-weight:600; margin-bottom:8px;">⚠️ Platform Disclaimer</p>
+            <p style="font-size:12px; line-height:1.7; max-width:700px; margin:0 auto 10px; color: rgba(255,255,255,0.75);">
+                This platform is strictly for adults aged <strong>18 and over</strong>. By accessing or using this site, you confirm that you are at least 18 years of age.
+                This platform maintains a <strong>zero-tolerance policy</strong> for the following: any content involving minors, incest, non-consensual acts, violence, hate speech, harassment, abuse, or anything illegal under applicable law.
+                Creators and fans are solely responsible for the content of their sessions.
+                <strong>The platform administrator reserves the right to delete, suspend, or permanently block any account — creator or fan — that violates these rules, without prior notice.</strong>
+                Any violation may also be reported to the appropriate authorities.
+            </p>
             <p>&copy; 2025 <a href="https://www.truthordareformyfans.com">truthordareformyfans.com</a> &nbsp;·&nbsp; All rights reserved &nbsp;·&nbsp; For adults 18+ only</p>
             <p style="margin-top: 10px;">
                 <a href="#">Terms</a>
@@ -1060,20 +1061,21 @@
             if (input) { input.value = name; input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
         }
 
-        // ── BROWSE CREATORS GRID ─────────────────────────────────────────────────
-        const BROWSE_SLOTS = 12;
-
+        // ── BROWSE CREATORS GRID ─────────────────────────────────────────────────────
         async function fetchBrowseCreators() {
             const grid = document.getElementById('browse-creators-grid');
             if (!grid) return;
             let creators = [];
             try {
-                const res = await fetch(`${CONFIG.backendUrl}/featured-creators`);
+                const res = await fetch(`${CONFIG.backendUrl}/all-creators`);
                 if (res.ok) { const d = await res.json(); creators = d.creators || []; }
             } catch (e) { console.warn('Browse creators fetch failed:', e); }
 
             grid.innerHTML = '';
-            for (let i = 0; i < BROWSE_SLOTS; i++) {
+
+            // Show all real creators — no slot cap
+            const totalCards = Math.max(creators.length, 6); // show at least 6 placeholder slots when empty
+            for (let i = 0; i < totalCards; i++) {
                 const card = document.createElement('div');
                 if (i < creators.length) {
                     const c = creators[i];
@@ -1314,7 +1316,6 @@
         // Initial calls
         document.addEventListener('DOMContentLoaded', () => {
             updateCalc();
-            fetchFeaturedCreators();
             fetchBrowseCreators();
             renderFavouritesBar();
             // Check for success/cancel from Stripe redirect

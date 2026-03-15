@@ -490,6 +490,232 @@
         .btn-join-live .join-price { display: block; font-size: 18px; font-weight: 900; }
         .btn-join-live .join-type { display: block; font-size: 11px; opacity: 0.75; margin-top: 2px; }
 
+        /* ── FULL-SCREEN SESSION ROOM ── */
+        .session-room {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            animation: roomEnter 0.5s ease;
+        }
+        @keyframes roomEnter {
+            from { opacity: 0; transform: scale(0.97); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .room-topbar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+        }
+        .room-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .room-creator-avatar {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+        }
+        .room-creator-name {
+            font-family: 'Cinzel', serif;
+            font-size: 15px;
+            color: var(--gold-light);
+        }
+        .room-session-badge {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .room-session-badge.truth { background: rgba(74,158,255,0.25); color: #4a9eff; border: 1px solid #4a9eff; }
+        .room-session-badge.dare  { background: rgba(255,74,110,0.25); color: #ff4a6e; border: 1px solid #ff4a6e; }
+        .room-timer {
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            font-variant-numeric: tabular-nums;
+        }
+        .btn-end-session {
+            background: rgba(204,0,0,0.8);
+            border: none;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-end-session:hover { background: rgba(204,0,0,1); }
+        /* Video area */
+        .room-video-area {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+        .room-remote-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #111;
+        }
+        .room-local-video {
+            position: absolute;
+            bottom: 80px;
+            right: 16px;
+            width: 120px;
+            height: 90px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+            background: #222;
+            z-index: 5;
+        }
+        @media (max-width: 600px) {
+            .room-local-video { width: 80px; height: 60px; bottom: 70px; }
+        }
+        /* Chat panel */
+        .room-chat-panel {
+            position: absolute;
+            top: 70px;
+            right: 0;
+            bottom: 0;
+            width: 280px;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+        }
+        .room-chat-panel.hidden { transform: translateX(100%); }
+        @media (max-width: 700px) {
+            .room-chat-panel { width: 100%; top: auto; bottom: 0; height: 220px; border-left: none; border-top: 1px solid rgba(255,255,255,0.1); }
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chat-msg {
+            font-size: 13px;
+            line-height: 1.4;
+            padding: 7px 10px;
+            border-radius: 8px;
+            max-width: 95%;
+        }
+        .chat-msg.fan {
+            background: rgba(74,158,255,0.2);
+            color: #c0d8ff;
+            align-self: flex-end;
+        }
+        .chat-msg.creator {
+            background: rgba(201,168,76,0.2);
+            color: var(--gold-light);
+            align-self: flex-start;
+        }
+        .chat-msg .msg-sender {
+            font-size: 10px;
+            font-weight: 700;
+            opacity: 0.7;
+            margin-bottom: 2px;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .chat-input {
+            flex: 1;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 13px;
+        }
+        .chat-input:focus { outline: none; border-color: var(--gold); }
+        .chat-send-btn {
+            background: var(--gold);
+            border: none;
+            color: var(--dark);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        /* Bottom controls */
+        .room-controls {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 14px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            z-index: 10;
+        }
+        .room-ctrl-btn {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .room-ctrl-btn:hover { background: rgba(255,255,255,0.22); }
+        .room-ctrl-btn.active { background: rgba(201,168,76,0.3); border-color: var(--gold); }
+        .room-ctrl-btn.muted { background: rgba(204,0,0,0.4); border-color: #cc0000; }
+        .room-waiting {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0f;
+            z-index: 3;
+            gap: 16px;
+        }
+        .room-waiting h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-light);
+            font-size: 22px;
+        }
+        .room-waiting p { color: var(--text-secondary); font-size: 14px; text-align: center; max-width: 320px; }
+        .room-waiting .pulse-ring {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            animation: pulseRing 1.5s ease-in-out infinite;
+        }
+        @keyframes pulseRing {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.5; }
+        }
+
         /* ── LOADING ── */
         .loading-state {
             text-align: center;
@@ -569,6 +795,51 @@
                 <button class="btn-modal-cancel" onclick="closeNotifyModal()">Cancel</button>
                 <button class="btn-modal-confirm" onclick="sendNotify()">Send Notification →</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Full-Screen Session Room (injected after payment) -->
+    <div class="session-room" id="sessionRoom" style="display:none;">
+        <div class="room-topbar">
+            <div class="room-topbar-left">
+                <img id="roomAvatar" src="" alt="" class="room-creator-avatar" style="display:none;">
+                <div>
+                    <div class="room-creator-name" id="roomCreatorName"></div>
+                    <span class="room-session-badge" id="roomSessionBadge"></span>
+                </div>
+            </div>
+            <div class="room-timer" id="roomTimer">00:00</div>
+            <button class="btn-end-session" onclick="endSession()">&#x2715; End Session</button>
+        </div>
+
+        <div class="room-video-area">
+            <!-- Waiting screen shown until creator connects -->
+            <div class="room-waiting" id="roomWaiting">
+                <div class="pulse-ring"></div>
+                <h2>Waiting for Creator...</h2>
+                <p id="roomWaitingText">Payment confirmed! The creator will connect with you shortly. Please keep this window open.</p>
+            </div>
+            <!-- Remote video (creator) -->
+            <video class="room-remote-video" id="roomRemoteVideo" autoplay playsinline></video>
+            <!-- Local video (fan) -->
+            <video class="room-local-video" id="roomLocalVideo" autoplay playsinline muted></video>
+
+            <!-- Chat panel -->
+            <div class="room-chat-panel" id="roomChatPanel">
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-row">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChatMsg()">
+                    <button class="chat-send-btn" onclick="sendChatMsg()">&#x27A4;</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom controls -->
+        <div class="room-controls">
+            <button class="room-ctrl-btn" id="btnMicToggle" onclick="toggleMic()" title="Toggle microphone">&#x1F3A4;</button>
+            <button class="room-ctrl-btn" id="btnCamToggle" onclick="toggleCam()" title="Toggle camera">&#x1F4F9;</button>
+            <button class="room-ctrl-btn" id="btnChatToggle" onclick="toggleChat()" title="Toggle chat">&#x1F4AC;</button>
+            <button class="room-ctrl-btn" id="btnFullscreen" onclick="toggleFullscreen()" title="Fullscreen">&#x26F6;</button>
         </div>
     </div>
 
@@ -903,8 +1174,231 @@
             if (e.target === this) closeLiveModal();
         });
 
+        // ── SESSION ROOM ──────────────────────────────────────────────────────────
+        // State
+        let sessionActive = false;
+        let sessionType = null;
+        let sessionTimerInterval = null;
+        let sessionSeconds = 0;
+        let sessionDurationSecs = 0;
+        let localStream = null;
+        let peerConnection = null;
+        let micEnabled = true;
+        let camEnabled = true;
+        let chatVisible = true;
+        const chatLog = [];
+
+        // Check URL params on load — if ?session=truth&paid=1 open the room
+        async function checkSessionParams() {
+            const params = new URLSearchParams(window.location.search);
+            const sType = params.get('session');   // 'truth' or 'dare'
+            const paid  = params.get('paid');      // '1'
+            const fanN  = params.get('fan') || 'Fan';
+            if (sType && paid === '1') {
+                // Wait for creator to load, then open room
+                await waitForCreator();
+                openSessionRoom(sType, fanN);
+                // Clean up URL without reload
+                window.history.replaceState({}, '', window.location.pathname);
+            }
+        }
+
+        function waitForCreator(retries = 20) {
+            return new Promise(resolve => {
+                const check = (n) => {
+                    if (currentCreator) { resolve(); return; }
+                    if (n <= 0) { resolve(); return; }
+                    setTimeout(() => check(n - 1), 300);
+                };
+                check(retries);
+            });
+        }
+
+        async function openSessionRoom(sType, fanName) {
+            sessionType = sType;
+            sessionDurationSecs = sType === 'truth' ? 5 * 60 : 15 * 60;
+            sessionSeconds = 0;
+
+            // Populate top bar
+            const c = currentCreator || {};
+            document.getElementById('roomCreatorName').textContent = c.name || 'Creator';
+            const badge = document.getElementById('roomSessionBadge');
+            badge.textContent = sType === 'truth' ? '🎯 Truth Session' : '🔥 Dare Session';
+            badge.className = 'room-session-badge ' + sType;
+            if (c.photo) {
+                const av = document.getElementById('roomAvatar');
+                av.src = c.photo;
+                av.style.display = 'block';
+            }
+            document.getElementById('roomWaitingText').textContent =
+                `Payment confirmed! ${c.name || 'The creator'} will connect with you shortly. Please keep this window open.`;
+
+            // Show the room
+            const room = document.getElementById('sessionRoom');
+            room.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Request mic + camera access
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('roomLocalVideo').srcObject = localStream;
+            } catch (err) {
+                // Camera/mic denied — still show the room, just without local video
+                console.warn('Media access denied:', err);
+            }
+
+            // Add welcome message in chat
+            addChatMsg('system', '', `Welcome to your ${sType} session! The creator will join shortly.`);
+
+            // Start countdown timer
+            sessionActive = true;
+            updateTimerDisplay();
+            sessionTimerInterval = setInterval(() => {
+                sessionSeconds++;
+                updateTimerDisplay();
+                if (sessionSeconds >= sessionDurationSecs) {
+                    endSession(true);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const remaining = Math.max(0, sessionDurationSecs - sessionSeconds);
+            const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+            const s = String(remaining % 60).padStart(2, '0');
+            document.getElementById('roomTimer').textContent = m + ':' + s;
+        }
+
+        function endSession(auto = false) {
+            if (!sessionActive) return;
+            sessionActive = false;
+            clearInterval(sessionTimerInterval);
+
+            // Stop local media
+            if (localStream) {
+                localStream.getTracks().forEach(t => t.stop());
+                localStream = null;
+            }
+
+            // Hide room
+            document.getElementById('sessionRoom').style.display = 'none';
+            document.body.style.overflow = '';
+
+            if (auto) {
+                showToast('⏰ Session time is up! Thank you for joining.', 'success');
+            } else {
+                showToast('Session ended. Thanks for joining!', 'success');
+            }
+        }
+
+        // ── CHAT ──────────────────────────────────────────────────────────────────
+        function addChatMsg(role, sender, text) {
+            const msgs = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-msg ' + (role === 'fan' ? 'fan' : role === 'creator' ? 'creator' : 'fan');
+            if (sender) {
+                const s = document.createElement('div');
+                s.className = 'msg-sender';
+                s.textContent = sender;
+                div.appendChild(s);
+            }
+            const t = document.createElement('div');
+            t.textContent = text;
+            div.appendChild(t);
+            msgs.appendChild(div);
+            msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        function sendChatMsg() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            addChatMsg('fan', 'You', text);
+            input.value = '';
+            chatLog.push({ role: 'fan', text });
+        }
+
+        // ── CONTROLS ──────────────────────────────────────────────────────────────
+        function toggleMic() {
+            if (!localStream) return;
+            micEnabled = !micEnabled;
+            localStream.getAudioTracks().forEach(t => { t.enabled = micEnabled; });
+            const btn = document.getElementById('btnMicToggle');
+            btn.classList.toggle('muted', !micEnabled);
+            btn.title = micEnabled ? 'Mute microphone' : 'Unmute microphone';
+        }
+
+        function toggleCam() {
+            if (!localStream) return;
+            camEnabled = !camEnabled;
+            localStream.getVideoTracks().forEach(t => { t.enabled = camEnabled; });
+            const btn = document.getElementById('btnCamToggle');
+            btn.classList.toggle('muted', !camEnabled);
+            btn.title = camEnabled ? 'Turn off camera' : 'Turn on camera';
+        }
+
+        function toggleChat() {
+            chatVisible = !chatVisible;
+            document.getElementById('roomChatPanel').classList.toggle('hidden', !chatVisible);
+            document.getElementById('btnChatToggle').classList.toggle('active', chatVisible);
+        }
+
+        function toggleFullscreen() {
+            const room = document.getElementById('sessionRoom');
+            if (!document.fullscreenElement) {
+                room.requestFullscreen().catch(err => console.warn('Fullscreen error:', err));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // ── UPDATE CHECKOUT SUCCESS URL ──────────────────────────────────────────
+        // Override submitLiveJoin and submitBooking to use creator profile as success URL
+        const _origSubmitLiveJoin = submitLiveJoin;
+        async function submitLiveJoin() {
+            const fanName = document.getElementById('liveFanName').value.trim();
+            const fanEmail = document.getElementById('liveFanEmail').value.trim();
+            if (!fanName) { showToast('Please enter your name.', 'error'); return; }
+            if (!fanEmail) { showToast('Please enter your email.', 'error'); return; }
+
+            const btn = document.getElementById('confirmLiveBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            try {
+                const now = new Date();
+                const handle = currentCreator.handle;
+                const successUrl = `${window.location.origin}/creator/${handle}?session=${pendingSessionType}&paid=1&fan=${encodeURIComponent(fanName)}`;
+                const cancelUrl  = `${window.location.origin}/creator/${handle}`;
+
+                const res = await fetch(`${CONFIG.backendUrl}/create-checkout-session`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        selectedCard: pendingSessionType,
+                        creatorName: currentCreator.name,
+                        creatorStripeAccountId: currentCreator.stripeAccountId || null,
+                        fanName,
+                        fanEmail,
+                        bookingDate: now.toISOString().split('T')[0],
+                        bookingTime: 'LIVE NOW',
+                        note: 'Instant live session',
+                        successUrl,
+                        cancelUrl,
+                    }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Payment setup failed.');
+                window.location.href = data.url;
+            } catch (e) {
+                showToast('Could not start session: ' + e.message, 'error');
+                btn.disabled = false;
+                btn.textContent = 'Pay & Join Now →';
+            }
+        }
+
         // Load on page start
-        loadCreator();
+        loadCreator().then(() => checkSessionParams());
     </script>
 </body>
 </html>

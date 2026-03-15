@@ -242,23 +242,7 @@
                 </div>
             </div>
 
-            <!-- Featured Section -->
-            <div class="section-card">
-                <h2>⭐ Get Featured (Optional)</h2>
-                <div class="featured-box">
-                    <p>Opt in to appear in one of the <strong style="color:var(--gold);">12 featured creator slots</strong> on the homepage. This is completely optional — you can opt out at any time. Once you submit, your profile goes to the admin for approval before it goes live.</p>
-                    <div class="featured-toggle-row">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="featured-toggle" onchange="handleFeaturedToggle(this.checked)">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span id="featured-toggle-label">Not featured — toggle to apply</span>
-                    </div>
-                    <div class="featured-status pending" id="featured-status-box">
-                        ⏳ Your application is pending admin approval. We'll notify you when it's approved!
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Danger Zone -->
             <div class="section-card" style="border-color: rgba(204,0,0,0.4);">
@@ -266,7 +250,7 @@
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-top:12px;">
                     <div>
                         <div style="font-size:14px; color:var(--cream); font-weight:600; margin-bottom:4px;">Close My Account</div>
-                        <div style="font-size:12px; color:var(--text-dim);">Permanently deletes your profile, sessions, and featured listing. This cannot be undone.</div>
+                        <div style="font-size:12px; color:var(--text-dim);">Permanently deletes your profile and all sessions. This cannot be undone.</div>
                     </div>
                     <button onclick="confirmDeleteAccount()" style="background:transparent; border:1.5px solid rgba(204,0,0,0.6); color:#FF6B6B; padding:9px 20px; border-radius:6px; font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all 0.2s;" onmouseover="this.style.background='rgba(204,0,0,0.15)'" onmouseout="this.style.background='transparent'">Delete Account</button>
                 </div>
@@ -353,7 +337,6 @@
                 creatorProfile = user;
                 renderProfile(user);
                 renderAvailability(user.isLive);
-                renderFeatured(user.featuredRequested);
                 if (earnings) renderEarnings(earnings);
                 if (stripeStatus) renderStripeStatus(stripeStatus);
                 if (sessionsData) renderSessions(sessionsData.sessions);
@@ -551,65 +534,6 @@
             `;
         }
 
-        // ── FEATURED ──────────────────────────────────────────────────────────
-        function renderFeatured(featuredRequested) {
-            const toggle = document.getElementById('featured-toggle');
-            const label = document.getElementById('featured-toggle-label');
-            const statusBox = document.getElementById('featured-status-box');
-            toggle.checked = featuredRequested;
-            if (featuredRequested) {
-                label.textContent = 'Featured application submitted';
-                statusBox.style.display = 'block';
-            } else {
-                label.textContent = 'Not featured — toggle to apply';
-                statusBox.style.display = 'none';
-            }
-        }
-
-        async function handleFeaturedToggle(checked) {
-            if (checked) {
-                // Submit feature request
-                try {
-                    const res = await fetch(`${BACKEND}/creator/feature-request`, {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            bio: document.getElementById('profile-bio').value.trim(),
-                            photo: creatorProfile.photo,
-                        }),
-                    });
-                    const data = await res.json();
-                    if (res.ok) {
-                        showToast('⭐ Feature request submitted! Pending admin approval.', 'success');
-                        renderFeatured(true);
-                    } else {
-                        showToast(data.error || 'Failed to submit.', 'error');
-                        document.getElementById('featured-toggle').checked = false;
-                    }
-                } catch (err) {
-                    showToast('Network error.', 'error');
-                    document.getElementById('featured-toggle').checked = false;
-                }
-            } else {
-                // Remove from featured
-                try {
-                    const res = await fetch(`${BACKEND}/creator/feature-request`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `Bearer ${authToken}` },
-                    });
-                    if (res.ok) {
-                        showToast('Removed from featured.', 'info');
-                        renderFeatured(false);
-                    } else {
-                        showToast('Failed to remove.', 'error');
-                        document.getElementById('featured-toggle').checked = true;
-                    }
-                } catch (err) {
-                    showToast('Network error.', 'error');
-                    document.getElementById('featured-toggle').checked = true;
-                }
-            }
-        }
 
         // ── TOAST ─────────────────────────────────────────────────────────────
         function showToast(message, type = 'info') {
