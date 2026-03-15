@@ -329,20 +329,7 @@
         .creator-notify-options label { font-size: 15px; color: var(--text); }
         #handleInput { margin-top: 10px; display: none; } /* Hidden by default */
 
-        /* --- SESSION ROOMS --- */
-        .session-rooms-section { margin-top: 60px; text-align: center; }
-        .session-rooms-section h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--cream); margin-bottom: 30px; }
-        .room-cards { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
-        .room-card { background: var(--panel); border: 1px solid var(--gold-dim); border-radius: 8px; padding: 30px; width: 100%; max-width: 450px; text-align: left; position: relative; }
-        .room-card h3 { font-size: 24px; color: var(--gold-light); margin-bottom: 10px; }
-        .room-card .duration { font-size: 16px; color: var(--text); margin-bottom: 15px; }
-        .room-card .features { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
-        .room-card .feature { background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 4px; font-size: 13px; color: var(--gold-light); }
-        .room-card .chat-box { background: rgba(0,0,0,0.2); border: 1px solid var(--gold-dim); border-radius: 4px; height: 120px; overflow-y: scroll; padding: 10px; margin-top: 20px; font-size: 14px; color: var(--cream); }
-        .room-card .chat-input-group { display: flex; margin-top: 10px; }
-        .room-card .chat-input-group input { flex-grow: 1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid var(--gold-dim); border-radius: 4px 0 0 4px; color: var(--cream); }
-        .room-card .chat-input-group button { background: var(--gold); color: var(--dark); border: none; padding: 8px 15px; border-radius: 0 4px 4px 0; cursor: pointer; }
-        .room-card .live-badge { position: absolute; top: 15px; right: 15px; background: var(--red); color: #fff; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+
 
         /* --- FEATURED CREATORS --- */
         .featured-creators-section { margin-top: 60px; text-align: center; }
@@ -421,8 +408,6 @@
             .challenge-form { padding: 20px; }
             .challenge-form .btn-notify { margin-left: 0; margin-top: 15px; }
             .subscribe-cards { flex-direction: column; align-items: center; }
-            .room-cards { flex-direction: column; align-items: center; }
-            .room-card { max-width: 100%; }
             .creator-grid { flex-direction: column; align-items: center; }
         }
     </style>
@@ -565,43 +550,7 @@
             </div>
         </section>
 
-        <section class="session-rooms-section">
-            <h2>🎮 Session Rooms</h2>
-            <p style="font-size: 15px; color: var(--text); margin-bottom: 30px;">Rooms activate after payment is confirmed — powered by Agora.io</p>
-            <div class="room-cards">
-                <div class="room-card">
-                    <h3>🤔 Truth Room</h3>
-                    <p class="duration">5 min · Live Audio + Video</p>
-                    <p style="font-size: 14px; color: var(--cream); margin-top: 20px;">📹 Video + 🎤 2-Way Audio + 💬 Chat<br>Both creator and fan on mic · creator on camera</p>
-                    <div class="chat-box">Chat appears here during your session...</div>
-                    <div class="chat-input-group">
-                        <input type="text" id="truth-chat-input" placeholder="Type a message...">
-                        <button>Send</button>
-                    </div>
-                    <div class="features">
-                        <span class="feature">📹 Video: 1-way</span>
-                        <span class="feature">🎤 Audio: 2-way</span>
-                        <span class="feature">💬 Chat: 2-way</span>
-                    </div>
-                </div>
-                <div class="room-card">
-                    <h3>🔥 Dare Room</h3>
-                    <p class="duration">15 min · Live Audio + Video</p>
-                    <span class="live-badge">● LIVE</span>
-                    <p style="font-size: 14px; color: var(--cream); margin-top: 20px;">📹 Video + 🎤 2-Way Audio + 💬 Chat<br>Both creator and fan on mic · creator on camera</p>
-                    <div class="chat-box">Chat with the creator during the dare...</div>
-                    <div class="chat-input-group">
-                        <input type="text" id="dare-chat-input" placeholder="Type a message...">
-                        <button>Send</button>
-                    </div>
-                    <div class="features">
-                        <span class="feature">📹 Video: 1-way</span>
-                        <span class="feature">🎤 Audio: 2-way</span>
-                        <span class="feature">💬 Chat: 2-way</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+
 
 
 
