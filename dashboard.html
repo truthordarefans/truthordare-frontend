@@ -223,8 +223,9 @@
                                 <input type="text" id="profile-name" placeholder="Your name">
                             </div>
                             <div class="field-group">
-                                <label>Your Handle <span style="font-size:11px;color:var(--text-dim);font-weight:400;">(auto-set from your name)</span></label>
-                                <input type="text" id="profile-handle" placeholder="yourname@truthordare" style="opacity:0.7;cursor:default;" readonly title="Handle is automatically set from your display name">
+                                <label>Your Handle <span style="font-size:11px;color:var(--text-dim);font-weight:400;">— fans will find you at <strong>yourname@truthordare</strong></span></label>
+                                <input type="text" id="profile-handle" placeholder="yourname@truthordare" title="Customise your handle — must end with @truthordare">
+                                <small style="color:var(--text-dim);font-size:11px;margin-top:4px;display:block;">You can change the part before @truthordare. e.g. <em>zara@truthordare</em></small>
                             </div>
                         </div>
                         <div class="field-group">
@@ -416,9 +417,17 @@
             const btn = document.getElementById('save-profile-btn');
             btn.disabled = true;
             btn.textContent = 'Saving...';
+            let handle = document.getElementById('profile-handle').value.trim();
+            // Ensure handle ends with @truthordare
+            if (handle && !handle.endsWith('@truthordare')) {
+                // Strip any existing @truthordare suffix variants and re-append
+                handle = handle.replace(/@truthordare$/i, '').replace(/@+$/, '').trim();
+                handle = handle + '@truthordare';
+                document.getElementById('profile-handle').value = handle;
+            }
             const payload = {
                 name: document.getElementById('profile-name').value.trim(),
-                handle: document.getElementById('profile-handle').value.trim(),
+                handle: handle,
                 bio: document.getElementById('profile-bio').value.trim(),
             };
             if (pendingPhotoBase64) payload.photo = pendingPhotoBase64;
