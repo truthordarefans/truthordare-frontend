@@ -1053,7 +1053,7 @@
             grid.innerHTML = '';
 
             // Show all real creators — no slot cap
-            const totalCards = Math.max(creators.length, 6); // show at least 6 placeholder slots when empty
+            const totalCards = Math.max(creators.length, 24); // show at least 24 placeholder slots when empty
             for (let i = 0; i < totalCards; i++) {
                 const card = document.createElement('div');
                 if (i < creators.length) {
