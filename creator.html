@@ -241,6 +241,18 @@
             transition: transform 0.2s, border-color 0.2s;
         }
         .extra-photo-img:hover { transform: scale(1.02); border-color: var(--gold); }
+        .extra-photo-placeholder {
+            width: 100%;
+            aspect-ratio: 3/4;
+            border-radius: 10px;
+            border: 2px dashed rgba(201,168,76,0.2);
+            background: rgba(255,255,255,0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(201,168,76,0.2);
+            font-size: 28px;
+        }
 
         /* ── NOTIFY BUTTON ── */
         .notify-section {
@@ -953,14 +965,18 @@
                     </div>
                 </div>` : '';
 
-            // Build extra photos HTML (only show filled slots)
-            const extraPhotos = (c.extraPhotos || []).filter(p => p && p.trim());
-            const extraPhotosHtml = extraPhotos.length > 0 ? `
+            // Always show 4 slots — filled photos or subtle placeholders
+            const extraPhotos = c.extraPhotos || [];
+            const slots = [0,1,2,3].map(i => {
+                const p = extraPhotos[i] && extraPhotos[i].trim();
+                return p
+                    ? `<img src="${p}" alt="${escHtml(c.name)} photo ${i+2}" class="extra-photo-img" loading="lazy">`
+                    : `<div class="extra-photo-placeholder">+</div>`;
+            }).join('');
+            const extraPhotosHtml = `
                 <div class="extra-photos-section">
-                    <div class="extra-photos-grid">
-                        ${extraPhotos.map((p, i) => `<img src="${p}" alt="${escHtml(c.name)} photo ${i+2}" class="extra-photo-img" loading="lazy">`).join('')}
-                    </div>
-                </div>` : '';
+                    <div class="extra-photos-grid">${slots}</div>
+                </div>`;
 
             document.getElementById('profile-root').innerHTML = `
                 <div class="profile-hero">
