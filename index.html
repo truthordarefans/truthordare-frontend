@@ -514,8 +514,8 @@
                 <div class="subscribe-card">
                     <h3>🎉 For Fans</h3>
                     <p>Subscribe free to get notified when your favorite creator goes live for a Truth or Dare session.</p>
-                    <input type="text" id="fanSubName" placeholder="Your name or nickname">
-                    <input type="email" id="fanSubEmail" placeholder="Your email address">
+                    <input type="text" id="fanSubName" placeholder="Your name or nickname" autocomplete="off">
+                    <input type="email" id="fanSubEmail" placeholder="Your email address" autocomplete="off">
                     <input type="text" id="fanSubHandle" placeholder="Favorite creator's handle (optional)">
                     <div class="checkbox-group">
                         <input type="checkbox" id="fanAgeCheck">
@@ -528,11 +528,11 @@
                     <p>Sign up free and get your own profile page instantly. Earn 85% of every session paid directly to your Stripe account.</p>
 
                     <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;">Stage / Display Name <span style="color:#ff6b6b;">*</span></label>
-                    <input type="text" id="creatorSubName" placeholder="e.g. Jessica Wild, Zara, MissDare..." oninput="updateHandlePreview()" style="margin-bottom:4px;">
+                    <input type="text" id="creatorSubName" placeholder="e.g. Jessica Wild, Zara, MissDare..." oninput="updateHandlePreview()" autocomplete="off" style="margin-bottom:4px;">
                     <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">This is the name fans will see on your profile card.</p>
 
                     <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;">Legal Name (private) <span style="color:#ff6b6b;">*</span></label>
-                    <input type="text" id="creatorLegalName" placeholder="Your real name — only used for Stripe payouts" style="margin-bottom:4px;">
+                    <input type="text" id="creatorLegalName" placeholder="Your real name — only used for Stripe payouts" autocomplete="off" style="margin-bottom:4px;">
                     <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">Never shown publicly. Required by Stripe to send you money.</p>
 
                     <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:block;">Your Platform Handle</label>
@@ -544,11 +544,11 @@
                     <input type="hidden" id="creatorPlatformHandle">
 
                     <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;margin-top:14px;">Email Address <span style="color:#ff6b6b;">*</span></label>
-                    <input type="email" id="creatorSubEmail" placeholder="you@example.com" style="margin-bottom:4px;">
+                    <input type="email" id="creatorSubEmail" placeholder="you@example.com" autocomplete="off" style="margin-bottom:4px;">
                     <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">Used to log in and receive booking notifications.</p>
 
                     <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;">Password <span style="color:#ff6b6b;">*</span></label>
-                    <input type="password" id="creatorPassword" placeholder="At least 8 characters" style="margin-bottom:4px;">
+                    <input type="password" id="creatorPassword" placeholder="At least 8 characters" autocomplete="new-password" style="margin-bottom:4px;">
                     <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">Minimum 8 characters. Keep it safe!</p>
                     <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light); font-size: 13px;">Your social handles (optional — shown on your profile page):</p>
                     <input type="text" id="creatorInstagram" placeholder="Instagram handle (e.g. @yourname)">
