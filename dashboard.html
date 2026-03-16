@@ -85,18 +85,18 @@
         .section-card h2 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--cream); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--gold-dim); }
 
         /* PROFILE SECTION */
-        .profile-grid { display: grid; grid-template-columns: 120px 1fr; gap: 24px; align-items: start; }
-        @media (max-width: 600px) { .profile-grid { grid-template-columns: 1fr; } }
+        .profile-grid { display: grid; grid-template-columns: 240px 1fr; gap: 28px; align-items: start; }
+        @media (max-width: 700px) { .profile-grid { grid-template-columns: 1fr; } }
         .avatar-upload { text-align: center; }
-        .avatar-circle { width: 100px; height: 100px; border-radius: 50%; background: var(--gold-dim); margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; font-size: 36px; overflow: hidden; border: 2px solid var(--gold-dim); cursor: pointer; transition: all 0.2s; }
-        .avatar-circle:hover { border-color: var(--gold); }
+        .avatar-circle { width: 220px; height: 220px; border-radius: 10px; background: var(--gold-dim); margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; font-size: 64px; overflow: hidden; border: 2px solid var(--gold-dim); cursor: pointer; transition: all 0.2s; }
+        .avatar-circle:hover { border-color: var(--gold); box-shadow: 0 0 18px rgba(212,165,116,0.3); }
         .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-upload label { font-size: 11px; color: var(--gold); cursor: pointer; text-decoration: underline; }
+        .avatar-upload label { font-size: 12px; color: var(--gold); cursor: pointer; text-decoration: underline; display: block; margin-top: 6px; }
         .profile-fields { display: flex; flex-direction: column; gap: 14px; }
         .field-group label { display: block; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
         .field-group input, .field-group textarea { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--gold-dim); border-radius: 4px; color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 14px; transition: border-color 0.2s; }
         .field-group input:focus, .field-group textarea:focus { outline: none; border-color: var(--gold); }
-        .field-group textarea { resize: vertical; min-height: 80px; }
+        .field-group textarea { resize: vertical; min-height: 140px; font-size: 14px; line-height: 1.6; }
         .save-btn { background: var(--gold); color: var(--dark); border: none; padding: 10px 24px; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 4px; }
         .save-btn:hover { background: var(--gold-light); }
         .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -136,6 +136,16 @@
         .featured-status { font-size: 13px; padding: 8px 14px; border-radius: 4px; margin-top: 8px; display: none; }
         .featured-status.pending { background: rgba(234,179,8,0.15); color: #fbbf24; border: 1px solid rgba(234,179,8,0.3); }
         .featured-status.approved { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+
+        /* EXTRA PHOTOS */
+        .extra-photo-slot { text-align: center; cursor: pointer; }
+        .extra-photo-inner { width: 100%; aspect-ratio: 3/4; background: rgba(0,0,0,0.3); border: 2px dashed var(--gold-dim); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--gold-dim); overflow: hidden; transition: all 0.2s; }
+        .extra-photo-inner:hover { border-color: var(--gold); color: var(--gold); }
+        .extra-photo-inner img { width: 100%; height: 100%; object-fit: cover; }
+        .extra-photo-label { font-size: 11px; color: var(--text-dim); margin-top: 5px; }
+        .extra-photo-remove { background: transparent; border: 1px solid rgba(204,0,0,0.4); color: #FF6B6B; font-size: 11px; padding: 3px 8px; border-radius: 4px; cursor: pointer; margin-top: 4px; font-family: 'DM Sans', sans-serif; }
+        .extra-photo-remove:hover { background: rgba(204,0,0,0.15); }
+        @media (max-width: 600px) { .extra-photos-grid { grid-template-columns: repeat(2, 1fr) !important; } }
 
         /* TOAST */
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -232,10 +242,52 @@
                             <label>Short Bio</label>
                             <textarea id="profile-bio" placeholder="Tell fans a little about yourself (max 160 characters)" maxlength="160"></textarea>
                         </div>
+                        <div class="field-group">
+                            <label style="margin-bottom:8px;display:block;">Social Handles <span style="font-size:11px;color:var(--text-dim);font-weight:400;">— optional, shown on your profile page</span></label>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                                <input type="text" id="social-instagram" placeholder="Instagram @yourname" style="padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:4px;color:var(--cream);font-size:13px;font-family:'DM Sans',sans-serif;">
+                                <input type="text" id="social-onlyfans" placeholder="OnlyFans @yourname" style="padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:4px;color:var(--cream);font-size:13px;font-family:'DM Sans',sans-serif;">
+                                <input type="text" id="social-fansly" placeholder="Fansly @yourname" style="padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:4px;color:var(--cream);font-size:13px;font-family:'DM Sans',sans-serif;">
+                                <input type="text" id="social-fansvue" placeholder="FansVue @yourname" style="padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:4px;color:var(--cream);font-size:13px;font-family:'DM Sans',sans-serif;">
+                                <input type="text" id="social-luvelyfans" placeholder="LuvlyFans @yourname" style="padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:4px;color:var(--cream);font-size:13px;font-family:'DM Sans',sans-serif;">
+                                <input type="text" id="social-tiktok" placeholder="TikTok @yourname" style="padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:4px;color:var(--cream);font-size:13px;font-family:'DM Sans',sans-serif;">
+                            </div>
+                        </div>
                         <div>
                             <button class="save-btn" id="save-profile-btn" onclick="saveProfile()">Save Profile</button>
                         </div>
                     </div>
+                </div>
+                <!-- Extra Photos -->
+                <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gold-dim);">
+                    <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;">📸 <strong style="color:var(--cream);">Extra Photos</strong> <span style="font-size:11px;">— up to 4 optional portrait photos shown on your profile page (3:4 format recommended)</span></div>
+                    <div class="extra-photos-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+                        <div class="extra-photo-slot" onclick="document.getElementById('extra-photo-input-0').click()">
+                            <div class="extra-photo-inner" id="extra-photo-preview-0"><span>+</span></div>
+                            <input type="file" id="extra-photo-input-0" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleExtraPhoto(this,0)">
+                            <div class="extra-photo-label">Photo 1</div>
+                            <button class="extra-photo-remove" id="extra-remove-0" onclick="removeExtraPhoto(event,0)" style="display:none;">✕ Remove</button>
+                        </div>
+                        <div class="extra-photo-slot" onclick="document.getElementById('extra-photo-input-1').click()">
+                            <div class="extra-photo-inner" id="extra-photo-preview-1"><span>+</span></div>
+                            <input type="file" id="extra-photo-input-1" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleExtraPhoto(this,1)">
+                            <div class="extra-photo-label">Photo 2</div>
+                            <button class="extra-photo-remove" id="extra-remove-1" onclick="removeExtraPhoto(event,1)" style="display:none;">✕ Remove</button>
+                        </div>
+                        <div class="extra-photo-slot" onclick="document.getElementById('extra-photo-input-2').click()">
+                            <div class="extra-photo-inner" id="extra-photo-preview-2"><span>+</span></div>
+                            <input type="file" id="extra-photo-input-2" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleExtraPhoto(this,2)">
+                            <div class="extra-photo-label">Photo 3</div>
+                            <button class="extra-photo-remove" id="extra-remove-2" onclick="removeExtraPhoto(event,2)" style="display:none;">✕ Remove</button>
+                        </div>
+                        <div class="extra-photo-slot" onclick="document.getElementById('extra-photo-input-3').click()">
+                            <div class="extra-photo-inner" id="extra-photo-preview-3"><span>+</span></div>
+                            <input type="file" id="extra-photo-input-3" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleExtraPhoto(this,3)">
+                            <div class="extra-photo-label">Photo 4</div>
+                            <button class="extra-photo-remove" id="extra-remove-3" onclick="removeExtraPhoto(event,3)" style="display:none;">✕ Remove</button>
+                        </div>
+                    </div>
+                    <div style="font-size:10px;color:var(--text-dim);margin-top:8px;">JPG, PNG, WebP · Max 2 MB each · Empty slots are hidden from fans · Click Save Profile to apply changes</div>
                 </div>
             </div>
 
@@ -297,6 +349,8 @@
         let authToken = null;
         let creatorProfile = null;
         let pendingPhotoBase64 = null;
+        let pendingExtraPhotos = [null, null, null, null]; // pending new uploads
+        let currentExtraPhotos = ['', '', '', '']; // current saved photos (base64 or url)
 
         // ── AUTH ──────────────────────────────────────────────────────────────
         function getToken() {
@@ -397,6 +451,54 @@
                 const preview = document.getElementById('avatar-preview');
                 preview.innerHTML = `<img src="${user.photo}" alt="Profile photo">`;
             }
+            // Populate social handles if present
+            const s = user.socials || {};
+            document.getElementById('social-instagram').value = s.instagram || '';
+            document.getElementById('social-onlyfans').value = s.onlyfans || '';
+            document.getElementById('social-fansly').value = s.fansly || '';
+            document.getElementById('social-fansvue').value = s.fansvue || '';
+            document.getElementById('social-luvelyfans').value = s.luvelyfans || '';
+            document.getElementById('social-tiktok').value = s.tiktok || '';
+            // Populate extra photos
+            const extras = user.extraPhotos || [];
+            for (let i = 0; i < 4; i++) {
+                currentExtraPhotos[i] = extras[i] || '';
+                pendingExtraPhotos[i] = null;
+                const preview = document.getElementById(`extra-photo-preview-${i}`);
+                const removeBtn = document.getElementById(`extra-remove-${i}`);
+                if (extras[i]) {
+                    preview.innerHTML = `<img src="${extras[i]}" alt="Extra photo ${i+1}">`;
+                    removeBtn.style.display = 'inline-block';
+                } else {
+                    preview.innerHTML = '<span>+</span>';
+                    removeBtn.style.display = 'none';
+                }
+            }
+        }
+        function handleExtraPhoto(input, index) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) { showToast('Photo must be under 2MB.', 'error'); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                pendingExtraPhotos[index] = e.target.result;
+                const preview = document.getElementById(`extra-photo-preview-${index}`);
+                preview.innerHTML = `<img src="${e.target.result}" alt="Extra photo ${index+1}">`;
+                document.getElementById(`extra-remove-${index}`).style.display = 'inline-block';
+                showToast(`Photo ${index+1} selected. Click "Save Profile" to apply.`, 'info');
+            };
+            reader.readAsDataURL(file);
+        }
+        function removeExtraPhoto(event, index) {
+            event.stopPropagation();
+            pendingExtraPhotos[index] = null;
+            currentExtraPhotos[index] = '';
+            const preview = document.getElementById(`extra-photo-preview-${index}`);
+            preview.innerHTML = '<span>+</span>';
+            document.getElementById(`extra-remove-${index}`).style.display = 'none';
+            // Clear file input
+            const fileInput = document.getElementById(`extra-photo-input-${index}`);
+            fileInput.value = '';
         }
 
         function handlePhotoUpload(input) {
@@ -429,8 +531,27 @@
                 name: document.getElementById('profile-name').value.trim(),
                 handle: handle,
                 bio: document.getElementById('profile-bio').value.trim(),
+                socials: {
+                    instagram: document.getElementById('social-instagram').value.trim(),
+                    onlyfans: document.getElementById('social-onlyfans').value.trim(),
+                    fansly: document.getElementById('social-fansly').value.trim(),
+                    fansvue: document.getElementById('social-fansvue').value.trim(),
+                    luvelyfans: document.getElementById('social-luvelyfans').value.trim(),
+                    tiktok: document.getElementById('social-tiktok').value.trim(),
+                },
             };
             if (pendingPhotoBase64) payload.photo = pendingPhotoBase64;
+            // Build extra photos array: use pending if set, else keep current
+            const extraPhotosPayload = [];
+            for (let i = 0; i < 4; i++) {
+                if (pendingExtraPhotos[i] !== null) {
+                    extraPhotosPayload.push(pendingExtraPhotos[i]);
+                } else {
+                    extraPhotosPayload.push(currentExtraPhotos[i] || '');
+                }
+            }
+            // Filter trailing empty strings but keep structure
+            payload.extraPhotos = extraPhotosPayload.map(p => p || '');
             try {
                 const res = await fetch(`${BACKEND}/creator/profile`, {
                     method: 'PUT',
@@ -441,6 +562,11 @@
                 if (res.ok) {
                     showToast('Profile saved!', 'success');
                     pendingPhotoBase64 = null;
+                    // Update currentExtraPhotos and clear pending
+                    for (let i = 0; i < 4; i++) {
+                        if (pendingExtraPhotos[i] !== null) currentExtraPhotos[i] = pendingExtraPhotos[i];
+                        pendingExtraPhotos[i] = null;
+                    }
                 } else {
                     showToast(data.error || 'Failed to save profile.', 'error');
                 }
