@@ -1112,23 +1112,124 @@
 
         // ── FAN LOGIN PROMPT ───────────────────────────────────────────────────
         function showLoginPrompt() {
-            const existing = document.getElementById('fan-login-prompt');
+            openFanModal('login');
+        }
+
+        // ── FAN MODAL (login + signup tabs) ──────────────────────────────────────
+        function openFanModal(tab) {
+            const existing = document.getElementById('fan-modal');
             if (existing) existing.remove();
             const overlay = document.createElement('div');
-            overlay.id = 'fan-login-prompt';
-            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            overlay.id = 'fan-modal';
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
             overlay.innerHTML = `
-                <div style="background:#1a1a2e;border:1px solid rgba(212,165,116,0.35);border-radius:14px;padding:40px 36px;max-width:420px;width:100%;text-align:center;position:relative;">
-                    <button onclick="document.getElementById('fan-login-prompt').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#888;font-size:22px;cursor:pointer;">✕</button>
-                    <div style="font-size:40px;margin-bottom:12px;">👤</div>
-                    <h2 style="font-family:'Playfair Display',serif;color:#F5EDD6;font-size:22px;margin-bottom:8px;">Sign in to Book</h2>
-                    <p style="font-size:14px;color:#888;margin-bottom:24px;">You need a free fan account to book a session.</p>
-                    <a href="/#fan-login" onclick="document.getElementById('fan-login-prompt').remove()" style="display:block;background:linear-gradient(135deg,#D4A574,#c49060);color:#0d0d1a;padding:13px;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none;margin-bottom:10px;">Log In →</a>
-                    <a href="/#subscribe" onclick="document.getElementById('fan-login-prompt').remove()" style="display:block;background:rgba(212,165,116,0.1);color:#D4A574;border:1px solid rgba(212,165,116,0.3);padding:12px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;">Create Free Account →</a>
+                <div style="background:#12122a;border:1px solid rgba(212,165,116,0.35);border-radius:16px;max-width:440px;width:100%;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.8);overflow:hidden;">
+                    <button onclick="document.getElementById('fan-modal').remove()" style="position:absolute;top:14px;right:16px;background:none;border:none;color:#888;font-size:22px;cursor:pointer;z-index:2;line-height:1;">&#x2715;</button>
+                    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <button id="tab-login" onclick="switchFanTab('login')" style="flex:1;padding:18px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Log In</button>
+                        <button id="tab-signup" onclick="switchFanTab('signup')" style="flex:1;padding:18px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Create Account</button>
+                    </div>
+                    <div id="fan-panel-login" style="padding:32px 36px;">
+                        <p style="font-size:13px;color:#888;margin-bottom:22px;">Welcome back. Access your bookings and sessions.</p>
+                        <label style="font-size:11px;color:#D4A574;text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:5px;">Email Address</label>
+                        <input id="fml-email" type="email" placeholder="you@example.com" style="width:100%;padding:13px 15px;margin-bottom:16px;background:rgba(0,0,0,0.35);border:1.5px solid rgba(212,165,116,0.25);border-radius:7px;color:#F5EDD6;font-size:15px;outline:none;font-family:'DM Sans',sans-serif;">
+                        <label style="font-size:11px;color:#D4A574;text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:5px;">Password</label>
+                        <input id="fml-password" type="password" placeholder="Your password" style="width:100%;padding:13px 15px;margin-bottom:22px;background:rgba(0,0,0,0.35);border:1.5px solid rgba(212,165,116,0.25);border-radius:7px;color:#F5EDD6;font-size:15px;outline:none;font-family:'DM Sans',sans-serif;">
+                        <button id="fml-btn" onclick="handleFanLogin()" style="width:100%;padding:15px;background:linear-gradient(135deg,#D4A574,#c49060);color:#0d0d1a;border:none;border-radius:8px;font-size:16px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;">LOG IN &#x2192;</button>
+                        <p style="text-align:center;margin-top:14px;font-size:13px;"><a href="/reset-password" style="color:#888;text-decoration:none;">Forgot password?</a></p>
+                    </div>
+                    <div id="fan-panel-signup" style="padding:32px 36px;display:none;">
+                        <p style="font-size:13px;color:#888;margin-bottom:22px;">Free forever. Book sessions, track history, get notified.</p>
+                        <label style="font-size:11px;color:#D4A574;text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:5px;">Your Name or Nickname</label>
+                        <input id="fms-name" type="text" placeholder="e.g. Alex, BigFan99..." style="width:100%;padding:13px 15px;margin-bottom:14px;background:rgba(0,0,0,0.35);border:1.5px solid rgba(212,165,116,0.25);border-radius:7px;color:#F5EDD6;font-size:15px;outline:none;font-family:'DM Sans',sans-serif;">
+                        <label style="font-size:11px;color:#D4A574;text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:5px;">Email Address</label>
+                        <input id="fms-email" type="email" placeholder="you@example.com" style="width:100%;padding:13px 15px;margin-bottom:14px;background:rgba(0,0,0,0.35);border:1.5px solid rgba(212,165,116,0.25);border-radius:7px;color:#F5EDD6;font-size:15px;outline:none;font-family:'DM Sans',sans-serif;">
+                        <label style="font-size:11px;color:#D4A574;text-transform:uppercase;letter-spacing:0.8px;display:block;margin-bottom:5px;">Password</label>
+                        <input id="fms-password" type="password" placeholder="Minimum 6 characters" style="width:100%;padding:13px 15px;margin-bottom:14px;background:rgba(0,0,0,0.35);border:1.5px solid rgba(212,165,116,0.25);border-radius:7px;color:#F5EDD6;font-size:15px;outline:none;font-family:'DM Sans',sans-serif;">
+                        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;">
+                            <input id="fms-age" type="checkbox" style="margin-top:3px;accent-color:#D4A574;width:16px;height:16px;flex-shrink:0;">
+                            <label for="fms-age" style="font-size:12px;color:#888;line-height:1.5;cursor:pointer;">I confirm I am 18 or older and agree to the <a href="/terms" style="color:#D4A574;text-decoration:none;">Terms</a> &amp; Community Guidelines.</label>
+                        </div>
+                        <button id="fms-btn" onclick="handleFanSignup()" style="width:100%;padding:15px;background:linear-gradient(135deg,#D4A574,#c49060);color:#0d0d1a;border:none;border-radius:8px;font-size:16px;font-weight:900;cursor:pointer;font-family:'DM Sans',sans-serif;">CREATE FREE ACCOUNT &#x2192;</button>
+                    </div>
                 </div>
             `;
-            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
             document.body.appendChild(overlay);
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+            switchFanTab(tab || 'login');
+        }
+
+        function switchFanTab(tab) {
+            const loginPanel = document.getElementById('fan-panel-login');
+            const signupPanel = document.getElementById('fan-panel-signup');
+            const loginTab = document.getElementById('tab-login');
+            const signupTab = document.getElementById('tab-signup');
+            if (!loginPanel) return;
+            if (tab === 'login') {
+                loginPanel.style.display = 'block'; signupPanel.style.display = 'none';
+                loginTab.style.color = '#D4A574'; loginTab.style.borderBottom = '2px solid #D4A574';
+                signupTab.style.color = '#666'; signupTab.style.borderBottom = '2px solid transparent';
+                setTimeout(() => { const el = document.getElementById('fml-email'); if(el) el.focus(); }, 100);
+            } else {
+                loginPanel.style.display = 'none'; signupPanel.style.display = 'block';
+                loginTab.style.color = '#666'; loginTab.style.borderBottom = '2px solid transparent';
+                signupTab.style.color = '#D4A574'; signupTab.style.borderBottom = '2px solid #D4A574';
+                setTimeout(() => { const el = document.getElementById('fms-name'); if(el) el.focus(); }, 100);
+            }
+        }
+
+        async function handleFanLogin() {
+            const email = document.getElementById('fml-email').value.trim();
+            const password = document.getElementById('fml-password').value;
+            if (!email || !password) { showToast('Please enter your email and password.', 'error'); return; }
+            const btn = document.getElementById('fml-btn');
+            btn.disabled = true; btn.textContent = 'Logging in...';
+            try {
+                const res = await fetch(`${CONFIG.backendUrl}/login`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Invalid email or password.');
+                localStorage.setItem('tod_token', data.token);
+                localStorage.setItem('tod_role', data.role);
+                document.getElementById('fan-modal').remove();
+                localStorage.setItem('tod_user', JSON.stringify({ name: data.name || '', email, role: 'fan' }));
+                showToast('Welcome back! Taking you to your dashboard...', 'success');
+                setTimeout(() => window.location.href = '/fan-dashboard.html', 1200);
+            } catch (err) {
+                showToast(err.message || 'Login failed.', 'error');
+                btn.disabled = false; btn.textContent = 'LOG IN →';
+            }
+        }
+
+        async function handleFanSignup() {
+            const name = document.getElementById('fms-name').value.trim();
+            const email = document.getElementById('fms-email').value.trim();
+            const password = document.getElementById('fms-password').value;
+            const ageCheck = document.getElementById('fms-age').checked;
+            if (!name || !email) { showToast('Please enter your name and email.', 'error'); return; }
+            if (!password || password.length < 6) { showToast('Password must be at least 6 characters.', 'error'); return; }
+            if (!ageCheck) { showToast('Please confirm you are 18 or older.', 'error'); return; }
+            const btn = document.getElementById('fms-btn');
+            btn.disabled = true; btn.textContent = 'Creating account...';
+            try {
+                const res = await fetch(`${CONFIG.backendUrl}/register`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, role: 'fan' }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Registration failed.');
+                localStorage.setItem('tod_token', data.token);
+                localStorage.setItem('tod_role', 'fan');
+                localStorage.setItem('tod_user', JSON.stringify({ name, email, role: 'fan' }));
+                document.getElementById('fan-modal').remove();
+                showToast('✅ Account created! Taking you to your dashboard...', 'success');
+                setTimeout(() => window.location.href = '/fan-dashboard.html', 1200);
+            } catch (err) {
+                showToast(err.message || 'Registration failed.', 'error');
+                btn.disabled = false; btn.textContent = 'CREATE FREE ACCOUNT →';
+            }
         }
 
         // ── BOOKING MODAL ──────────────────────────────────────────────────────────
