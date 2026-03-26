@@ -81,6 +81,25 @@
         .ended-sub { font-size: 14px; color: var(--text-dim); text-align: center; max-width: 320px; line-height: 1.7; }
         .btn-home { padding: 14px 32px; background: linear-gradient(135deg,#C49050,#D4A574); color: #1A0800; border: none; border-radius: 6px; font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; }
         @media (max-width: 640px) { .main-area { flex-direction: column; } .chat-side { width: 100%; height: 280px; border-left: none; border-top: 1px solid var(--gold-dim); } }
+        /* Refuse Challenge button */
+        .btn-refuse { padding: 7px 14px; background: transparent; border: 1.5px solid rgba(204,0,0,0.5); border-radius: 6px; color: #FF8080; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .btn-refuse:hover { background: rgba(204,0,0,0.15); border-color: #CC0000; color: #FF6060; }
+        /* Refuse confirm modal */
+        .refuse-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 200; }
+        .refuse-modal.show { display: flex; }
+        .refuse-box { background: #1A0800; border: 1px solid rgba(204,0,0,0.4); border-radius: 12px; padding: 32px; max-width: 380px; width: 90%; text-align: center; }
+        .refuse-icon { font-size: 40px; margin-bottom: 12px; }
+        .refuse-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--cream); margin-bottom: 10px; }
+        .refuse-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; margin-bottom: 8px; }
+        .refuse-warning { font-size: 13px; color: #FF8080; font-weight: 700; margin-bottom: 24px; }
+        .refuse-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-confirm-refuse { padding: 12px 24px; background: #CC0000; color: #fff; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .btn-confirm-refuse:hover { background: #990000; }
+        .btn-cancel-refuse { padding: 12px 24px; background: transparent; color: var(--text); border: 1.5px solid var(--gold-dim); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .btn-cancel-refuse:hover { border-color: var(--gold); color: var(--gold); }
+        /* Refunded overlay */
+        .refunded-overlay { position: fixed; inset: 0; background: rgba(8,2,0,0.97); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 100; }
+        .refunded-overlay.show { display: flex; }
     </style>
 </head>
 <body>
@@ -96,6 +115,7 @@
     <div class="top-bar-right">
         <div class="live-dot" id="liveDot" style="display:none"></div>
         <div class="live-label" id="liveLabel" style="display:none">LIVE</div>
+        <button class="btn-refuse" id="btnRefuse" style="display:none" onclick="showRefuseModal()">⚠️ Refuse Challenge</button>
     </div>
 </div>
 <div class="main-area">
@@ -131,6 +151,26 @@
             <div class="chat-note">Messages visible to creator &amp; fan only</div>
         </div>
     </div>
+</div>
+<!-- Refuse Challenge Confirmation Modal -->
+<div class="refuse-modal" id="refuseModal">
+    <div class="refuse-box">
+        <div class="refuse-icon">⚠️</div>
+        <div class="refuse-title">Refuse This Challenge?</div>
+        <div class="refuse-desc">You are about to refuse this challenge and end the session early.</div>
+        <div class="refuse-warning">⚠️ The fan will be fully refunded. You will not receive payment for this session.</div>
+        <div class="refuse-actions">
+            <button class="btn-cancel-refuse" onclick="hideRefuseModal()">Cancel</button>
+            <button class="btn-confirm-refuse" onclick="confirmRefuse()">Yes, Refuse &amp; Refund Fan</button>
+        </div>
+    </div>
+</div>
+<!-- Refunded Overlay -->
+<div class="refunded-overlay" id="refundedOverlay">
+    <div class="ended-icon">💸</div>
+    <div class="ended-title" style="font-family:'Playfair Display',serif;font-size:28px;color:var(--cream);">Challenge Refused</div>
+    <div class="ended-sub" style="font-size:14px;color:var(--text-dim);text-align:center;max-width:320px;line-height:1.7;">The session has ended. The fan has been fully refunded and will receive a confirmation email.</div>
+    <a href="/dashboard" class="btn-home">← Back to Dashboard</a>
 </div>
 <div class="ended-overlay" id="endedOverlay">
     <div class="ended-icon">⭐</div>
@@ -193,6 +233,7 @@
         document.getElementById('chatSendBtn').disabled = false;
         addSystemMessage('Session started! ' + (isCreator ? 'You are live.' : 'The creator will go live shortly.'));
         setSessionStatus(true); // Mark creator as In Session
+        if (isCreator) document.getElementById('btnRefuse').style.display = 'block';
         startTimer();
         if (roomId) await initDailyRoom();
         startChatPolling();
@@ -276,9 +317,42 @@
         if (callFrame) callFrame.destroy();
         document.getElementById('liveDot').style.display = 'none';
         document.getElementById('liveLabel').style.display = 'none';
+        document.getElementById('btnRefuse').style.display = 'none';
         document.getElementById('chatInput').disabled = true;
         document.getElementById('chatSendBtn').disabled = true;
         document.getElementById('endedOverlay').classList.add('show');
+    }
+
+    function showRefuseModal() {
+        document.getElementById('refuseModal').classList.add('show');
+    }
+    function hideRefuseModal() {
+        document.getElementById('refuseModal').classList.remove('show');
+    }
+    async function confirmRefuse() {
+        hideRefuseModal();
+        // Stop session immediately
+        clearInterval(timerInterval);
+        setSessionStatus(false);
+        if (callFrame) callFrame.destroy();
+        document.getElementById('liveDot').style.display = 'none';
+        document.getElementById('liveLabel').style.display = 'none';
+        document.getElementById('btnRefuse').style.display = 'none';
+        document.getElementById('chatInput').disabled = true;
+        document.getElementById('chatSendBtn').disabled = true;
+        // Call backend to issue refund
+        const bookingId = params.get('bookingId');
+        if (bookingId) {
+            try {
+                const token = localStorage.getItem('tod_token');
+                await fetch(`${BACKEND}/booking/${bookingId}/refuse-challenge`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                });
+            } catch(e) { console.error('Refund request failed:', e); }
+        }
+        // Show refunded overlay
+        document.getElementById('refundedOverlay').classList.add('show');
     }
 
     if (!roomId) {
