@@ -818,7 +818,7 @@
 
             <div class="modal-actions">
                 <button class="btn-modal-cancel" onclick="closeBookingModal()">Cancel</button>
-                <button class="btn-modal-confirm" id="confirmBookingBtn" onclick="submitBooking()">Confirm Booking →</button>
+                <button class="btn-modal-confirm" id="confirmBookingBtn" onclick="submitBooking()">Send Booking Request →</button>
             </div>
         </div>
     </div>
@@ -1191,32 +1191,32 @@
 
             const btn = document.getElementById('confirmBookingBtn');
             btn.disabled = true;
-            btn.textContent = 'Processing...';
+            btn.textContent = 'Sending Request...';
 
             try {
-                // First create a Stripe checkout session
-                const priceRes = await fetch(`${CONFIG.backendUrl}/create-checkout-session`, {
+                // Submit booking REQUEST (no payment yet — creator confirms first)
+                const res = await fetch(`${CONFIG.backendUrl}/booking`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        selectedCard: pendingSessionType,
-                        creatorName: currentCreator.displayName || currentCreator.handle,
-                        creatorStripeAccountId: currentCreator.stripeAccountId || null,
                         fanName,
                         fanEmail,
-                        bookingDate: selectedDate,
-                        bookingTime: selectedTime,
+                        creatorHandle: currentCreator.handle,
+                        sessionType: pendingSessionType,
+                        requestedDate: selectedDate,
+                        requestedTime: selectedTime,
                         note,
                     }),
                 });
-                const priceData = await priceRes.json();
-                if (!priceRes.ok) throw new Error(priceData.error || 'Payment setup failed.');
-                // Redirect to Stripe checkout
-                window.location.href = priceData.url;
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Request failed.');
+                // Show success — no redirect to Stripe yet
+                closeBookingModal();
+                showToast('✅ Booking request sent! You\'ll receive an email once the creator confirms your time.', 'success');
             } catch (e) {
                 showToast('Booking failed: ' + e.message, 'error');
                 btn.disabled = false;
-                btn.textContent = 'Confirm Booking →';
+                btn.textContent = 'Send Booking Request →';
             }
         }
 

@@ -375,6 +375,22 @@
         </div><!-- end dashboard-content -->
     </div>
 
+    <!-- Propose New Time Modal -->
+    <div id="proposeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;">
+        <div style="background:#1a1a2e;border:1px solid rgba(212,165,116,0.3);border-radius:12px;padding:28px;max-width:420px;width:90%;">
+            <h3 style="color:#D4A574;margin:0 0 16px;font-size:18px;">📅 Propose a New Time</h3>
+            <p style="color:#aaa;font-size:13px;margin:0 0 16px;">Select a date and time to propose to the fan. They will receive an email with your suggestion.</p>
+            <label style="color:#ccc;font-size:13px;display:block;margin-bottom:6px;">Date</label>
+            <select id="proposeDate" style="width:100%;background:#0d0d1a;border:1px solid rgba(212,165,116,0.3);color:#fff;padding:10px;border-radius:6px;font-size:14px;margin-bottom:14px;"></select>
+            <label style="color:#ccc;font-size:13px;display:block;margin-bottom:6px;">Time</label>
+            <select id="proposeTime" style="width:100%;background:#0d0d1a;border:1px solid rgba(212,165,116,0.3);color:#fff;padding:10px;border-radius:6px;font-size:14px;margin-bottom:20px;"></select>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button onclick="closeProposeModal()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:#aaa;padding:8px 18px;border-radius:6px;font-size:14px;cursor:pointer;">Cancel</button>
+                <button onclick="submitPropose()" style="background:linear-gradient(135deg,#D4A574,#c49060);color:#0d0d1a;padding:8px 18px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;border:none;">Send Proposal</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container"></div>
 
     <script>
@@ -765,16 +781,75 @@
 
 
         // ── BOOKINGS ──────────────────────────────────────────────────────────
+        // ── PROPOSE TIME MODAL ────────────────────────────────────────────────
+        let proposeBookingId = null;
+        function openProposeModal(bookingId) {
+            proposeBookingId = bookingId;
+            // Build date options (next 14 days)
+            const dateSelect = document.getElementById('proposeDate');
+            dateSelect.innerHTML = '';
+            for (let i = 0; i < 14; i++) {
+                const d = new Date(); d.setDate(d.getDate() + i);
+                const val = d.toISOString().split('T')[0];
+                const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const opt = document.createElement('option'); opt.value = val; opt.textContent = label;
+                dateSelect.appendChild(opt);
+            }
+            // Build 30-min time slots
+            const timeSelect = document.getElementById('proposeTime');
+            timeSelect.innerHTML = '';
+            for (let h = 0; h < 24; h++) {
+                for (let m = 0; m < 60; m += 30) {
+                    const ampm = h < 12 ? 'AM' : 'PM';
+                    const hh = h === 0 ? 12 : h > 12 ? h - 12 : h;
+                    const mm = m === 0 ? '00' : '30';
+                    const label = `${hh}:${mm} ${ampm}`;
+                    const opt = document.createElement('option'); opt.value = label; opt.textContent = label;
+                    timeSelect.appendChild(opt);
+                }
+            }
+            document.getElementById('proposeModal').style.display = 'flex';
+        }
+        function closeProposeModal() {
+            document.getElementById('proposeModal').style.display = 'none';
+            proposeBookingId = null;
+        }
+        async function submitPropose() {
+            const date = document.getElementById('proposeDate').value;
+            const time = document.getElementById('proposeTime').value;
+            if (!date || !time) { showToast('Please select a date and time.', 'error'); return; }
+            try {
+                const res = await fetch(`${BACKEND}/booking/${proposeBookingId}/respond`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'propose', proposedDate: date, proposedTime: time }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('📅 New time proposed to fan!', 'success');
+                    closeProposeModal();
+                    reloadBookings();
+                } else { showToast(data.error || 'Failed.', 'error'); }
+            } catch (err) { showToast('Network error.', 'error'); }
+        }
+
+        async function reloadBookings() {
+            const bookingsRes = await fetch(`${BACKEND}/creator/bookings`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+            const bookingsData = bookingsRes.ok ? await bookingsRes.json() : null;
+            renderBookings(bookingsData ? bookingsData.bookings : []);
+        }
+
         function renderBookings(bookings) {
             const container = document.getElementById('bookings-container');
             if (!bookings || bookings.length === 0) {
-                container.innerHTML = '<div class="no-data">No pending bookings. When fans pay for a session, they will appear here.</div>';
+                container.innerHTML = '<div class="no-data">No booking requests yet. When fans request a session, they will appear here.</div>';
                 return;
             }
             const rows = bookings.map(b => {
                 const sessionLabel = b.sessionType === 'truth' ? '🤔 Truth ($15)' : '🔥 Dare ($45)';
-                const dateStr = b.requestedDate || 'Flexible';
+                const dateStr = b.proposedDate ? `${b.proposedDate} @ ${b.proposedTime} <span style="color:#D4A574;font-size:11px;">(proposed)</span>` : (b.requestedDate ? `${b.requestedDate} @ ${b.requestedTime || ''}` : 'Flexible');
                 const roomBtn = b.roomId ? `<a href="/room?id=${b.roomId}&type=${b.sessionType}" target="_blank" style="display:inline-block;background:var(--gold);color:var(--dark);padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;margin-right:6px;">▶ Start Session</a>` : '';
+                const isPending = b.status === 'pending' || b.status === 'proposed';
                 return `
                 <div style="background:rgba(0,0,0,0.2);border:1px solid var(--gold-dim);border-radius:8px;padding:16px;margin-bottom:12px;">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
@@ -789,12 +864,27 @@
                     </div>
                     <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
                         ${roomBtn}
-                        ${b.status === 'pending' || b.status === 'confirmed' ? `<button onclick="respondBooking('${b._id}','accept')" style="background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#22c55e;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✓ Accept</button>` : ''}
-                        ${b.status !== 'declined' ? `<button onclick="respondBooking('${b._id}','decline')" style="background:rgba(204,0,0,0.15);border:1px solid rgba(204,0,0,0.3);color:#FF6B6B;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✕ Decline</button>` : ''}
+                        ${isPending ? `<button onclick="acceptBooking('${b._id}')" style="background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#22c55e;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✅ Accept &amp; Send Payment Link</button>` : ''}
+                        ${isPending ? `<button onclick="openProposeModal('${b._id}')" style="background:rgba(212,165,116,0.15);border:1px solid rgba(212,165,116,0.3);color:#D4A574;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">📅 Propose New Time</button>` : ''}
+                        ${b.status !== 'declined' && b.status !== 'paid' ? `<button onclick="respondBooking('${b._id}','decline')" style="background:rgba(204,0,0,0.15);border:1px solid rgba(204,0,0,0.3);color:#FF6B6B;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✕ Decline</button>` : ''}
                     </div>
                 </div>`;
             }).join('');
             container.innerHTML = rows;
+        }
+
+        async function acceptBooking(bookingId) {
+            try {
+                const res = await fetch(`${BACKEND}/booking/${bookingId}/generate-payment-link`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('✅ Accepted! Payment link sent to fan.', 'success');
+                    reloadBookings();
+                } else { showToast(data.error || 'Failed to generate payment link.', 'error'); }
+            } catch (err) { showToast('Network error.', 'error'); }
         }
 
         async function respondBooking(bookingId, action) {
@@ -806,11 +896,8 @@
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    showToast(action === 'accept' ? '✅ Booking accepted!' : '❌ Booking declined.', action === 'accept' ? 'success' : 'info');
-                    // Reload bookings
-                    const bookingsRes = await fetch(`${BACKEND}/creator/bookings`, { headers: { 'Authorization': `Bearer ${authToken}` } });
-                    const bookingsData = bookingsRes.ok ? await bookingsRes.json() : null;
-                    renderBookings(bookingsData ? bookingsData.bookings : []);
+                    showToast(action === 'decline' ? '❌ Booking declined. Fan notified.' : '✅ Done!', action === 'decline' ? 'info' : 'success');
+                    reloadBookings();
                 } else {
                     showToast(data.error || 'Failed to update booking.', 'error');
                 }

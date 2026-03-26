@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Confirmed — Truth or Dare Fans</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --dark: #0d0d1a;
+            --dark2: #1a1a2e;
+            --gold: #D4A574;
+            --gold-dim: rgba(212,165,116,0.25);
+            --cream: #F5EDD6;
+            --text: #c8c8d8;
+            --text-dim: #888;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--dark);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            background: var(--dark2);
+            border: 1px solid var(--gold-dim);
+            border-radius: 16px;
+            padding: 48px 40px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: var(--gold);
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+        }
+        .icon { font-size: 64px; margin-bottom: 20px; }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: var(--cream);
+            margin-bottom: 12px;
+        }
+        p {
+            font-size: 15px;
+            color: var(--text);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+        .note {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-top: 24px;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #D4A574, #c49060);
+            color: #0d0d1a;
+            border: none;
+            border-radius: 8px;
+            padding: 13px 28px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            text-decoration: none;
+            margin-top: 8px;
+        }
+        .confetti {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .card { position: relative; z-index: 1; }
+    </style>
+</head>
+<body>
+    <div class="confetti" id="confetti"></div>
+    <div class="card">
+        <div class="logo">Truth or Dare Fans</div>
+        <div class="icon">🎉</div>
+        <h1>Payment Confirmed!</h1>
+        <p>Your session is booked and paid. You'll receive an email shortly with your room link and session details.</p>
+        <p>Keep an eye on your inbox — the creator will be in touch before your session starts.</p>
+        <a href="/" class="btn">Browse More Creators →</a>
+        <p class="note">Questions? Email us at <a href="mailto:truthordarefans@gmail.com" style="color:var(--gold);">truthordarefans@gmail.com</a></p>
+    </div>
+
+    <script>
+        // Simple confetti animation
+        const container = document.getElementById('confetti');
+        const colors = ['#D4A574', '#F5EDD6', '#c49060', '#fff', '#ffd700'];
+        for (let i = 0; i < 60; i++) {
+            const el = document.createElement('div');
+            const size = Math.random() * 10 + 5;
+            el.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                left: ${Math.random() * 100}%;
+                top: -20px;
+                opacity: ${Math.random() * 0.8 + 0.2};
+                animation: fall ${Math.random() * 3 + 2}s linear ${Math.random() * 2}s forwards;
+            `;
+            container.appendChild(el);
+        }
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                to { transform: translateY(110vh) rotate(${Math.random() * 720}deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
