@@ -537,11 +537,14 @@
 
                     <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:block;">Your Platform Handle</label>
                     <div style="background:rgba(0,0,0,0.35);border:1.5px solid rgba(212,165,116,0.5);border-radius:6px;padding:12px 16px;margin-bottom:4px;">
-                        <div style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">Fans will find and book you at:</div>
-                        <div style="font-size:17px;font-weight:700;color:var(--gold);letter-spacing:0.3px;" id="handle-preview">yourname@truthordare</div>
-                        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Auto-generated from your stage name above — no typing needed.</div>
+                        <div style="font-size:13px;color:var(--text-dim);margin-bottom:6px;">Choose your handle — fans will find and book you at:</div>
+                        <div style="display:flex;align-items:center;gap:0;">
+                            <input type="text" id="creatorPlatformHandle" placeholder="yourname" maxlength="20" oninput="checkHandleAvailability()" autocomplete="off" style="margin:0;border-radius:6px 0 0 6px;border-right:none;flex:1;font-size:15px;font-weight:600;color:var(--gold);background:rgba(0,0,0,0.4);border:1.5px solid rgba(212,165,116,0.5);padding:10px 12px;">
+                            <div style="background:rgba(212,165,116,0.15);border:1.5px solid rgba(212,165,116,0.5);border-left:none;border-radius:0 6px 6px 0;padding:10px 12px;font-size:15px;font-weight:700;color:var(--gold);white-space:nowrap;">@truthordare</div>
+                        </div>
+                        <div id="handle-status" style="font-size:12px;margin-top:6px;min-height:16px;"></div>
+                        <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">Letters and numbers only, 3–20 characters. Auto-filled from your stage name — you can change it.</div>
                     </div>
-                    <input type="hidden" id="creatorPlatformHandle">
 
                     <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;margin-top:14px;">Email Address <span style="color:#ff6b6b;">*</span></label>
                     <input type="email" id="creatorSubEmail" placeholder="you@example.com" autocomplete="off" style="margin-bottom:4px;">
@@ -812,22 +815,48 @@
             btn.classList.remove('loading'); btn.disabled = false;
         }
 
-        // Auto-generate handle from display name
+        // Auto-fill handle from display name (only if user hasn't manually edited it)
+        let handleManuallyEdited = false;
         function updateHandlePreview() {
+            if (handleManuallyEdited) return; // Don't override if user typed their own
             const name = document.getElementById('creatorSubName').value.trim();
             const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
-            const handle = slug ? `${slug}@truthordare` : 'yourname@truthordare';
-            document.getElementById('handle-preview').textContent = handle;
-            document.getElementById('creatorPlatformHandle').value = slug || '';
+            const handleInput = document.getElementById('creatorPlatformHandle');
+            handleInput.value = slug || '';
+            if (slug) checkHandleAvailability();
+            else document.getElementById('handle-status').textContent = '';
+        }
+
+        // Live handle availability checker
+        let handleCheckTimer = null;
+        function checkHandleAvailability() {
+            handleManuallyEdited = true; // Mark as manually edited once user types in handle field
+            const raw = document.getElementById('creatorPlatformHandle').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+            document.getElementById('creatorPlatformHandle').value = raw; // sanitize in place
+            const statusEl = document.getElementById('handle-status');
+            if (!raw) { statusEl.textContent = ''; return; }
+            if (raw.length < 3) { statusEl.style.color = '#ff6b6b'; statusEl.textContent = 'Too short — minimum 3 characters.'; return; }
+            statusEl.style.color = 'var(--text-dim)'; statusEl.textContent = 'Checking...';
+            clearTimeout(handleCheckTimer);
+            handleCheckTimer = setTimeout(async () => {
+                try {
+                    const res = await fetch(`${CONFIG.backendUrl}/check-handle/${encodeURIComponent(raw)}`);
+                    const data = await res.json();
+                    if (data.available) {
+                        statusEl.style.color = '#4caf50'; statusEl.textContent = '✓ Available!';
+                    } else {
+                        statusEl.style.color = '#ff6b6b'; statusEl.textContent = `✗ ${data.reason}`;
+                    }
+                } catch { statusEl.style.color = '#ff6b6b'; statusEl.textContent = 'Could not check availability.'; }
+            }, 500);
         }
 
         // Creator Subscription
         async function subscribeCreator() {
             const creatorSubName = document.getElementById('creatorSubName').value.trim();
             const creatorLegalName = document.getElementById('creatorLegalName').value.trim();
-            // Auto-generate handle from display name
-            const slug = creatorSubName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 20);
-            const creatorPlatformHandle = slug;
+            // Read handle from the input field (user may have customized it)
+            const creatorPlatformHandle = document.getElementById('creatorPlatformHandle').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
             const creatorSubEmail = document.getElementById('creatorSubEmail').value.trim();
             const creatorPassword = document.getElementById('creatorPassword').value.trim();
             const creatorAgeCheck = document.getElementById('creatorAgeCheck').checked;
@@ -850,6 +879,17 @@
 
             if (!creatorSubName || !creatorLegalName || !creatorSubEmail || !creatorPassword) {
                 showToast('Please fill in all required creator fields.', 'error');
+                return;
+            }
+            if (!creatorPlatformHandle || creatorPlatformHandle.length < 3) {
+                showToast('Please choose a handle of at least 3 characters.', 'error');
+                return;
+            }
+            // Check handle availability one more time before submitting
+            const handleCheckRes = await fetch(`${CONFIG.backendUrl}/check-handle/${encodeURIComponent(creatorPlatformHandle)}`);
+            const handleCheckData = await handleCheckRes.json();
+            if (!handleCheckData.available) {
+                showToast(`Handle not available: ${handleCheckData.reason}`, 'error');
                 return;
             }
             if (creatorPassword.length < 8) {
