@@ -1110,8 +1110,36 @@
             }
         }
 
+        // ── FAN LOGIN PROMPT ───────────────────────────────────────────────────
+        function showLoginPrompt() {
+            const existing = document.getElementById('fan-login-prompt');
+            if (existing) existing.remove();
+            const overlay = document.createElement('div');
+            overlay.id = 'fan-login-prompt';
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            overlay.innerHTML = `
+                <div style="background:#1a1a2e;border:1px solid rgba(212,165,116,0.35);border-radius:14px;padding:40px 36px;max-width:420px;width:100%;text-align:center;position:relative;">
+                    <button onclick="document.getElementById('fan-login-prompt').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#888;font-size:22px;cursor:pointer;">✕</button>
+                    <div style="font-size:40px;margin-bottom:12px;">👤</div>
+                    <h2 style="font-family:'Playfair Display',serif;color:#F5EDD6;font-size:22px;margin-bottom:8px;">Sign in to Book</h2>
+                    <p style="font-size:14px;color:#888;margin-bottom:24px;">You need a free fan account to book a session.</p>
+                    <a href="/#fan-login" onclick="document.getElementById('fan-login-prompt').remove()" style="display:block;background:linear-gradient(135deg,#D4A574,#c49060);color:#0d0d1a;padding:13px;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none;margin-bottom:10px;">Log In →</a>
+                    <a href="/#subscribe" onclick="document.getElementById('fan-login-prompt').remove()" style="display:block;background:rgba(212,165,116,0.1);color:#D4A574;border:1px solid rgba(212,165,116,0.3);padding:12px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;">Create Free Account →</a>
+                </div>
+            `;
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+            document.body.appendChild(overlay);
+        }
+
         // ── BOOKING MODAL ──────────────────────────────────────────────────────────
         function openBooking(sessionType) {
+            // Require fan login before booking
+            const fanToken = localStorage.getItem('tod_token');
+            const fanRole = localStorage.getItem('tod_role');
+            if (!fanToken || fanRole !== 'fan') {
+                showLoginPrompt();
+                return;
+            }
             pendingSessionType = sessionType;
             const title = sessionType === 'truth' ? '🎯 Book a Truth Session — $15 USD' : '🔥 Book a Dare Session — $45 USD';
             document.getElementById('bookingModalTitle').textContent = title;

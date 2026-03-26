@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Dashboard — Truth or Dare Fans</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --dark: #0d0d1a;
+            --dark2: #1a1a2e;
+            --dark3: #12122a;
+            --gold: #D4A574;
+            --gold-dim: rgba(212,165,116,0.2);
+            --cream: #F5EDD6;
+            --text: #c8c8d8;
+            --text-dim: #888;
+            --green: #22c55e;
+            --red: #FF6B6B;
+            --purple: #818cf8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; }
+
+        /* TOPBAR */
+        .topbar {
+            background: var(--dark2);
+            border-bottom: 1px solid var(--gold-dim);
+            padding: 14px 28px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 18px; text-decoration: none; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .topbar-name { font-size: 14px; color: var(--text-dim); }
+        .btn-logout {
+            background: transparent; border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-dim); padding: 6px 14px; border-radius: 6px;
+            font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+        }
+        .btn-browse {
+            background: linear-gradient(135deg, #D4A574, #c49060);
+            color: #0d0d1a; border: none; border-radius: 6px;
+            padding: 8px 16px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            text-decoration: none; display: inline-block;
+        }
+
+        /* MAIN */
+        .main { max-width: 860px; margin: 0 auto; padding: 32px 24px; }
+
+        .welcome {
+            margin-bottom: 28px;
+        }
+        .welcome h1 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--cream); margin-bottom: 6px; }
+        .welcome p { font-size: 14px; color: var(--text-dim); }
+
+        /* STATS */
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 32px; }
+        .stat {
+            background: var(--dark2); border: 1px solid var(--gold-dim);
+            border-radius: 10px; padding: 18px 20px; text-align: center;
+        }
+        .stat-val { font-size: 28px; font-weight: 700; color: var(--cream); }
+        .stat-lbl { font-size: 12px; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* SECTION */
+        .section-title {
+            font-size: 16px; font-weight: 700; color: var(--cream);
+            margin-bottom: 14px; padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        /* BOOKING CARDS */
+        .booking-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+        .booking-card {
+            background: var(--dark2); border: 1px solid var(--gold-dim);
+            border-radius: 10px; padding: 18px 20px;
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        }
+        .booking-card.paid { border-color: rgba(34,197,94,0.25); }
+        .booking-card.pending { border-color: rgba(212,165,116,0.25); }
+        .booking-card.declined { border-color: rgba(255,107,107,0.2); opacity: 0.7; }
+
+        .booking-info { flex: 1; }
+        .booking-creator { font-size: 15px; font-weight: 700; color: var(--cream); margin-bottom: 4px; }
+        .booking-meta { font-size: 13px; color: var(--text-dim); }
+        .booking-meta span { margin-right: 12px; }
+
+        .badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+        .badge.paid { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+        .badge.pending { background: rgba(212,165,116,0.12); color: var(--gold); border: 1px solid rgba(212,165,116,0.3); }
+        .badge.accepted { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+        .badge.proposed { background: rgba(212,165,116,0.12); color: var(--gold); border: 1px solid rgba(212,165,116,0.3); }
+        .badge.declined { background: rgba(255,107,107,0.1); color: var(--red); border: 1px solid rgba(255,107,107,0.25); }
+        .badge.truth { background: rgba(212,165,116,0.1); color: var(--gold); border: 1px solid rgba(212,165,116,0.2); }
+        .badge.dare { background: rgba(255,107,107,0.1); color: var(--red); border: 1px solid rgba(255,107,107,0.2); }
+
+        .btn-join {
+            background: linear-gradient(135deg, #D4A574, #c49060);
+            color: #0d0d1a; border: none; border-radius: 7px;
+            padding: 9px 18px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            text-decoration: none; white-space: nowrap;
+        }
+        .btn-pay {
+            background: rgba(34,197,94,0.15); color: var(--green);
+            border: 1px solid rgba(34,197,94,0.35); border-radius: 7px;
+            padding: 9px 18px; font-size: 13px; font-weight: 700;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+            text-decoration: none; white-space: nowrap;
+        }
+
+        .empty {
+            background: var(--dark2); border: 1px dashed rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 40px; text-align: center;
+            color: var(--text-dim); font-size: 14px;
+        }
+        .empty a { color: var(--gold); text-decoration: none; font-weight: 600; }
+
+        .loading { color: var(--text-dim); font-size: 14px; padding: 20px 0; }
+
+        /* TOAST */
+        #toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--dark2); border: 1px solid var(--gold-dim);
+            color: var(--gold); padding: 12px 20px; border-radius: 8px;
+            font-size: 14px; display: none; z-index: 9999;
+        }
+
+        @media (max-width: 600px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .booking-card { flex-direction: column; align-items: flex-start; }
+            .topbar { padding: 12px 16px; }
+            .main { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <a href="/" class="topbar-logo">Truth or Dare Fans</a>
+    <div class="topbar-right">
+        <span class="topbar-name" id="topbarName"></span>
+        <a href="/" class="btn-browse">Browse Creators</a>
+        <button class="btn-logout" onclick="logout()">Log out</button>
+    </div>
+</div>
+
+<div class="main">
+    <div class="welcome">
+        <h1 id="welcomeHeading">My Dashboard</h1>
+        <p>Track your sessions, view upcoming bookings, and access your room links here.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-val" id="statTotal">—</div>
+            <div class="stat-lbl">Total Bookings</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val" id="statUpcoming">—</div>
+            <div class="stat-lbl">Upcoming</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val" id="statCompleted">—</div>
+            <div class="stat-lbl">Completed</div>
+        </div>
+    </div>
+
+    <!-- Upcoming sessions -->
+    <div class="section-title">Upcoming Sessions</div>
+    <div class="booking-list" id="upcomingList">
+        <div class="loading">Loading...</div>
+    </div>
+
+    <!-- All bookings -->
+    <div class="section-title">All Bookings</div>
+    <div class="booking-list" id="allList">
+        <div class="loading">Loading...</div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+    const BACKEND = 'https://truthordare-backend.onrender.com';
+    const token = localStorage.getItem('tod_token');
+    const role = localStorage.getItem('tod_role');
+
+    // Redirect if not logged in as fan
+    if (!token || role !== 'fan') {
+        window.location.href = '/';
+    }
+
+    const userInfo = localStorage.getItem('tod_user') ? JSON.parse(localStorage.getItem('tod_user')) : {};
+
+    // Set name in topbar
+    if (userInfo.name) {
+        document.getElementById('topbarName').textContent = userInfo.name;
+        document.getElementById('welcomeHeading').textContent = `Welcome back, ${userInfo.name.split(' ')[0]} 👋`;
+    }
+
+    async function loadBookings() {
+        try {
+            const res = await fetch(`${BACKEND}/fan/bookings`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.status === 401 || res.status === 403) {
+                logout();
+                return;
+            }
+            const data = await res.json();
+            const bookings = data.bookings || [];
+
+            // Stats
+            const upcoming = bookings.filter(b => ['pending','accepted','proposed'].includes(b.status));
+            const completed = bookings.filter(b => b.status === 'paid');
+            document.getElementById('statTotal').textContent = bookings.length;
+            document.getElementById('statUpcoming').textContent = upcoming.length;
+            document.getElementById('statCompleted').textContent = completed.length;
+
+            // Upcoming
+            const upcomingEl = document.getElementById('upcomingList');
+            if (upcoming.length === 0) {
+                upcomingEl.innerHTML = `<div class="empty">No upcoming sessions. <a href="/">Browse creators →</a></div>`;
+            } else {
+                upcomingEl.innerHTML = upcoming.map(b => renderCard(b)).join('');
+            }
+
+            // All bookings
+            const allEl = document.getElementById('allList');
+            if (bookings.length === 0) {
+                allEl.innerHTML = `<div class="empty">You haven't booked any sessions yet. <a href="/">Browse creators →</a></div>`;
+            } else {
+                allEl.innerHTML = bookings.map(b => renderCard(b)).join('');
+            }
+
+        } catch (err) {
+            document.getElementById('upcomingList').innerHTML = `<div class="empty">Could not load bookings. Please refresh.</div>`;
+            document.getElementById('allList').innerHTML = '';
+        }
+    }
+
+    function renderCard(b) {
+        const sessionLabel = b.sessionType === 'dare' ? '🔥 Dare $45' : '🤔 Truth $15';
+        const sessionClass = b.sessionType === 'dare' ? 'dare' : 'truth';
+        const date = b.proposedDate || b.requestedDate || '';
+        const time = b.proposedTime || b.requestedTime || '';
+        const dateStr = date ? `${date}${time ? ' @ ' + time : ''}` : 'Date TBC';
+        const creatorDisplay = b.creatorName || b.creatorHandle || 'Creator';
+
+        let actionBtn = '';
+        if (b.status === 'accepted' || b.status === 'proposed') {
+            if (b.token) {
+                actionBtn = `<a href="/confirm.html?id=${b._id}&token=${encodeURIComponent(b.token)}" class="btn-pay">💳 Pay Now</a>`;
+            }
+        } else if (b.status === 'paid' && b.roomUrl) {
+            actionBtn = `<a href="${b.roomUrl}" class="btn-join" target="_blank">🎥 Join Room</a>`;
+        }
+
+        const statusLabel = b.status === 'proposed' ? 'New Time Proposed' : b.status;
+
+        return `
+        <div class="booking-card ${b.status}">
+            <div class="booking-info">
+                <div class="booking-creator">${esc(creatorDisplay)}</div>
+                <div class="booking-meta">
+                    <span><span class="badge ${sessionClass}">${sessionLabel}</span></span>
+                    <span style="color:#aaa;">${esc(dateStr)}</span>
+                    ${b.note ? `<span style="color:#666;font-size:12px;">"${esc(b.note)}"</span>` : ''}
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                <span class="badge ${b.status}">${statusLabel}</span>
+                ${actionBtn}
+            </div>
+        </div>`;
+    }
+
+    function logout() {
+        localStorage.removeItem('tod_token');
+        localStorage.removeItem('tod_role');
+        localStorage.removeItem('tod_user');
+        window.location.href = '/';
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 3500);
+    }
+
+    function esc(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    loadBookings();
+</script>
+</body>
+</html>

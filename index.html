@@ -523,15 +523,15 @@
             <div class="subscribe-cards">
                 <div class="subscribe-card">
                     <h3>🎉 For Fans</h3>
-                    <p>Subscribe free to get notified when your favorite creator goes live for a Truth or Dare session.</p>
+                    <p>Create your free account to book sessions, track your history, and get notified when your favourite creator goes live.</p>
                     <input type="text" id="fanSubName" placeholder="Your name or nickname" autocomplete="off">
                     <input type="email" id="fanSubEmail" placeholder="Your email address" autocomplete="off">
-                    <input type="text" id="fanSubHandle" placeholder="Favorite creator's handle (optional)">
+                    <input type="password" id="fanSubPassword" placeholder="Choose a password" autocomplete="new-password">
                     <div class="checkbox-group">
                         <input type="checkbox" id="fanAgeCheck">
-                        <label for="fanAgeCheck">I confirm I am 18 years of age or older and agree to the Terms & Community Guidelines.</label>
+                        <label for="fanAgeCheck">I confirm I am 18 years of age or older and agree to the Terms &amp; Community Guidelines.</label>
                     </div>
-                    <button class="btn btn-subscribe" id="fanSubscribeBtn" onclick="subscribeFan()">SUBSCRIBE AS FAN — FREE</button>
+                    <button class="btn btn-subscribe" id="fanSubscribeBtn" onclick="subscribeFan()">CREATE FAN ACCOUNT — FREE</button>
                 </div>
                 <div class="subscribe-card" id="creator-signup">
                     <h3>🌟 For Creators</h3>
@@ -795,34 +795,39 @@
 
         // Fan Subscription
         async function subscribeFan() {
-            const fanSubName = document.getElementById('fanSubName').value.trim();
-            const fanSubEmail = document.getElementById('fanSubEmail').value.trim();
-            const fanAgeCheck = document.getElementById('fanAgeCheck').checked;
+            const name = document.getElementById('fanSubName').value.trim();
+            const email = document.getElementById('fanSubEmail').value.trim();
+            const password = document.getElementById('fanSubPassword').value;
+            const ageCheck = document.getElementById('fanAgeCheck').checked;
 
-            if (!fanSubName || !fanSubEmail) {
-                showToast('Please enter your name and email.', 'error');
-                return;
-            }
-            if (!fanAgeCheck) {
-                showToast('Please confirm you are 18 years or older and agree to the terms.', 'error');
-                return;
-            }
+            if (!name || !email) { showToast('Please enter your name and email.', 'error'); return; }
+            if (!password || password.length < 6) { showToast('Please choose a password (min 6 characters).', 'error'); return; }
+            if (!ageCheck) { showToast('Please confirm you are 18 or older and agree to the terms.', 'error'); return; }
 
-            // Simulate API call
             const btn = document.getElementById('fanSubscribeBtn');
-            btn.classList.add('loading'); btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Subscribing...';
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
 
             try {
-                // In a real app, send data to backend
-                await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-                showToast('✓ Fan subscribed successfully!', 'success');
-                btn.innerHTML = 'SUBSCRIBE AS FAN — FREE';
+                const res = await fetch(`${CONFIG.backendUrl}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, role: 'fan' }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Registration failed.');
+
+                // Save auth and redirect to fan dashboard
+                localStorage.setItem('tod_token', data.token);
+                localStorage.setItem('tod_role', 'fan');
+                localStorage.setItem('tod_user', JSON.stringify({ name, email, role: 'fan' }));
+                showToast('✅ Account created! Taking you to your dashboard...', 'success');
+                setTimeout(() => window.location.href = '/fan-dashboard.html', 1200);
             } catch (e) {
-                showToast('Subscription failed. Please try again.', 'error');
-                btn.innerHTML = 'SUBSCRIBE AS FAN — FREE';
+                showToast(e.message || 'Registration failed. Please try again.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'CREATE FAN ACCOUNT — FREE';
             }
-            btn.classList.remove('loading'); btn.disabled = false;
         }
 
         // Auto-fill handle from display name (only if user hasn't manually edited it)
@@ -1285,7 +1290,9 @@
                     showToast('Welcome back! Redirecting to your dashboard...', 'success');
                     setTimeout(() => window.location.href = '/dashboard', 1200);
                 } else {
-                    showToast(`Welcome back! You are logged in as a fan.`, 'success');
+                    localStorage.setItem('tod_user', JSON.stringify({ name: data.name || '', email, role: 'fan' }));
+                    showToast('Welcome back! Taking you to your dashboard...', 'success');
+                    setTimeout(() => window.location.href = '/fan-dashboard.html', 1200);
                 }
 
             } catch (err) {
