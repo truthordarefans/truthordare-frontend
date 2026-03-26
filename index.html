@@ -215,12 +215,13 @@
 
         /* --- HEADER --- */
         .site-header { text-align: center; margin-bottom: 32px; }
-        .login-btns-header { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; float: right; margin-left: 16px; }
-        .login-btn-header { padding: 11px 20px; background: transparent; border: 2px solid rgba(212,165,116,0.5); border-radius: 8px; color: #D4A574; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.2s; white-space: nowrap; display: block; }
-        .login-btn-header:hover { border-color: #D4A574; background: rgba(212,165,116,0.15); color: #F0C890; }
-        .login-btn-header.creator { background: rgba(204,0,0,0.25); border-color: rgba(204,0,0,0.8); color: #FF6B6B; font-size: 14px; }
-        .login-btn-header.creator:hover { background: rgba(204,0,0,0.45); border-color: #CC0000; color: #fff; }
-        @media (max-width: 600px) { .login-btns-header { float: none; flex-direction: row; justify-content: center; margin-bottom: 12px; } .login-btn-header { padding: 10px 16px; font-size: 12px; } }
+        .login-btns-header { display: flex; flex-direction: row; align-items: flex-start; gap: 16px; float: right; margin-left: 16px; }
+        .login-btn-group { display: flex; flex-direction: column; gap: 7px; }
+        .login-btn-header { padding: 10px 18px; background: #D4A574; border: none; border-radius: 8px; color: #0d1b2a; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.2s; white-space: nowrap; display: block; text-align: center; }
+        .login-btn-header:hover { background: #e8b882; color: #0d1b2a; transform: translateY(-1px); }
+        .login-btn-header.creator { background: #D4A574; color: #0d0d0d; }
+        .login-btn-header.creator:hover { background: #e8b882; color: #0d0d0d; }
+        @media (max-width: 680px) { .login-btns-header { float: none; flex-direction: row; justify-content: center; margin-bottom: 12px; gap: 10px; } .login-btn-header { padding: 9px 13px; font-size: 11px; } }
 
         .site-header h1 {
             font-family: 'Playfair Display', serif;
@@ -439,9 +440,16 @@
 
         <header class="site-header">
             <div class="login-btns-header">
-                <a href="#fan-signup" class="login-btn-header" onclick="openFanModal('signup'); return false;">✨ Join Free</a>
-                <a href="#fan-login" class="login-btn-header" onclick="openFanModal('login'); return false;">👤 Fan Login</a>
-                <a href="#creator-login" class="login-btn-header creator" onclick="openLoginModal('creator'); return false;">🌟 Creator Login</a>
+                <!-- Fan group -->
+                <div class="login-btn-group">
+                    <a href="#fan-signup" class="login-btn-header" onclick="openFanModal('signup'); return false;">✨ Fans Join Free</a>
+                    <a href="#fan-login" class="login-btn-header" onclick="openFanModal('login'); return false;">👤 Fan Login</a>
+                </div>
+                <!-- Creator group -->
+                <div class="login-btn-group">
+                    <a href="#creator-signup" class="login-btn-header creator" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'}); return false;">🌟 Join as Creator Free</a>
+                    <a href="#creator-login" class="login-btn-header creator" onclick="openLoginModal('creator'); return false;">🌟 Creator Login</a>
+                </div>
             </div>
             <h1>Truth or Dare <br>For My Fans</h1>
             <p class="tagline">The ultimate fan-creator challenge experience</p>
