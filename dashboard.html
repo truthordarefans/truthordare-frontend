@@ -327,6 +327,14 @@
 
 
 
+            <!-- Booking Inbox -->
+            <div class="section-card">
+                <h2>📬 Booking Inbox</h2>
+                <div id="bookings-container">
+                    <div class="no-data">Loading bookings...</div>
+                </div>
+            </div>
+
             <!-- Danger Zone -->
             <div class="section-card" style="border-color: rgba(204,0,0,0.4);">
                 <h2 style="color:#FF6B6B;">&#9888; Account Settings</h2>
@@ -405,11 +413,12 @@
         // ── LOAD DASHBOARD ────────────────────────────────────────────────────
         async function loadDashboard() {
             try {
-                const [profileRes, earningsRes, sessionsRes, stripeRes] = await Promise.all([
+                const [profileRes, earningsRes, sessionsRes, stripeRes, bookingsRes] = await Promise.all([
                     fetch(`${BACKEND}/creator/profile`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
                     fetch(`${BACKEND}/creator/earnings`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
                     fetch(`${BACKEND}/creator/sessions`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
                     fetch(`${BACKEND}/stripe-account-status`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
+                    fetch(`${BACKEND}/creator/bookings`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
                 ]);
 
                 if (!profileRes.ok) { logout(); return; }
@@ -418,6 +427,7 @@
                 const earnings = earningsRes.ok ? await earningsRes.json() : null;
                 const sessionsData = sessionsRes.ok ? await sessionsRes.json() : null;
                 const stripeStatus = stripeRes.ok ? await stripeRes.json() : null;
+                const bookingsData = bookingsRes.ok ? await bookingsRes.json() : null;
 
                 creatorProfile = user;
                 renderProfile(user);
@@ -425,6 +435,7 @@
                 if (earnings) renderEarnings(earnings);
                 if (stripeStatus) renderStripeStatus(stripeStatus);
                 if (sessionsData) renderSessions(sessionsData.sessions);
+                renderBookings(bookingsData ? bookingsData.bookings : []);
 
                 // Check if returning from Stripe onboarding
                 const params = new URLSearchParams(window.location.search);
@@ -699,6 +710,61 @@
             `;
         }
 
+
+        // ── BOOKINGS ──────────────────────────────────────────────────────────
+        function renderBookings(bookings) {
+            const container = document.getElementById('bookings-container');
+            if (!bookings || bookings.length === 0) {
+                container.innerHTML = '<div class="no-data">No pending bookings. When fans pay for a session, they will appear here.</div>';
+                return;
+            }
+            const rows = bookings.map(b => {
+                const sessionLabel = b.sessionType === 'truth' ? '🤔 Truth ($15)' : '🔥 Dare ($45)';
+                const dateStr = b.requestedDate || 'Flexible';
+                const roomBtn = b.roomId ? `<a href="/room?id=${b.roomId}&type=${b.sessionType}" target="_blank" style="display:inline-block;background:var(--gold);color:var(--dark);padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;margin-right:6px;">▶ Start Session</a>` : '';
+                return `
+                <div style="background:rgba(0,0,0,0.2);border:1px solid var(--gold-dim);border-radius:8px;padding:16px;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+                        <div>
+                            <div style="font-size:15px;font-weight:700;color:var(--cream);margin-bottom:4px;">${b.fanName} <span style="font-size:12px;color:var(--text-dim);font-weight:400;">— ${b.fanEmail}</span></div>
+                            <div style="font-size:13px;color:var(--text);margin-bottom:4px;">${sessionLabel} &nbsp;·&nbsp; ${dateStr}</div>
+                            ${b.note ? `<div style="font-size:12px;color:var(--text-dim);font-style:italic;">"${b.note}"</div>` : ''}
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                            <span class="badge ${b.status}">${b.status}</span>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                        ${roomBtn}
+                        ${b.status === 'pending' || b.status === 'confirmed' ? `<button onclick="respondBooking('${b._id}','accept')" style="background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#22c55e;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✓ Accept</button>` : ''}
+                        ${b.status !== 'declined' ? `<button onclick="respondBooking('${b._id}','decline')" style="background:rgba(204,0,0,0.15);border:1px solid rgba(204,0,0,0.3);color:#FF6B6B;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✕ Decline</button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+            container.innerHTML = rows;
+        }
+
+        async function respondBooking(bookingId, action) {
+            try {
+                const res = await fetch(`${BACKEND}/booking/${bookingId}/respond`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(action === 'accept' ? '✅ Booking accepted!' : '❌ Booking declined.', action === 'accept' ? 'success' : 'info');
+                    // Reload bookings
+                    const bookingsRes = await fetch(`${BACKEND}/creator/bookings`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+                    const bookingsData = bookingsRes.ok ? await bookingsRes.json() : null;
+                    renderBookings(bookingsData ? bookingsData.bookings : []);
+                } else {
+                    showToast(data.error || 'Failed to update booking.', 'error');
+                }
+            } catch (err) {
+                showToast('Network error.', 'error');
+            }
+        }
 
         // ── TOAST ─────────────────────────────────────────────────────────────
         function showToast(message, type = 'info') {
