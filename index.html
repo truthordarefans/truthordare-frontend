@@ -748,11 +748,15 @@
         document.querySelectorAll('input[name="notifyMethod"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 const handleInput = document.getElementById('handleInput');
-                if (this.value !== 'email') {
+                if (this.value === 'text') {
                     handleInput.style.display = 'block';
-                    handleInput.placeholder = `Your ${this.value} handle or number`;
+                    handleInput.placeholder = 'Your phone number (e.g. +1 555 123 4567)';
+                } else if (this.value === 'other') {
+                    handleInput.style.display = 'block';
+                    handleInput.placeholder = 'e.g. DM me on Instagram @yourname';
                 } else {
                     handleInput.style.display = 'none';
+                    handleInput.value = '';
                 }
             });
         });
@@ -834,6 +838,15 @@
             const fansvue = document.getElementById('creatorFansVue').value.trim();
             const luvelyfans = document.getElementById('creatorLuvlyFans').value.trim();
             const tiktok = document.getElementById('creatorTikTok').value.trim();
+            // Notification preferences
+            const notifyMethod = document.querySelector('input[name="notifyMethod"]:checked')?.value || 'email';
+            const notifyContact = document.getElementById('handleInput').value.trim();
+            const notificationPrefs = {
+                email: notifyMethod === 'email' || notifyMethod === 'text' || notifyMethod === 'other',
+                sms: notifyMethod === 'text',
+                phone: notifyMethod === 'text' ? notifyContact : null,
+                customHandle: notifyMethod === 'other' ? notifyContact : null,
+            };
 
             if (!creatorSubName || !creatorLegalName || !creatorSubEmail || !creatorPassword) {
                 showToast('Please fill in all required creator fields.', 'error');
@@ -864,6 +877,7 @@
                         role: 'creator',
                         handle: creatorPlatformHandle,
                         socials: { instagram, onlyfans, fansly, fansvue, luvelyfans, tiktok },
+                        notificationPrefs,
                     }),
                 });
                 const data = await res.json();
