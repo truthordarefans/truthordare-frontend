@@ -170,6 +170,20 @@
         }
     }
 
+    // Set creator inSession status (only called for creator)
+    async function setSessionStatus(inSession) {
+        if (!isCreator) return;
+        try {
+            const token = localStorage.getItem('tod_token');
+            if (!token) return;
+            await fetch(`${BACKEND}/creator/session-status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ inSession })
+            });
+        } catch(e) {}
+    }
+
     async function startSession() {
         if (sessionStarted) return;
         sessionStarted = true;
@@ -178,6 +192,7 @@
         document.getElementById('chatInput').disabled = false;
         document.getElementById('chatSendBtn').disabled = false;
         addSystemMessage('Session started! ' + (isCreator ? 'You are live.' : 'The creator will go live shortly.'));
+        setSessionStatus(true); // Mark creator as In Session
         startTimer();
         if (roomId) await initDailyRoom();
         startChatPolling();
@@ -257,6 +272,7 @@
     document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
 
     function endSession() {
+        setSessionStatus(false); // Clear In Session status
         if (callFrame) callFrame.destroy();
         document.getElementById('liveDot').style.display = 'none';
         document.getElementById('liveLabel').style.display = 'none';

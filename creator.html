@@ -481,6 +481,18 @@
             text-transform: uppercase;
             margin-bottom: 12px;
         }
+        /* Status badge overlaid on avatar photo */
+        .avatar-wrap { position: relative; display: inline-block; }
+        .profile-status-badge { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 800; padding: 5px 14px; border-radius: 20px; letter-spacing: 0.8px; display: flex; align-items: center; gap: 6px; white-space: nowrap; box-shadow: 0 2px 12px rgba(0,0,0,0.7); z-index: 5; }
+        .profile-status-badge.online { background: #1a7a1a; color: #7fff7f; border: 1px solid #4caf50; }
+        .profile-status-badge.in-session { background: #7a1a1a; color: #ffaaaa; border: 1px solid #e53935; animation: pulse-badge 1.5s infinite; }
+        .profile-status-badge.offline { background: rgba(20,10,5,0.9); color: #777; border: 1px solid #444; }
+        .profile-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .profile-status-dot.online { background: #4caf50; box-shadow: 0 0 6px #4caf50; animation: blink-dot 1.8s infinite; }
+        .profile-status-dot.in-session { background: #e53935; box-shadow: 0 0 6px #e53935; animation: blink-dot 0.8s infinite; }
+        .profile-status-dot.offline { background: #555; }
+        @keyframes pulse-badge { 0%,100%{box-shadow:0 2px 10px rgba(229,57,53,0.4);} 50%{box-shadow:0 2px 18px rgba(229,57,53,0.8);} }
+        @keyframes blink-dot { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
         .live-dot {
             width: 8px; height: 8px;
             background: #fff;
@@ -939,11 +951,24 @@
             const socials = c.socials || {};
             const socialLinks = buildSocialLinks(socials, c.handle);
 
-            const avatarHtml = c.photo
-                ? `<img src="${c.photo}" alt="${c.name}" class="creator-avatar">`
-                : `<div class="avatar-placeholder">🎭</div>`;
+            const isInSession = c.inSession || false;
+            const isOnline = c.isLive || false;
 
-            const onlineClass = c.isLive ? 'visible' : '';
+            // Status badge overlaid on avatar photo
+            let statusBadgeHtml = '';
+            if (isInSession) {
+                statusBadgeHtml = `<div class="profile-status-badge in-session"><span class="profile-status-dot in-session"></span> IN SESSION</div>`;
+            } else if (isOnline) {
+                statusBadgeHtml = `<div class="profile-status-badge online"><span class="profile-status-dot online"></span> ONLINE</div>`;
+            } else {
+                statusBadgeHtml = `<div class="profile-status-badge offline"><span class="profile-status-dot offline"></span> OFFLINE</div>`;
+            }
+
+            const avatarHtml = `<div class="avatar-wrap">${c.photo
+                ? `<img src="${c.photo}" alt="${c.name}" class="creator-avatar">`
+                : `<div class="avatar-placeholder">🎭</div>`}${statusBadgeHtml}</div>`;
+
+            const onlineClass = isOnline ? 'visible' : '';
 
             // Live banner — shown only when creator is online
             const liveBannerHtml = c.isLive ? `
