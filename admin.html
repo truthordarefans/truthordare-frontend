@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Truth or Dare Fans</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: #0d0d1a; color: #c8c8d8; min-height: 100vh; }
+
+        /* LOGIN */
+        #loginScreen {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 24px;
+        }
+        .login-card {
+            background: #1a1a2e; border: 1px solid rgba(212,165,116,0.25);
+            border-radius: 14px; padding: 40px 36px; max-width: 380px; width: 100%; text-align: center;
+        }
+        .login-card h1 { color: #D4A574; font-size: 22px; margin-bottom: 8px; }
+        .login-card p { color: #888; font-size: 13px; margin-bottom: 24px; }
+        .login-card input {
+            width: 100%; background: #0d0d1a; border: 1px solid rgba(212,165,116,0.25);
+            color: #fff; padding: 12px 14px; border-radius: 7px; font-size: 15px;
+            font-family: 'DM Sans', sans-serif; margin-bottom: 14px;
+        }
+        .login-card button {
+            width: 100%; background: linear-gradient(135deg,#D4A574,#c49060);
+            color: #0d0d1a; border: none; border-radius: 7px; padding: 13px;
+            font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif;
+        }
+        .login-error { color: #FF6B6B; font-size: 13px; margin-top: 10px; }
+
+        /* DASHBOARD */
+        #dashboard { display: none; }
+        .topbar {
+            background: #1a1a2e; border-bottom: 1px solid rgba(212,165,116,0.15);
+            padding: 14px 28px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .topbar-title { color: #D4A574; font-size: 18px; font-weight: 700; }
+        .topbar button {
+            background: transparent; border: 1px solid rgba(255,255,255,0.15);
+            color: #888; padding: 6px 14px; border-radius: 6px; font-size: 13px;
+            cursor: pointer; font-family: 'DM Sans', sans-serif;
+        }
+
+        .main { padding: 28px; max-width: 1100px; margin: 0 auto; }
+
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 32px; }
+        .stat-card {
+            background: #1a1a2e; border: 1px solid rgba(212,165,116,0.2);
+            border-radius: 10px; padding: 18px 20px;
+        }
+        .stat-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .stat-value { font-size: 28px; font-weight: 700; color: #F5EDD6; }
+        .stat-sub { font-size: 12px; color: #D4A574; margin-top: 4px; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .tab {
+            padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+            color: #888; border-bottom: 2px solid transparent; background: none; border-top: none;
+            border-left: none; border-right: none; font-family: 'DM Sans', sans-serif;
+            transition: color 0.2s;
+        }
+        .tab.active { color: #D4A574; border-bottom-color: #D4A574; }
+
+        /* TABLE */
+        .section { display: none; }
+        .section.active { display: block; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 10px 12px; color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        td { padding: 12px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+        .badge {
+            display: inline-block; padding: 2px 8px; border-radius: 20px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .badge.live { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .badge.offline { background: rgba(255,255,255,0.05); color: #666; border: 1px solid rgba(255,255,255,0.1); }
+        .badge.paid { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+        .badge.pending { background: rgba(212,165,116,0.15); color: #D4A574; border: 1px solid rgba(212,165,116,0.3); }
+        .badge.declined { background: rgba(204,0,0,0.15); color: #FF6B6B; border: 1px solid rgba(204,0,0,0.3); }
+        .badge.accepted { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+        .badge.proposed { background: rgba(212,165,116,0.15); color: #D4A574; border: 1px solid rgba(212,165,116,0.3); }
+        .badge.stripe { background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
+        .badge.no-stripe { background: rgba(255,255,255,0.05); color: #666; border: 1px solid rgba(255,255,255,0.1); }
+        .badge.featured { background: rgba(212,165,116,0.2); color: #D4A574; border: 1px solid rgba(212,165,116,0.4); }
+
+        .action-btn {
+            padding: 4px 10px; border-radius: 5px; font-size: 12px; font-weight: 600;
+            cursor: pointer; font-family: 'DM Sans', sans-serif; border: 1px solid;
+            margin-right: 4px;
+        }
+        .btn-delete { background: rgba(204,0,0,0.1); border-color: rgba(204,0,0,0.3); color: #FF6B6B; }
+        .btn-feature { background: rgba(212,165,116,0.1); border-color: rgba(212,165,116,0.3); color: #D4A574; }
+        .btn-unfeature { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.15); color: #888; }
+
+        .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(212,165,116,0.2); }
+        .avatar-placeholder { width: 34px; height: 34px; border-radius: 50%; background: #2a2a3e; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+
+        .empty { color: #555; font-size: 14px; text-align: center; padding: 40px; }
+        .loading { color: #555; font-size: 14px; text-align: center; padding: 40px; }
+
+        /* TOAST */
+        #toast {
+            position: fixed; bottom: 20px; right: 20px; background: #1a1a2e;
+            border: 1px solid rgba(212,165,116,0.3); color: #D4A574; padding: 12px 20px;
+            border-radius: 8px; font-size: 14px; display: none; z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div class="login-card">
+        <h1>🔐 Admin Access</h1>
+        <p>Enter your admin password to continue</p>
+        <input type="password" id="adminPassword" placeholder="Admin password" onkeydown="if(event.key==='Enter')login()" />
+        <button onclick="login()">Login →</button>
+        <div class="login-error" id="loginError"></div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+    <div class="topbar">
+        <div class="topbar-title">Truth or Dare Fans — Admin</div>
+        <button onclick="logout()">Log out</button>
+    </div>
+
+    <div class="main">
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="stat-label">Total Creators</div><div class="stat-value" id="s-creators">—</div></div>
+            <div class="stat-card"><div class="stat-label">Live Now</div><div class="stat-value" id="s-live">—</div></div>
+            <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-value" id="s-bookings">—</div></div>
+            <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value" id="s-pending">—</div></div>
+            <div class="stat-card"><div class="stat-label">Paid Sessions</div><div class="stat-value" id="s-paid">—</div></div>
+            <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" id="s-revenue">—</div><div class="stat-sub" id="s-cut"></div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('creators')">Creators</button>
+            <button class="tab" onclick="switchTab('bookings')">Bookings</button>
+        </div>
+
+        <!-- Creators -->
+        <div class="section active" id="sec-creators">
+            <div class="loading" id="creators-loading">Loading creators...</div>
+            <table id="creators-table" style="display:none;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name / Handle</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Stripe</th>
+                        <th>Featured</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="creators-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Bookings -->
+        <div class="section" id="sec-bookings">
+            <div class="loading" id="bookings-loading">Loading bookings...</div>
+            <table id="bookings-table" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Fan</th>
+                        <th>Creator</th>
+                        <th>Session</th>
+                        <th>Date / Time</th>
+                        <th>Status</th>
+                        <th>Requested</th>
+                    </tr>
+                </thead>
+                <tbody id="bookings-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+    const BACKEND = 'https://truthordare-backend.onrender.com';
+    let adminSecret = null;
+
+    function login() {
+        const pw = document.getElementById('adminPassword').value.trim();
+        if (!pw) return;
+        adminSecret = pw;
+        // Verify by fetching stats
+        fetch(`${BACKEND}/admin/stats`, { headers: { 'x-admin-secret': pw } })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('loginError').textContent = 'Incorrect password.';
+                    adminSecret = null;
+                } else {
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    renderStats(data);
+                    loadCreators();
+                }
+            })
+            .catch(() => { document.getElementById('loginError').textContent = 'Could not connect to server.'; });
+    }
+
+    function logout() {
+        adminSecret = null;
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('adminPassword').value = '';
+    }
+
+    function renderStats(s) {
+        document.getElementById('s-creators').textContent = s.totalCreators;
+        document.getElementById('s-live').textContent = s.liveCreators;
+        document.getElementById('s-bookings').textContent = s.totalBookings;
+        document.getElementById('s-pending').textContent = s.pendingBookings;
+        document.getElementById('s-paid').textContent = s.paidBookings;
+        document.getElementById('s-revenue').textContent = '$' + s.totalRevenueUSD;
+        document.getElementById('s-cut').textContent = 'Platform: $' + s.platformCutUSD;
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('sec-' + tab).classList.add('active');
+        if (tab === 'bookings') loadBookings();
+    }
+
+    async function loadCreators() {
+        try {
+            const res = await fetch(`${BACKEND}/admin/creators`, { headers: { 'x-admin-secret': adminSecret } });
+            const data = await res.json();
+            document.getElementById('creators-loading').style.display = 'none';
+            if (!data.creators || data.creators.length === 0) {
+                document.getElementById('creators-loading').style.display = 'block';
+                document.getElementById('creators-loading').textContent = 'No creators yet.';
+                return;
+            }
+            const tbody = document.getElementById('creators-body');
+            tbody.innerHTML = data.creators.map(c => `
+                <tr>
+                    <td>${c.photo ? `<img src="${c.photo}" class="avatar" />` : `<div class="avatar-placeholder">👤</div>`}</td>
+                    <td>
+                        <div style="font-weight:600;color:#F5EDD6;">${esc(c.name)}</div>
+                        <div style="font-size:11px;color:#888;">${c.handle ? '@' + c.handle.replace('@truthordare','') + '@truthordare' : '—'}</div>
+                    </td>
+                    <td style="color:#aaa;">${esc(c.email)}</td>
+                    <td>
+                        <span class="badge ${c.isLive ? 'live' : 'offline'}">${c.isLive ? '🟢 Live' : 'Offline'}</span>
+                        ${c.inSession ? '<span class="badge live" style="margin-left:4px;">In Session</span>' : ''}
+                    </td>
+                    <td><span class="badge ${c.stripeAccountId ? 'stripe' : 'no-stripe'}">${c.stripeAccountId ? '✓ Connected' : 'Not set up'}</span></td>
+                    <td><span class="badge ${c.featuredRequested ? 'featured' : 'offline'}">${c.featuredRequested ? '⭐ Featured' : '—'}</span></td>
+                    <td style="color:#666;font-size:12px;">${new Date(c.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+                    <td>
+                        ${c.featuredRequested
+                            ? `<button class="action-btn btn-unfeature" onclick="featureCreator('${c._id}', false)">Remove Featured</button>`
+                            : `<button class="action-btn btn-feature" onclick="featureCreator('${c._id}', true)">⭐ Feature</button>`
+                        }
+                        <button class="action-btn btn-delete" onclick="deleteCreator('${c._id}', '${esc(c.name)}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+            document.getElementById('creators-table').style.display = 'table';
+        } catch (err) {
+            document.getElementById('creators-loading').textContent = 'Failed to load creators.';
+        }
+    }
+
+    async function loadBookings() {
+        const loading = document.getElementById('bookings-loading');
+        loading.style.display = 'block';
+        loading.textContent = 'Loading bookings...';
+        document.getElementById('bookings-table').style.display = 'none';
+        try {
+            const res = await fetch(`${BACKEND}/admin/bookings`, { headers: { 'x-admin-secret': adminSecret } });
+            const data = await res.json();
+            loading.style.display = 'none';
+            if (!data.bookings || data.bookings.length === 0) {
+                loading.style.display = 'block';
+                loading.textContent = 'No bookings yet.';
+                return;
+            }
+            const tbody = document.getElementById('bookings-body');
+            tbody.innerHTML = data.bookings.map(b => {
+                const dateStr = b.proposedDate ? `${b.proposedDate} @ ${b.proposedTime} (proposed)` : (b.requestedDate ? `${b.requestedDate} @ ${b.requestedTime || ''}` : '—');
+                return `
+                <tr>
+                    <td>
+                        <div style="font-weight:600;color:#F5EDD6;">${esc(b.fanName)}</div>
+                        <div style="font-size:11px;color:#888;">${esc(b.fanEmail)}</div>
+                    </td>
+                    <td style="color:#aaa;">${esc(b.creatorName)}</td>
+                    <td><span style="color:${b.sessionType==='dare'?'#FF6B6B':'#D4A574'};font-weight:600;">${b.sessionType === 'truth' ? '🤔 Truth $15' : '🔥 Dare $45'}</span></td>
+                    <td style="font-size:12px;color:#aaa;">${dateStr}</td>
+                    <td><span class="badge ${b.status}">${b.status}</span></td>
+                    <td style="font-size:11px;color:#666;">${new Date(b.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+                </tr>`;
+            }).join('');
+            document.getElementById('bookings-table').style.display = 'table';
+        } catch (err) {
+            loading.textContent = 'Failed to load bookings.';
+        }
+    }
+
+    async function deleteCreator(id, name) {
+        if (!confirm(`Delete creator "${name}"? This cannot be undone.`)) return;
+        try {
+            const res = await fetch(`${BACKEND}/admin/creator/${id}`, {
+                method: 'DELETE',
+                headers: { 'x-admin-secret': adminSecret }
+            });
+            const data = await res.json();
+            if (res.ok) { showToast(`✅ ${name} deleted.`); loadCreators(); }
+            else showToast('Error: ' + data.error);
+        } catch { showToast('Network error.'); }
+    }
+
+    async function featureCreator(id, approve) {
+        try {
+            const res = await fetch(`${BACKEND}/admin/creator/${id}/feature`, {
+                method: 'PUT',
+                headers: { 'x-admin-secret': adminSecret, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ approve })
+            });
+            const data = await res.json();
+            if (res.ok) { showToast(approve ? '⭐ Creator featured!' : 'Removed from featured.'); loadCreators(); }
+            else showToast('Error: ' + data.error);
+        } catch { showToast('Network error.'); }
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 3500);
+    }
+
+    function esc(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+</script>
+</body>
+</html>
