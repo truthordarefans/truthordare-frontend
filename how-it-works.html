@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works | Truth or Dare For My Fans</title>
+    <meta name="description" content="Learn how Truth or Dare For My Fans works — book a live Truth or Dare session with your favourite creator in minutes.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #8B0000;
+            --gold: #D4A574;
+            --gold-light: #F0C890;
+            --cream: #FDF6EC;
+            --text: #C9B99A;
+            --text-dim: rgba(201,185,154,0.55);
+            --panel: rgba(0,0,0,0.35);
+            --green: #22c55e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { overflow-x: hidden; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--red);
+            background-image:
+                radial-gradient(ellipse at 15% 10%, rgba(212,165,116,0.12) 0%, transparent 45%),
+                radial-gradient(ellipse at 85% 90%, rgba(100,0,0,0.5) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 24px 16px;
+            color: var(--text);
+        }
+        .page-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            border: 3px solid var(--gold);
+            padding: 40px 48px;
+            background: rgba(0,0,0,0.12);
+            position: relative;
+            border-radius: 4px;
+        }
+        .page-wrapper::before { content: '♦'; position: absolute; top: 10px; left: 12px; color: var(--gold); font-size: 18px; }
+        .page-wrapper::after { content: '♦'; position: absolute; bottom: 10px; right: 12px; color: var(--gold); font-size: 18px; }
+        @media (max-width: 600px) { .page-wrapper { padding: 28px 18px; } body { padding: 12px; } }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: var(--gold); text-decoration: none; font-size: 13px;
+            font-weight: 700; letter-spacing: 0.5px; margin-bottom: 32px;
+        }
+        .back-link:hover { color: var(--gold-light); }
+
+        .page-header { text-align: center; margin-bottom: 48px; }
+        .page-header .eyebrow { font-size: 11px; letter-spacing: 2.5px; color: var(--gold); text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 38px; color: var(--cream); margin-bottom: 14px; line-height: 1.2; }
+        .page-header p { font-size: 16px; color: var(--text); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+        @media (max-width: 600px) { .page-header h1 { font-size: 28px; } }
+
+        /* Tab switcher */
+        .tab-bar { display: flex; gap: 0; border: 2px solid rgba(212,165,116,0.4); border-radius: 10px; overflow: hidden; margin-bottom: 40px; }
+        .tab-btn { flex: 1; padding: 14px; background: transparent; border: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+        .tab-btn.active { background: var(--gold); color: #120500; }
+        .tab-btn:not(.active):hover { background: rgba(212,165,116,0.15); color: var(--gold-light); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Steps */
+        .steps { display: flex; flex-direction: column; gap: 0; }
+        .step { display: flex; gap: 24px; padding: 28px 0; border-bottom: 1px solid rgba(212,165,116,0.12); }
+        .step:last-child { border-bottom: none; }
+        .step-num {
+            flex-shrink: 0; width: 52px; height: 52px;
+            border: 2px solid var(--gold); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Playfair Display', serif; font-size: 22px;
+            color: var(--gold); font-weight: 700;
+        }
+        .step-body h3 { font-size: 17px; color: var(--cream); font-weight: 700; margin-bottom: 8px; }
+        .step-body p { font-size: 14px; color: var(--text); line-height: 1.7; }
+        .step-body .tag {
+            display: inline-block; margin-top: 10px; padding: 4px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+        }
+        .tag-truth { background: rgba(212,165,116,0.2); color: var(--gold-light); border: 1px solid rgba(212,165,116,0.4); }
+        .tag-dare { background: rgba(204,0,0,0.2); color: #ff9999; border: 1px solid rgba(204,0,0,0.4); }
+        @media (max-width: 500px) { .step { gap: 16px; } .step-num { width: 40px; height: 40px; font-size: 18px; } }
+
+        /* Pricing cards */
+        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 32px 0; }
+        @media (max-width: 500px) { .pricing-grid { grid-template-columns: 1fr; } }
+        .pricing-card {
+            background: var(--panel); border: 2px solid rgba(212,165,116,0.35);
+            border-radius: 12px; padding: 28px 24px; text-align: center;
+        }
+        .pricing-card .emoji { font-size: 36px; margin-bottom: 12px; }
+        .pricing-card h3 { font-size: 20px; color: var(--cream); font-weight: 800; margin-bottom: 6px; }
+        .pricing-card .price { font-size: 38px; color: var(--gold); font-weight: 900; margin-bottom: 4px; }
+        .pricing-card .duration { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
+        .pricing-card p { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+        /* FAQ */
+        .faq { display: flex; flex-direction: column; gap: 0; }
+        .faq-item { border-bottom: 1px solid rgba(212,165,116,0.12); }
+        .faq-q {
+            width: 100%; background: none; border: none; text-align: left;
+            padding: 20px 0; color: var(--cream); font-family: 'DM Sans', sans-serif;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; gap: 12px;
+        }
+        .faq-q:hover { color: var(--gold-light); }
+        .faq-q .arrow { color: var(--gold); font-size: 18px; transition: transform 0.2s; flex-shrink: 0; }
+        .faq-q.open .arrow { transform: rotate(180deg); }
+        .faq-a { display: none; padding: 0 0 20px 0; font-size: 14px; color: var(--text); line-height: 1.75; }
+        .faq-a.open { display: block; }
+
+        /* CTA */
+        .cta-section {
+            margin-top: 48px; text-align: center;
+            background: rgba(212,165,116,0.07); border: 1px solid rgba(212,165,116,0.3);
+            border-radius: 12px; padding: 36px 28px;
+        }
+        .cta-section h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--cream); margin-bottom: 12px; }
+        .cta-section p { font-size: 14px; color: var(--text); margin-bottom: 24px; }
+        .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+        .btn-gold { background: var(--gold); color: #120500; border: none; padding: 14px 32px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 900; letter-spacing: 0.5px; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; }
+        .btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); }
+        .btn-outline { background: transparent; color: var(--gold); border: 2px solid var(--gold); padding: 14px 32px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 900; letter-spacing: 0.5px; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; }
+        .btn-outline:hover { background: rgba(212,165,116,0.15); }
+
+        .footer { margin-top: 40px; text-align: center; font-size: 12px; color: var(--text-dim); padding-top: 24px; border-top: 1px solid rgba(212,165,116,0.15); }
+        .footer a { color: var(--gold); text-decoration: none; }
+        .footer a:hover { color: var(--gold-light); }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <a href="/" class="back-link">← Back to Home</a>
+
+        <div class="page-header">
+            <p class="eyebrow">Truth or Dare For My Fans</p>
+            <h1>How It Works</h1>
+            <p>Live, interactive Truth or Dare sessions between fans and their favourite creators — booked in minutes, paid securely, and streamed live.</p>
+        </div>
+
+        <!-- Tab switcher -->
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('fans', this)">👤 For Fans</button>
+            <button class="tab-btn" onclick="switchTab('creators', this)">🌟 For Creators</button>
+            <button class="tab-btn" onclick="switchTab('pricing', this)">💰 Pricing</button>
+            <button class="tab-btn" onclick="switchTab('faq', this)">❓ FAQ</button>
+        </div>
+
+        <!-- FOR FANS -->
+        <div class="tab-content active" id="tab-fans">
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <h3>Create your free fan account</h3>
+                        <p>Sign up in seconds — just your name, email, and a password. No credit card required to join. Your account lets you track bookings, save favourite creators, and receive session room links.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <h3>Browse creators and pick your session</h3>
+                        <p>Explore creator profiles on the homepage. Each creator offers two session types — choose the one that excites you most.</p>
+                        <span class="tag tag-truth">🤔 Truth — $15 &nbsp;·&nbsp; 5 minutes</span>&nbsp;
+                        <span class="tag tag-dare">🔥 Dare — $45 &nbsp;·&nbsp; 15 minutes</span>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <h3>Submit a booking request</h3>
+                        <p>Pick your preferred date and time, add an optional note for the creator, and hit <strong>Send Booking Request</strong>. No payment is taken at this stage — you only pay once the creator confirms.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <h3>Creator accepts — complete payment</h3>
+                        <p>Once the creator accepts your booking, you'll receive an email with a secure payment link. Click it, review the session details, and complete payment via Stripe. Your spot is locked in.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">5</div>
+                    <div class="step-body">
+                        <h3>Join your live session</h3>
+                        <p>At your session time, click the room link in your email (or from your fan dashboard). Allow camera and microphone access, and you're live with your creator. The session timer starts automatically.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOR CREATORS -->
+        <div class="tab-content" id="tab-creators">
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <h3>Sign up free and get your profile instantly</h3>
+                        <p>Register on the homepage — your public creator profile is live immediately at <strong>truthordareformyfans.com/creator/yourhandle</strong>. Add your photo, bio, and social links to attract fans.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <h3>Connect Stripe to receive payouts</h3>
+                        <p>From your dashboard, click <strong>Connect Stripe</strong>. This creates a free Stripe Express account linked to your bank. Setup takes about 5 minutes. You'll receive <strong>85% of every session fee</strong> paid directly to your account.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <h3>Go live and start accepting bookings</h3>
+                        <p>Flip the <strong>Availability toggle</strong> in your dashboard to Online. Fans can now see you and submit booking requests. You'll receive an email notification for every new request.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <h3>Manage bookings from your dashboard</h3>
+                        <p>Your <strong>Booking Inbox</strong> shows all pending requests. For each one, you can <strong>Accept &amp; Send Payment Link</strong>, <strong>Propose a New Time</strong>, or <strong>Decline</strong>. You're always in control of your schedule.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">5</div>
+                    <div class="step-body">
+                        <h3>Run the session and get paid automatically</h3>
+                        <p>Once the fan pays, both of you receive a private video room link. Join at the scheduled time, run your Truth or Dare session, and your 85% payout is processed automatically by Stripe.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRICING -->
+        <div class="tab-content" id="tab-pricing">
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="emoji">🤔</div>
+                    <h3>Truth Session</h3>
+                    <div class="price">$15</div>
+                    <div class="duration">5 minutes · Live video</div>
+                    <p>The fan asks the creator a truth question. The creator answers live on camera. Honest, personal, and intimate.</p>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-card">
+                    <div class="emoji">🔥</div>
+                    <h3>Dare Session</h3>
+                    <div class="price">$45</div>
+                    <div class="duration">15 minutes · Live video</div>
+                    <p>The fan dares the creator to do something on camera. Playful, bold, and unforgettable. Three times the time, three times the fun.</p>
+                </div>
+            </div>
+
+            <div style="background:rgba(212,165,116,0.07);border:1px solid rgba(212,165,116,0.3);border-radius:12px;padding:24px 28px;margin-top:28px;">
+                <h3 style="color:var(--gold-light);font-size:17px;margin-bottom:12px;">💸 Creator Payout Split</h3>
+                <p style="font-size:14px;color:var(--text);line-height:1.7;">Every session fee is automatically split at the moment of payment:</p>
+                <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:140px;background:rgba(0,0,0,0.3);border-radius:8px;padding:16px;text-align:center;">
+                        <div style="font-size:28px;color:var(--green);font-weight:900;">85%</div>
+                        <div style="font-size:12px;color:var(--text);margin-top:4px;">Goes directly to the creator's Stripe account</div>
+                    </div>
+                    <div style="flex:1;min-width:140px;background:rgba(0,0,0,0.3);border-radius:8px;padding:16px;text-align:center;">
+                        <div style="font-size:28px;color:var(--gold);font-weight:900;">15%</div>
+                        <div style="font-size:12px;color:var(--text);margin-top:4px;">Platform fee — covers hosting, video, and payment processing</div>
+                    </div>
+                </div>
+                <p style="font-size:13px;color:var(--text-dim);margin-top:16px;">Stripe's standard processing fee (~2.9% + $0.30) is deducted from the platform's 15% share — creators always receive their full 85%.</p>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="tab-content" id="tab-faq">
+            <div class="faq">
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        Do I need an account to book a session?
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="faq-a">Yes — you need a free fan account to book sessions. This lets us send you your room link and keep a record of your bookings. Signing up takes about 30 seconds.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        When do I pay?
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="faq-a">You only pay after the creator accepts your booking request. Submitting a request is completely free — no card details are taken until you're confirmed.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        What if the creator doesn't show up?
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="faq-a">If a creator fails to attend a confirmed, paid session, you are entitled to a full refund. Contact us at truthordarefans@gmail.com and we'll process it within 5 business days.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        Can I record the session?
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="faq-a">Recording sessions without the creator's explicit consent is strictly prohibited and may result in account termination. Please respect creators' privacy.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        How do creators get paid?
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="faq-a">Creators connect a free Stripe Express account from their dashboard. When a fan pays, 85% is automatically transferred to the creator's Stripe account. Stripe then pays out to the creator's bank account on their standard payout schedule (typically 2–7 business days).</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        Is the platform safe and private?
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="faq-a">Yes. All payments are processed by Stripe — we never store card details. Video sessions use private, unique room links that expire after the session. We do not record sessions.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        What devices can I use?
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="faq-a">Sessions work on any modern browser — Chrome, Safari, Firefox, or Edge — on desktop, laptop, tablet, or smartphone. No app download required. You'll need a working camera and microphone.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">
+                        How do I become a creator?
+                        <span class="arrow">▼</span>
+                    </button>
+                    <div class="faq-a">Go to the homepage and scroll to the "For Creators" signup form. Fill in your details, choose your handle, and your profile is live immediately. Then connect Stripe from your dashboard and flip your availability to Online.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-section">
+            <h2>Ready to get started?</h2>
+            <p>Join thousands of fans and creators on the platform built for live, interactive experiences.</p>
+            <div class="cta-btns">
+                <a href="/" class="btn-gold" onclick="openFanModal && openFanModal('signup')">✨ Join as a Fan — Free</a>
+                <a href="/#creator-signup" class="btn-outline">🌟 Become a Creator</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 <a href="/">truthordareformyfans.com</a> &nbsp;·&nbsp; <a href="/terms.html">Terms</a> &nbsp;·&nbsp; <a href="/privacy.html">Privacy</a> &nbsp;·&nbsp; 18+ only</p>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function toggleFaq(btn) {
+            const answer = btn.nextElementSibling;
+            const isOpen = answer.classList.contains('open');
+            // Close all
+            document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+            document.querySelectorAll('.faq-q').forEach(q => q.classList.remove('open'));
+            // Open this one if it was closed
+            if (!isOpen) {
+                answer.classList.add('open');
+                btn.classList.add('open');
+            }
+        }
+    </script>
+</body>
+</html>

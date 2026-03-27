@@ -221,7 +221,11 @@
         .login-btn-header:hover { background: #e8b882; color: #0d1b2a; transform: translateY(-1px); }
         .login-btn-header.creator { background: #D4A574; color: #0d0d0d; }
         .login-btn-header.creator:hover { background: #e8b882; color: #0d0d0d; }
-        @media (max-width: 680px) { .login-btns-header { float: none; flex-direction: row; justify-content: center; margin-bottom: 12px; gap: 10px; } .login-btn-header { padding: 9px 13px; font-size: 11px; } }
+        @media (max-width: 680px) {
+            .login-btns-header { float: none; flex-direction: column; align-items: stretch; margin: 0 0 14px 0; gap: 8px; width: 100%; }
+            .login-btn-group { flex-direction: row; gap: 6px; }
+            .login-btn-header { padding: 10px 8px; font-size: 11px; flex: 1; text-align: center; }
+        }
 
         .site-header h1 {
             font-family: 'Playfair Display', serif;
@@ -415,15 +419,21 @@
 
         /* --- RESPONSIVE DESIGN --- */
         @media (max-width: 768px) {
-            .page-wrapper { padding: 20px; }
-            .site-header h1 { font-size: 32px; }
+            body { padding: 10px; }
+            .page-wrapper { padding: 16px 14px; }
+            .site-header { text-align: center; }
+            .site-header h1 { font-size: 28px; }
             .site-header .tagline { font-size: 12px; }
             .hero-section { flex-direction: column; align-items: center; }
             .challenge-options { flex-direction: column; align-items: center; }
-            .challenge-form { padding: 20px; }
+            .challenge-form { padding: 16px; }
             .challenge-form .btn-notify { margin-left: 0; margin-top: 15px; }
             .subscribe-cards { flex-direction: column; align-items: center; }
             .creator-grid { flex-direction: column; align-items: center; }
+            .creator-top-banner { flex-direction: column; gap: 12px; text-align: center; padding: 14px 16px; }
+            .creator-top-banner .banner-btn { width: 100%; }
+            .booking-modal { padding: 20px 16px; }
+            .stripe-connect-section { padding: 20px 16px; }
         }
     </style>
 </head>
@@ -659,9 +669,9 @@
             </p>
             <p>&copy; 2025 <a href="https://www.truthordareformyfans.com">truthordareformyfans.com</a> &nbsp;·&nbsp; All rights reserved &nbsp;·&nbsp; For adults 18+ only</p>
             <p style="margin-top: 10px;">
-                <a href="#">Terms</a>
-                <a href="#">Privacy</a>
-                <a href="#">Community Guidelines</a>
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/how-it-works.html">How It Works</a>
             </p>
         </footer>
     </div>
