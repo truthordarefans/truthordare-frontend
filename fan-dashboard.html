@@ -218,8 +218,21 @@
             const data = await res.json();
             const bookings = data.bookings || [];
 
+            // Helper: check if a booking's session time has already passed
+            function isSessionPast(b) {
+                const dateStr = b.proposedDate || b.requestedDate;
+                const timeStr = b.proposedTime || b.requestedTime;
+                if (!dateStr) return false;
+                try {
+                    const combined = timeStr ? `${dateStr} ${timeStr}` : dateStr;
+                    const sessionDate = new Date(combined);
+                    if (isNaN(sessionDate.getTime())) return false;
+                    return sessionDate < new Date();
+                } catch (e) { return false; }
+            }
+
             // Stats
-            const upcoming = bookings.filter(b => ['pending','accepted','proposed'].includes(b.status));
+            const upcoming = bookings.filter(b => ['pending','accepted','proposed'].includes(b.status) && !isSessionPast(b));
             const completed = bookings.filter(b => b.status === 'paid');
             document.getElementById('statTotal').textContent = bookings.length;
             document.getElementById('statUpcoming').textContent = upcoming.length;
