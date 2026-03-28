@@ -214,15 +214,16 @@
         .calc-breakdown .breakdown-item strong { color: var(--gold-light); font-size: 15px; }
 
         /* --- HEADER --- */
-        .site-header { text-align: center; margin-bottom: 32px; }
-        .login-btns-header { display: flex; flex-direction: row; align-items: flex-start; gap: 16px; float: right; margin-left: 16px; }
-        .login-btn-group { display: flex; flex-direction: column; gap: 7px; }
-        .login-btn-header { padding: 10px 18px; background: #D4A574; border: none; border-radius: 8px; color: #0d1b2a; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.2s; white-space: nowrap; display: block; text-align: center; }
-        .login-btn-header:hover { background: #e8b882; color: #0d1b2a; transform: translateY(-1px); }
-        .login-btn-header.creator { background: #D4A574; color: #0d0d0d; }
-        .login-btn-header.creator:hover { background: #e8b882; color: #0d0d0d; }
+        .site-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; gap: 12px; }
+        .site-header-title { flex: 1; text-align: center; }
+        .login-btn-group { display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+        .login-btn-header { padding: 10px 18px; background: #D4A017; border: none; border-radius: 8px; color: #0d1b2a; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: all 0.2s; white-space: nowrap; display: block; text-align: center; }
+        .login-btn-header:hover { background: #e8c520; color: #0d1b2a; transform: translateY(-1px); }
+        .login-btn-header.creator { background: #D4A017; color: #CC0000; }
+        .login-btn-header.creator:hover { background: #e8c520; color: #CC0000; }
         @media (max-width: 680px) {
-            .login-btns-header { float: none; flex-direction: column; align-items: stretch; margin: 0 0 14px 0; gap: 8px; width: 100%; }
+            .site-header { flex-direction: column; align-items: stretch; }
+            .site-header-title { order: -1; }
             .login-btn-group { flex-direction: row; gap: 6px; }
             .login-btn-header { padding: 10px 8px; font-size: 11px; flex: 1; text-align: center; }
         }
@@ -449,20 +450,21 @@
         </div>
 
         <header class="site-header">
-            <div class="login-btns-header">
-                <!-- Fan group -->
-                <div class="login-btn-group">
-                    <a href="#fan-signup" class="login-btn-header" onclick="openFanModal('signup'); return false;">✨ Fans Join Free</a>
-                    <a href="#fan-login" class="login-btn-header" onclick="openFanModal('login'); return false;">👤 Fan Login</a>
-                </div>
-                <!-- Creator group -->
-                <div class="login-btn-group">
-                    <a href="#creator-signup" class="login-btn-header creator" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'}); return false;">🌟 Join as Creator Free</a>
-                    <a href="#creator-login" class="login-btn-header creator" onclick="openLoginModal('creator'); return false;">🌟 Creator Login</a>
-                </div>
+            <!-- Fan buttons — LEFT -->
+            <div class="login-btn-group">
+                <a href="#fan-signup" class="login-btn-header" onclick="openFanModal('signup'); return false;">✨ Fans Join Free</a>
+                <a href="#fan-login" class="login-btn-header" onclick="openFanModal('login'); return false;">👤 Fan Login</a>
             </div>
-            <h1>Truth or Dare <br>For My Fans</h1>
-            <p class="tagline">The ultimate fan-creator challenge experience</p>
+            <!-- Title — CENTRE -->
+            <div class="site-header-title">
+                <h1>Truth or Dare <br>For My Fans</h1>
+                <p class="tagline">The ultimate fan-creator challenge experience</p>
+            </div>
+            <!-- Creator buttons — RIGHT -->
+            <div class="login-btn-group">
+                <a href="#creator-signup" class="login-btn-header creator" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'}); return false;">🌟 Join as Creator Free</a>
+                <a href="#creator-login" class="login-btn-header creator" onclick="openLoginModal('creator'); return false;">🌟 Creator Login</a>
+            </div>
         </header>
 
         <section class="hero-section">
