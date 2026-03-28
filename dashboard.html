@@ -290,29 +290,16 @@
                     <div style="font-size:10px;color:var(--text-dim);margin-top:8px;">JPG, PNG, WebP · Max 2 MB each · Empty slots are hidden from fans · Click Save Profile to apply changes</div>
                 </div>
                 <!-- Notification Preferences -->
-                <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--gold-dim);">
-                    <div style="font-size:13px;color:var(--text-dim);margin-bottom:14px;">🔔 <strong style="color:var(--cream);">Notification Preferences</strong> <span style="font-size:11px;">— how should we notify you when a fan books or shows interest?</span></div>
-                    <div style="display:flex;flex-direction:column;gap:10px;">
-                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--text);">
-                            <input type="checkbox" id="notif-email" style="width:16px;height:16px;accent-color:var(--gold);">
-                            <span>📧 Email (to your registered email)</span>
-                        </label>
-                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--text);">
-                            <input type="checkbox" id="notif-sms" style="width:16px;height:16px;accent-color:var(--gold);" onchange="toggleNotifPhone()">
-                            <span>📱 Text / SMS</span>
-                        </label>
-                        <div id="notif-phone-row" style="display:none;margin-left:26px;">
-                            <input type="tel" id="notif-phone" placeholder="Your phone number (e.g. +1 555 123 4567)" style="width:100%;max-width:320px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:6px;padding:8px 12px;color:var(--cream);font-size:13px;">
-                        </div>
-                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--text);">
-                            <input type="checkbox" id="notif-other" style="width:16px;height:16px;accent-color:var(--gold);" onchange="toggleNotifHandle()">
-                            <span>💬 Other (DM / custom handle)</span>
-                        </label>
-                        <div id="notif-handle-row" style="display:none;margin-left:26px;">
-                            <input type="text" id="notif-handle" placeholder="e.g. DM me on Instagram @yourname" style="width:100%;max-width:380px;background:rgba(0,0,0,0.3);border:1px solid var(--gold-dim);border-radius:6px;padding:8px 12px;color:var(--cream);font-size:13px;">
+                <div style="margin-top:28px;padding:20px;border-top:1px solid var(--gold-dim);background:rgba(0,0,0,0.2);border-radius:10px;">
+                    <div style="font-size:16px;color:var(--cream);margin-bottom:12px;">🔔 <strong>Notification Preferences</strong></div>
+                    <div style="display:flex;align-items:center;gap:14px;background:rgba(212,165,116,0.08);border:1px solid var(--gold-dim);border-radius:8px;padding:16px 18px;">
+                        <input type="checkbox" id="notif-email" checked disabled style="width:20px;height:20px;accent-color:var(--gold);flex-shrink:0;">
+                        <div>
+                            <div style="font-size:15px;color:var(--cream);font-weight:600;">📧 Email Notifications</div>
+                            <div style="font-size:13px;color:var(--text-dim);margin-top:3px;">You will be notified by email at your registered address whenever a fan books or shows interest.</div>
                         </div>
                     </div>
-                    <div style="font-size:10px;color:var(--text-dim);margin-top:10px;">These preferences are saved when you click <strong>Save Profile</strong> above.</div>
+                    <div style="font-size:12px;color:var(--text-dim);margin-top:10px;">Notifications are sent automatically — no action needed. Saved with your profile.</div>
                 </div>
             </div>
 
@@ -605,10 +592,7 @@
             payload.extraPhotos = extraPhotosPayload.map(p => p || '');
             // Notification preferences
             payload.notificationPrefs = {
-                email: document.getElementById('notif-email').checked,
-                sms: document.getElementById('notif-sms').checked,
-                phone: document.getElementById('notif-phone').value.trim() || null,
-                customHandle: document.getElementById('notif-handle').value.trim() || null,
+                email: true,
             };
             try {
                 const res = await fetch(`${BACKEND}/creator/profile`, {
@@ -635,24 +619,9 @@
             btn.textContent = 'Save Profile';
         }
 
-        // ── NOTIFICATION PREFS TOGGLES ─────────────────────────────────────
-        function toggleNotifPhone() {
-            const smsChecked = document.getElementById('notif-sms').checked;
-            document.getElementById('notif-phone-row').style.display = smsChecked ? 'block' : 'none';
-        }
-        function toggleNotifHandle() {
-            const otherChecked = document.getElementById('notif-other').checked;
-            document.getElementById('notif-handle-row').style.display = otherChecked ? 'block' : 'none';
-        }
+        // ── NOTIFICATION PREFS ─────────────────────────────────────────────
         function renderNotifPrefs(prefs) {
-            if (!prefs) return;
-            document.getElementById('notif-email').checked = prefs.email !== false;
-            document.getElementById('notif-sms').checked = !!prefs.sms;
-            document.getElementById('notif-other').checked = !!prefs.customHandle;
-            if (prefs.phone) document.getElementById('notif-phone').value = prefs.phone;
-            if (prefs.customHandle) document.getElementById('notif-handle').value = prefs.customHandle;
-            toggleNotifPhone();
-            toggleNotifHandle();
+            // Email-only notifications — checkbox is always checked and disabled
         }
 
         // ── AVAILABILITY ──────────────────────────────────────────────────────
