@@ -591,13 +591,9 @@
                     <input type="text" id="creatorFansVue" placeholder="FansVue handle (e.g. @yourname)">
                     <input type="text" id="creatorLuvlyFans" placeholder="LuvlyFans handle (e.g. @yourname)">
                     <input type="text" id="creatorTikTok" placeholder="TikTok handle (e.g. @yourname)">
-                    <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light);">How should we notify you when a fan books?</p>
-                    <div class="creator-notify-options">
-                        <div><input type="radio" name="notifyMethod" value="email" checked> <label>Email</label></div>
-                        <div><input type="radio" name="notifyMethod" value="text"> <label>Text / SMS</label></div>
-                        <div><input type="radio" name="notifyMethod" value="other"> <label>Other</label></div>
-                    </div>
-                    <input type="text" id="handleInput" placeholder="Your phone number or other contact">
+                    <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light);">You'll be notified by email when a fan books.</p>
+                    <input type="hidden" name="notifyMethod" value="email">
+                    <input type="hidden" id="handleInput" value="">
                     <div class="checkbox-group">
                         <input type="checkbox" id="creatorAgeCheck">
                         <label for="creatorAgeCheck">I confirm I am 18 years of age or older and agree to the terms.</label>
