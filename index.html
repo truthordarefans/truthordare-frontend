@@ -616,6 +616,9 @@
                 <!-- Step 1: Pick Date -->
                 <div class="booking-step active" id="booking-step-1">
                     <h4>Step 1 of 3 — Choose a date</h4>
+                    <div id="now-btn-container" style="display:none;margin-bottom:12px;">
+                        <button class="slot-btn" id="now-btn" style="width:100%;background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;font-weight:700;font-size:15px;padding:14px;border:none;border-radius:10px;cursor:pointer;" onclick="selectNowBooking()">⚡ Now / Immediately — Creator is Online!</button>
+                    </div>
                     <div class="date-btn-grid" id="date-btn-grid"></div>
                     <div class="booking-actions">
                         <button class="btn-back" onclick="closeBookingModal()">✕ Cancel</button>
@@ -987,10 +990,24 @@
         // ── BOOKING MODAL ─────────────────────────────────────────────────────────
         let bookingState = { creatorHandle: null, sessionType: null, selectedDate: null, selectedTime: null };
 
-        function openBookingModal(creatorHandle, sessionType) {
-            bookingState = { creatorHandle, sessionType, selectedDate: null, selectedTime: null };
+        function openBookingModal(creatorHandle, sessionType, isOnline) {
+            // Require fan login before booking
+            const token = localStorage.getItem('tod_token');
+            const role = localStorage.getItem('tod_role');
+            if (!token || role !== 'fan') {
+                showToast('Please log in or sign up as a fan to book a session.');
+                setTimeout(() => {
+                    const fanModal = document.getElementById('fan-panel-login');
+                    if (fanModal) { fanModal.closest('.modal-overlay') && (fanModal.closest('.modal-overlay').style.display = 'flex'); }
+                }, 600);
+                return;
+            }
+            bookingState = { creatorHandle, sessionType, selectedDate: null, selectedTime: null, isNow: false };
             document.getElementById('bookingModalSub').textContent =
                 `${sessionType === 'truth' ? 'Truth Session ($15)' : 'Dare Session ($45)'} with ${creatorHandle}`;
+            // Show/hide Now button based on creator online status
+            const nowContainer = document.getElementById('now-btn-container');
+            nowContainer.style.display = isOnline ? 'block' : 'none';
             // Build date buttons (next 7 days)
             const grid = document.getElementById('date-btn-grid');
             grid.innerHTML = '';
@@ -1001,13 +1018,29 @@
                 const dateStr = d.toISOString().split('T')[0];
                 const btn = document.createElement('button');
                 btn.className = 'slot-btn'; btn.textContent = label;
-                btn.onclick = () => { document.querySelectorAll('#date-btn-grid .slot-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); bookingState.selectedDate = dateStr; document.getElementById('date-next-btn').disabled = false; };
+                btn.onclick = () => { document.querySelectorAll('#date-btn-grid .slot-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); bookingState.selectedDate = dateStr; bookingState.isNow = false; document.getElementById('date-next-btn').disabled = false; };
                 grid.appendChild(btn);
             }
             // Show step 1
             document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
             document.getElementById('booking-step-1').classList.add('active');
             document.getElementById('bookingModalOverlay').style.display = 'flex';
+        }
+
+        function selectNowBooking() {
+            // Fan selected Now/Immediately
+            const now = new Date();
+            bookingState.selectedDate = now.toISOString().split('T')[0];
+            bookingState.selectedTime = now.getHours() + ':' + (now.getMinutes() < 30 ? '00' : '30');
+            bookingState.isNow = true;
+            // Highlight the Now button
+            document.getElementById('now-btn').style.outline = '3px solid #fff';
+            document.getElementById('date-next-btn').disabled = false;
+            // Skip straight to step 3 (confirm)
+            document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
+            const confirmBox = document.getElementById('booking-confirm-box');
+            confirmBox.innerHTML = `<strong>${bookingState.sessionType === 'truth' ? 'Truth Session ($15)' : 'Dare Session ($45)'}</strong> with <strong>${bookingState.creatorHandle}</strong><br><span style="color:#2ecc71;font-weight:700;">⚡ Now / Immediately</span>`;
+            document.getElementById('booking-step-3').classList.add('active');
         }
 
         function bookingNextStep(step) {
@@ -1172,8 +1205,8 @@
                             <h3>${c.name}</h3>
                             <p>${c.bio ? c.bio.substring(0, 90) + (c.bio.length > 90 ? '…' : '') : 'Available for Truth or Dare sessions.'}</p>
                             <div class="browse-card-btns">
-                                <button class="btn-truth" onclick="event.stopPropagation(); openBookingModal('${handle}','truth')">🤔 Truth — $15</button>
-                                <button class="btn-dare" onclick="event.stopPropagation(); openBookingModal('${handle}','dare')">🔥 Dare — $45</button>
+                                <button class="btn-truth" onclick="event.stopPropagation(); openBookingModal('${handle}','truth',${isLive})">🤔 Truth — $15</button>
+                                <button class="btn-dare" onclick="event.stopPropagation(); openBookingModal('${handle}','dare',${isLive})">🔥 Dare — $45</button>
                             </div>
                         </div>
                     `;
