@@ -1614,5 +1614,61 @@
             }
         });
     </script>
+
+    <!-- FLOATING DASHBOARD BUTTON: shown on all pages when logged in -->
+    <style>
+    #floating-dash-btn {
+        display: none;
+        position: fixed;
+        bottom: 24px;
+        right: 20px;
+        z-index: 9999;
+        background: linear-gradient(135deg, #D4A574, #c49060);
+        color: #1a0000;
+        border: none;
+        border-radius: 50px;
+        padding: 13px 20px;
+        font-size: 14px;
+        font-weight: 800;
+        font-family: 'DM Sans', sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 4px 20px rgba(212,165,116,0.55);
+        transition: all 0.2s;
+        white-space: nowrap;
+        align-items: center;
+        gap: 8px;
+    }
+    #floating-dash-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 28px rgba(212,165,116,0.7);
+    }
+    #floating-dash-btn.visible { display: flex; }
+    </style>
+    <a id="floating-dash-btn" href="/dashboard">My Dashboard</a>
+    <script>
+    (function() {
+        var token = localStorage.getItem('tod_token');
+        var role = localStorage.getItem('tod_role');
+        var btn = document.getElementById('floating-dash-btn');
+        if (token && role && btn) {
+            btn.href = role === 'creator' ? '/dashboard' : '/fan-dashboard';
+            var userRaw = localStorage.getItem('tod_user');
+            var label = role === 'creator' ? '\u2b50 My Dashboard' : '\ud83d\udc64 My Dashboard';
+            if (userRaw) {
+                try {
+                    var u = JSON.parse(userRaw);
+                    if (u.name) {
+                        var first = u.name.split(' ')[0];
+                        label = (role === 'creator' ? '\u2b50 ' : '\ud83d\udc64 ') + first + "\u2019s Dashboard";
+                    }
+                } catch(e) {}
+            }
+            btn.textContent = label;
+            btn.classList.add('visible');
+        }
+    })();
+    </script>
+
 </body>
 </html>
