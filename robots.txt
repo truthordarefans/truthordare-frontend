@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Disallow private/app pages from indexing
+Disallow: /dashboard
+Disallow: /fan-dashboard
+Disallow: /creator-setup
+Disallow: /admin
+Disallow: /room
+Disallow: /booking-confirmed
+Disallow: /confirm
+Disallow: /onboard-complete
+Disallow: /onboard-refresh
+Disallow: /reset-password
+
+# Sitemap location
+Sitemap: https://www.truthordareformyfans.com/sitemap.xml

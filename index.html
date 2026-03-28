@@ -228,6 +228,17 @@
             .login-btn-header { padding: 10px 8px; font-size: 11px; flex: 1; text-align: center; }
         }
 
+        /* --- LOGGED-IN USER PILL (shown when logged in, replaces both btn groups) --- */
+        #loggedin-bar { display: none; width: 100%; background: rgba(0,0,0,0.35); border: 1px solid rgba(212,165,116,0.4); border-radius: 12px; padding: 10px 18px; margin-bottom: 18px; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        #loggedin-bar.visible { display: flex; }
+        .loggedin-greeting { font-size: 14px; color: var(--cream); font-weight: 600; }
+        .loggedin-greeting span { color: var(--gold); }
+        .loggedin-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .loggedin-dash-btn { background: var(--gold); color: #1a0000; border: none; border-radius: 8px; padding: 10px 20px; font-size: 13px; font-weight: 800; font-family: 'DM Sans', sans-serif; cursor: pointer; text-decoration: none; letter-spacing: 0.3px; transition: all 0.2s; white-space: nowrap; }
+        .loggedin-dash-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+        .loggedin-signout-btn { background: transparent; border: 1px solid rgba(255,107,107,0.5); color: #FF6B6B; border-radius: 8px; padding: 10px 18px; font-size: 13px; font-weight: 700; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+        .loggedin-signout-btn:hover { background: rgba(255,107,107,0.12); }
+
         .site-header h1 {
             font-family: 'Playfair Display', serif;
             font-size: 40px;
@@ -449,7 +460,16 @@
             <button class="banner-btn" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'})">Join as Creator →</button>
         </div>
 
-        <header class="site-header">
+        <!-- Logged-in bar: only visible when user is logged in -->
+        <div id="loggedin-bar">
+            <div class="loggedin-greeting">Welcome back, <span id="loggedin-name">there</span> 👋</div>
+            <div class="loggedin-actions">
+                <a id="loggedin-dash-link" href="/dashboard" class="loggedin-dash-btn">🌟 My Dashboard</a>
+                <button class="loggedin-signout-btn" onclick="siteLogout()">🚪 Sign Out</button>
+            </div>
+        </div>
+
+        <header class="site-header" id="site-header-loggedout">
             <!-- Fan buttons — LEFT -->
             <div class="login-btn-group">
                 <a href="#fan-signup" class="login-btn-header" onclick="openFanModal('signup'); return false;"><span style="color:#22c55e;font-style:normal;">&#x279C;</span> Fans Join Free</a>
@@ -1537,8 +1557,51 @@
             `).join('');
         }
 
+        // ── LOGGED-IN STATE ON HOMEPAGE ─────────────────────────────────────────────
+        function checkLoginState() {
+            const token = localStorage.getItem('tod_token');
+            const role = localStorage.getItem('tod_role');
+            const userRaw = localStorage.getItem('tod_user');
+            const bar = document.getElementById('loggedin-bar');
+            const header = document.getElementById('site-header-loggedout');
+            const dashLink = document.getElementById('loggedin-dash-link');
+            const nameEl = document.getElementById('loggedin-name');
+            if (token && role) {
+                // Show logged-in bar, hide login/signup header
+                bar.classList.add('visible');
+                header.style.display = 'none';
+                // Set dashboard link based on role
+                if (role === 'creator') {
+                    dashLink.href = '/dashboard';
+                    dashLink.textContent = '🌟 Creator Dashboard';
+                } else {
+                    dashLink.href = '/fan-dashboard';
+                    dashLink.textContent = '👤 My Dashboard';
+                }
+                // Set name
+                if (userRaw) {
+                    try {
+                        const user = JSON.parse(userRaw);
+                        if (user.name) nameEl.textContent = user.name.split(' ')[0];
+                    } catch(e) {}
+                }
+            } else {
+                bar.classList.remove('visible');
+                header.style.display = '';
+            }
+        }
+
+        function siteLogout() {
+            localStorage.removeItem('tod_token');
+            localStorage.removeItem('tod_role');
+            localStorage.removeItem('tod_user');
+            checkLoginState();
+            showToast('You have been signed out.', 'info');
+        }
+
         // Initial calls
         document.addEventListener('DOMContentLoaded', () => {
+            checkLoginState();
             updateCalc();
             fetchBrowseCreators();
             renderFavouritesBar();

@@ -61,6 +61,20 @@
         .dash-header .logout-btn { background: transparent; border: 1px solid rgba(204,0,0,0.4); color: #FF6B6B; font-size: 12px; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 700; letter-spacing: 0.5px; transition: all 0.2s; }
         .dash-header .logout-btn:hover { background: rgba(204,0,0,0.2); }
 
+        /* AVATAR PILL DROPDOWN */
+        .avatar-pill { position: relative; display: flex; align-items: center; gap: 9px; background: rgba(0,0,0,0.35); border: 1px solid var(--gold-dim); border-radius: 40px; padding: 5px 14px 5px 5px; cursor: pointer; transition: all 0.2s; user-select: none; }
+        .avatar-pill:hover { border-color: var(--gold); background: rgba(212,165,116,0.1); }
+        .avatar-pill-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--gold-dim); display: flex; align-items: center; justify-content: center; font-size: 16px; overflow: hidden; flex-shrink: 0; }
+        .avatar-pill-img img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-pill-name { font-size: 13px; color: var(--cream); font-weight: 600; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .avatar-pill-caret { font-size: 10px; color: var(--gold); margin-left: 2px; }
+        .avatar-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: #1a0800; border: 1px solid var(--gold-dim); border-radius: 10px; min-width: 180px; z-index: 999; box-shadow: 0 8px 32px rgba(0,0,0,0.6); overflow: hidden; }
+        .avatar-dropdown.open { display: block; }
+        .avatar-dropdown a, .avatar-dropdown button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 13px 18px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 600; background: transparent; border: none; cursor: pointer; text-decoration: none; transition: background 0.15s; color: var(--cream); }
+        .avatar-dropdown a:hover, .avatar-dropdown button:hover { background: rgba(212,165,116,0.12); }
+        .avatar-dropdown .signout-btn { color: #FF6B6B; border-top: 1px solid var(--gold-dim); }
+        .avatar-dropdown .signout-btn:hover { background: rgba(255,107,107,0.1); }
+
         /* LOADING STATE */
         #loading-state { text-align: center; padding: 80px 20px; }
         #loading-state p { color: var(--text-dim); font-size: 16px; }
@@ -162,7 +176,16 @@
             <h1>🌟 Creator Dashboard</h1>
             <div style="display:flex;gap:10px;align-items:center;">
                 <a href="/" class="back-link">← Back to Site</a>
-                <button class="logout-btn" onclick="logout()">LOG OUT</button>
+                <!-- Avatar pill with dropdown -->
+                <div class="avatar-pill" id="avatar-pill" onclick="toggleAvatarMenu(event)">
+                    <div class="avatar-pill-img" id="avatar-pill-img">👤</div>
+                    <span class="avatar-pill-name" id="avatar-pill-name">My Account</span>
+                    <span class="avatar-pill-caret">▼</span>
+                    <div class="avatar-dropdown" id="avatar-dropdown">
+                        <a href="#profile-section" onclick="closeAvatarMenu()">👤 My Profile</a>
+                        <button class="signout-btn" onclick="logout()">🚪 Sign Out</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -217,7 +240,7 @@
             </div>
 
             <!-- Profile Section -->
-            <div class="section-card">
+            <div class="section-card" id="profile-section">
                 <h2>👤 My Profile</h2>
                 <div class="profile-grid">
                     <div class="avatar-upload">
@@ -397,6 +420,26 @@
             window.location.href = '/';
         }
 
+        // ── AVATAR PILL DROPDOWN ──────────────────────────────────────────────
+        function toggleAvatarMenu(e) {
+            e.stopPropagation();
+            document.getElementById('avatar-dropdown').classList.toggle('open');
+        }
+        function closeAvatarMenu() {
+            document.getElementById('avatar-dropdown').classList.remove('open');
+        }
+        document.addEventListener('click', function() {
+            closeAvatarMenu();
+        });
+        function updateAvatarPill(name, photoUrl) {
+            const nameEl = document.getElementById('avatar-pill-name');
+            const imgEl = document.getElementById('avatar-pill-img');
+            if (nameEl && name) nameEl.textContent = name.split(' ')[0] || name;
+            if (imgEl && photoUrl) {
+                imgEl.innerHTML = `<img src="${photoUrl}" alt="avatar">`;
+            }
+        }
+
         async function confirmDeleteAccount() {
             const confirmed = confirm(
                 'Are you sure you want to permanently delete your account?\n\n' +
@@ -480,11 +523,13 @@
             }
         }
 
-        // ── PROFILE ───────────────────────────────────────────────────────────
+        // ── PROFILE ─────────────────────────────────────────────────
         function renderProfile(user) {
             document.getElementById('profile-name').value = user.name || '';
             document.getElementById('profile-handle').value = user.handle || '';
             document.getElementById('profile-bio').value = user.bio || '';
+            // Update avatar pill in header
+            updateAvatarPill(user.name, user.photo);
             if (user.photo) {
                 const preview = document.getElementById('avatar-preview');
                 preview.innerHTML = `<img src="${user.photo}" alt="Profile photo">`;
