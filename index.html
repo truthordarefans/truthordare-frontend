@@ -452,8 +452,8 @@
         <header class="site-header">
             <!-- Fan buttons — LEFT -->
             <div class="login-btn-group">
-                <a href="#fan-signup" class="login-btn-header" onclick="openFanModal('signup'); return false;">✨ Fans Join Free</a>
-                <a href="#fan-login" class="login-btn-header" onclick="openFanModal('login'); return false;">👤 Fan Login</a>
+                <a href="#fan-signup" class="login-btn-header" onclick="openFanModal('signup'); return false;"><span style="color:#22c55e;font-style:normal;">&#x279C;</span> Fans Join Free</a>
+                <a href="#fan-login" class="login-btn-header" onclick="openFanModal('login'); return false;"><span style="color:#22c55e;font-style:normal;">&#x279C;</span> Fan Login</a>
             </div>
             <!-- Title — CENTRE -->
             <div class="site-header-title">
@@ -462,8 +462,8 @@
             </div>
             <!-- Creator buttons — RIGHT -->
             <div class="login-btn-group">
-                <a href="#creator-signup" class="login-btn-header creator" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'}); return false;">🌟 Join as Creator Free</a>
-                <a href="#creator-login" class="login-btn-header creator" onclick="openLoginModal('creator'); return false;">🌟 Creator Login</a>
+                <a href="#creator-signup" class="login-btn-header creator" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'}); return false;"><span style="color:#22c55e;font-style:normal;">&#x279C;</span> Join as Creator Free</a>
+                <a href="#creator-login" class="login-btn-header creator" onclick="openLoginModal('creator'); return false;"><span style="color:#22c55e;font-style:normal;">&#x279C;</span> Creator Login</a>
             </div>
         </header>
 
@@ -547,7 +547,7 @@
                     <p>Create your free account to book sessions, track your history, and get notified when your favourite creator goes live.</p>
                     <input type="text" id="fanSubName" placeholder="Your name or nickname" autocomplete="off">
                     <input type="email" id="fanSubEmail" placeholder="Your email address" autocomplete="off">
-                    <input type="password" id="fanSubPassword" placeholder="Choose a password" autocomplete="new-password">
+                    <input type="password" id="fanSubPassword" placeholder="Choose a password" autocomplete="new-password" style="padding:16px 18px;font-size:16px;">
                     <div class="checkbox-group">
                         <input type="checkbox" id="fanAgeCheck">
                         <label for="fanAgeCheck">I confirm I am 18 years of age or older and agree to the Terms &amp; Community Guidelines.</label>
@@ -582,7 +582,7 @@
                     <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">Used to log in and receive booking notifications.</p>
 
                     <label style="font-size:12px;color:var(--gold-light);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;display:block;">Password <span style="color:#ff6b6b;">*</span></label>
-                    <input type="password" id="creatorPassword" placeholder="At least 8 characters" autocomplete="new-password" style="margin-bottom:4px;">
+                    <input type="password" id="creatorPassword" placeholder="At least 8 characters" autocomplete="new-password" style="margin-bottom:4px;padding:16px 18px;font-size:16px;">
                     <p style="font-size:11px;color:var(--text-dim);margin-bottom:14px;">Minimum 8 characters. Keep it safe!</p>
                     <p style="margin-top: 20px; margin-bottom: 10px; color: var(--gold-light); font-size: 13px;">Your social handles (optional — shown on your profile page):</p>
                     <input type="text" id="creatorInstagram" placeholder="Instagram handle (e.g. @yourname)">
