@@ -1176,8 +1176,8 @@
                             <h3>${c.name}</h3>
                             <p>${c.bio ? c.bio.substring(0, 90) + (c.bio.length > 90 ? '…' : '') : 'Available for Truth or Dare sessions.'}</p>
                             <div class="browse-card-btns">
-                                <button class="btn-truth" onclick="event.stopPropagation(); openQuickPay('${handle}','${c.name}','truth')">🤔 Truth — $15</button>
-                                <button class="btn-dare" onclick="event.stopPropagation(); openQuickPay('${handle}','${c.name}','dare')">🔥 Dare — $45</button>
+                                <button class="btn-truth" onclick="event.stopPropagation(); openBookingModal('${handle}','truth')">🤔 Truth — $15</button>
+                                <button class="btn-dare" onclick="event.stopPropagation(); openBookingModal('${handle}','dare')">🔥 Dare — $45</button>
                             </div>
                         </div>
                     `;

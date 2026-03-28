@@ -377,16 +377,14 @@
 
     <!-- Propose New Time Modal -->
     <div id="proposeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;">
-        <div style="background:#1a1a2e;border:1px solid rgba(212,165,116,0.3);border-radius:12px;padding:28px;max-width:420px;width:90%;">
-            <h3 style="color:#D4A574;margin:0 0 16px;font-size:18px;">📅 Propose a New Time</h3>
-            <p style="color:#aaa;font-size:13px;margin:0 0 16px;">Select a date and time to propose to the fan. They will receive an email with your suggestion.</p>
-            <label style="color:#ccc;font-size:13px;display:block;margin-bottom:6px;">Date</label>
-            <select id="proposeDate" style="width:100%;background:#0d0d1a;border:1px solid rgba(212,165,116,0.3);color:#fff;padding:10px;border-radius:6px;font-size:14px;margin-bottom:14px;"></select>
-            <label style="color:#ccc;font-size:13px;display:block;margin-bottom:6px;">Time</label>
-            <select id="proposeTime" style="width:100%;background:#0d0d1a;border:1px solid rgba(212,165,116,0.3);color:#fff;padding:10px;border-radius:6px;font-size:14px;margin-bottom:20px;"></select>
+        <div style="background:#1a1a2e;border:1px solid rgba(212,165,116,0.3);border-radius:12px;padding:28px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto;">
+            <h3 style="color:#D4A574;margin:0 0 8px;font-size:18px;">📅 Propose Alternative Times</h3>
+            <p style="color:#aaa;font-size:13px;margin:0 0 20px;">Offer the fan up to 3 time options to choose from. They'll receive an email and can pick one to pay and confirm.</p>
+            <div id="proposal-slots"></div>
+            <button onclick="addProposalSlot()" id="add-slot-btn" style="background:transparent;border:1px dashed rgba(212,165,116,0.4);color:#D4A574;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;width:100%;margin-bottom:20px;">+ Add Another Time Option</button>
             <div style="display:flex;gap:10px;justify-content:flex-end;">
                 <button onclick="closeProposeModal()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:#aaa;padding:8px 18px;border-radius:6px;font-size:14px;cursor:pointer;">Cancel</button>
-                <button onclick="submitPropose()" style="background:linear-gradient(135deg,#D4A574,#c49060);color:#0d0d1a;padding:8px 18px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;border:none;">Send Proposal</button>
+                <button onclick="submitPropose()" style="background:linear-gradient(135deg,#D4A574,#c49060);color:#0d0d1a;padding:8px 18px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;border:none;">Send Proposals to Fan</button>
             </div>
         </div>
     </div>
@@ -785,48 +783,94 @@
         let proposeBookingId = null;
         function openProposeModal(bookingId) {
             proposeBookingId = bookingId;
-            // Build date options (next 14 days)
-            const dateSelect = document.getElementById('proposeDate');
-            dateSelect.innerHTML = '';
+            // Reset slots to 1
+            document.getElementById('proposal-slots').innerHTML = '';
+            addProposalSlot();
+            document.getElementById('add-slot-btn').style.display = 'block';
+            document.getElementById('proposeModal').style.display = 'flex';
+        }
+
+        function buildDateOptions() {
+            let html = '';
             for (let i = 0; i < 14; i++) {
                 const d = new Date(); d.setDate(d.getDate() + i);
                 const val = d.toISOString().split('T')[0];
                 const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                const opt = document.createElement('option'); opt.value = val; opt.textContent = label;
-                dateSelect.appendChild(opt);
+                html += `<option value="${val}">${label}</option>`;
             }
-            // Build 30-min time slots
-            const timeSelect = document.getElementById('proposeTime');
-            timeSelect.innerHTML = '';
+            return html;
+        }
+
+        function buildTimeOptions() {
+            let html = '';
             for (let h = 0; h < 24; h++) {
                 for (let m = 0; m < 60; m += 30) {
                     const ampm = h < 12 ? 'AM' : 'PM';
                     const hh = h === 0 ? 12 : h > 12 ? h - 12 : h;
                     const mm = m === 0 ? '00' : '30';
                     const label = `${hh}:${mm} ${ampm}`;
-                    const opt = document.createElement('option'); opt.value = label; opt.textContent = label;
-                    timeSelect.appendChild(opt);
+                    html += `<option value="${label}">${label}</option>`;
                 }
             }
-            document.getElementById('proposeModal').style.display = 'flex';
+            return html;
         }
+
+        function addProposalSlot() {
+            const slots = document.getElementById('proposal-slots');
+            const count = slots.children.length + 1;
+            if (count > 3) return;
+            const slot = document.createElement('div');
+            slot.style.cssText = 'margin-bottom:16px;padding:14px;background:rgba(0,0,0,0.2);border:1px solid rgba(212,165,116,0.2);border-radius:8px;';
+            slot.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                    <span style="color:#D4A574;font-size:13px;font-weight:700;">Option ${count}</span>
+                    ${count > 1 ? `<button onclick="this.closest('div[style]').remove(); updateSlotLabels(); updateAddBtn();" style="background:none;border:none;color:#FF6B6B;font-size:18px;cursor:pointer;line-height:1;">&times;</button>` : ''}
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <select class="prop-date" style="flex:1;background:#0d0d1a;border:1px solid rgba(212,165,116,0.3);color:#fff;padding:9px;border-radius:6px;font-size:13px;">${buildDateOptions()}</select>
+                    <select class="prop-time" style="flex:1;background:#0d0d1a;border:1px solid rgba(212,165,116,0.3);color:#fff;padding:9px;border-radius:6px;font-size:13px;">${buildTimeOptions()}</select>
+                </div>`;
+            slots.appendChild(slot);
+            updateAddBtn();
+        }
+
+        function updateSlotLabels() {
+            const slots = document.getElementById('proposal-slots').children;
+            Array.from(slots).forEach((s, i) => {
+                const label = s.querySelector('span');
+                if (label) label.textContent = `Option ${i + 1}`;
+            });
+            updateAddBtn();
+        }
+
+        function updateAddBtn() {
+            const count = document.getElementById('proposal-slots').children.length;
+            document.getElementById('add-slot-btn').style.display = count >= 3 ? 'none' : 'block';
+        }
+
         function closeProposeModal() {
             document.getElementById('proposeModal').style.display = 'none';
             proposeBookingId = null;
         }
+
         async function submitPropose() {
-            const date = document.getElementById('proposeDate').value;
-            const time = document.getElementById('proposeTime').value;
-            if (!date || !time) { showToast('Please select a date and time.', 'error'); return; }
+            const slots = document.getElementById('proposal-slots').children;
+            const proposals = [];
+            for (const slot of slots) {
+                const date = slot.querySelector('.prop-date').value;
+                const time = slot.querySelector('.prop-time').value;
+                if (date && time) proposals.push({ date, time });
+            }
+            if (proposals.length === 0) { showToast('Please add at least one time option.', 'error'); return; }
             try {
-                const res = await fetch(`${BACKEND}/booking/${proposeBookingId}/respond`, {
-                    method: 'PUT',
+                const res = await fetch(`${BACKEND}/booking/${proposeBookingId}/counter-propose`, {
+                    method: 'POST',
                     headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'propose', proposedDate: date, proposedTime: time }),
+                    body: JSON.stringify({ proposals }),
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    showToast('📅 New time proposed to fan!', 'success');
+                    showToast(`📅 ${proposals.length} time option${proposals.length > 1 ? 's' : ''} sent to fan!`, 'success');
                     closeProposeModal();
                     reloadBookings();
                 } else { showToast(data.error || 'Failed.', 'error'); }
