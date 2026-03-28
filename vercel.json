@@ -1,6 +1,13 @@
 {
   "rewrites": [
     { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/fan-dashboard", "destination": "/fan-dashboard.html" },
+    { "source": "/reset-password", "destination": "/reset-password.html" },
+    { "source": "/how-it-works", "destination": "/how-it-works.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/booking-confirmed", "destination": "/booking-confirmed.html" },
+    { "source": "/confirm", "destination": "/confirm.html" },
     { "source": "/creator/:handle", "destination": "/creator.html" },
     { "source": "/room", "destination": "/room.html" },
     { "source": "/room/:path", "destination": "/room.html" },
