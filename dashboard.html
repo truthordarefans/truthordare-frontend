@@ -619,7 +619,7 @@
             };
             reader.readAsDataURL(file);
         }
-        function removeExtraPhoto(event, index) {
+        async function removeExtraPhoto(event, index) {
             event.stopPropagation();
             pendingExtraPhotos[index] = null;
             currentExtraPhotos[index] = '';
@@ -629,6 +629,23 @@
             // Clear file input
             const fileInput = document.getElementById(`extra-photo-input-${index}`);
             fileInput.value = '';
+            // Auto-save deletion to backend immediately
+            try {
+                const extraPhotosPayload = currentExtraPhotos.map(p => p || '');
+                await fetch(`${BACKEND}/creator/profile`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('profile-name').value.trim(),
+                        handle: document.getElementById('profile-handle').value.trim(),
+                        bio: document.getElementById('profile-bio').value.trim(),
+                        extraPhotos: extraPhotosPayload,
+                    }),
+                });
+                showToast('Photo removed and saved.', 'success');
+            } catch (err) {
+                showToast('Photo removed locally — click Save Profile to persist.', 'info');
+            }
         }
 
         function handlePhotoUpload(input) {
