@@ -18,6 +18,24 @@
         :root { --red: #CC0000; --dark-red: #990000; --gold: #D4A574; --gold-light: #F0C890; --gold-dim: rgba(212,165,116,0.35); --cream: #FDF6EC; --text: #C9B99A; --text-dim: #9A8A72; --dark: #120500; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'DM Sans', sans-serif; background: #0D0400; color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+        /* ── PIN GATE ── */
+        .pin-gate { position: fixed; inset: 0; background: #0D0400; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 500; padding: 24px; }
+        .pin-gate.hidden { display: none; }
+        .pin-logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold); margin-bottom: 8px; }
+        .pin-title { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--cream); text-align: center; }
+        .pin-sub { font-size: 14px; color: var(--text-dim); text-align: center; max-width: 300px; line-height: 1.6; }
+        .pin-inputs { display: flex; gap: 12px; justify-content: center; }
+        .pin-digit { width: 60px; height: 72px; background: rgba(255,255,255,0.05); border: 2px solid var(--gold-dim); border-radius: 10px; text-align: center; font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--cream); outline: none; caret-color: var(--gold); transition: border-color 0.2s; }
+        .pin-digit:focus { border-color: var(--gold); }
+        .pin-digit.filled { border-color: var(--gold); }
+        .pin-error { font-size: 13px; color: #FF8080; text-align: center; min-height: 18px; }
+        .btn-pin-enter { padding: 14px 40px; background: linear-gradient(135deg,#C49050,#D4A574); color: #1A0800; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+        .btn-pin-enter:hover { background: linear-gradient(135deg,#D4A574,#F0C890); }
+        .btn-pin-enter:disabled { opacity: 0.5; cursor: default; }
+        .pin-hint { font-size: 12px; color: var(--text-dim); text-align: center; }
+
+        /* ── TOP BAR ── */
         .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: rgba(0,0,0,0.6); border-bottom: 1px solid var(--gold-dim); flex-shrink: 0; }
         .top-bar .session-info { display: flex; align-items: center; gap: 12px; }
         .session-type-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
@@ -29,28 +47,37 @@
         .timer-label { font-size: 9px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; }
         .timer-display { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gold-light); font-weight: 700; }
         .timer-display.warning { color: #FF8080; }
+        .timer-display.paused { color: var(--text-dim); }
         .top-bar-right { display: flex; align-items: center; gap: 10px; }
         .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #FF4444; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
         .live-label { font-size: 11px; font-weight: 700; color: #FF8080; letter-spacing: 1px; }
+
+        /* ── MAIN AREA ── */
         .main-area { flex: 1; display: flex; overflow: hidden; }
         .video-side { flex: 1; display: flex; flex-direction: column; background: #080200; position: relative; }
         #daily-frame { flex: 1; width: 100%; border: none; }
         .video-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--text-dim); }
         .video-placeholder .vp-icon { font-size: 48px; opacity: 0.3; }
         .video-placeholder .vp-text { font-size: 14px; }
+
+        /* Waiting overlay — shown until both join */
         .waiting-overlay { position: absolute; inset: 0; background: rgba(8,2,0,0.92); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 10; }
         .waiting-overlay.hidden { display: none; }
         .waiting-spinner { width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--gold-dim); border-top-color: var(--gold); animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .waiting-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--cream); }
         .waiting-sub { font-size: 13px; color: var(--text-dim); text-align: center; max-width: 260px; line-height: 1.6; }
+
+        /* Locked overlay */
         .locked-overlay { position: absolute; inset: 0; background: rgba(8,2,0,0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 10; }
         .locked-overlay.hidden { display: none; }
         .lock-icon { font-size: 56px; }
         .lock-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--cream); }
         .lock-sub { font-size: 13px; color: var(--text-dim); text-align: center; max-width: 280px; line-height: 1.6; }
         .lock-time { font-size: 14px; color: var(--gold); font-weight: 700; }
+
+        /* ── CHAT ── */
         .chat-side { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; border-left: 1px solid var(--gold-dim); background: rgba(0,0,0,0.4); }
         .chat-header { padding: 14px 16px; border-bottom: 1px solid var(--gold-dim); font-size: 12px; font-weight: 700; color: var(--gold); letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
@@ -74,17 +101,41 @@
         .chat-send:hover:not(:disabled) { background: var(--gold-light); }
         .chat-send:disabled { opacity: 0.4; cursor: default; }
         .chat-note { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 8px; }
+
+        /* ── EXTENSION PROMPT (fan only) ── */
+        .extension-prompt { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(13,4,0,0.97); border-top: 2px solid var(--gold); padding: 20px 24px; display: none; flex-direction: column; align-items: center; gap: 14px; z-index: 300; }
+        .extension-prompt.show { display: flex; }
+        .ext-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--cream); text-align: center; }
+        .ext-countdown { font-size: 13px; color: #FF8080; font-weight: 700; }
+        .ext-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+        .btn-extend { padding: 12px 22px; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-extend-truth { background: rgba(99,91,255,0.2); border: 2px solid rgba(99,91,255,0.6); color: #A09CFF; }
+        .btn-extend-truth:hover { background: rgba(99,91,255,0.35); }
+        .btn-extend-dare { background: rgba(204,0,0,0.2); border: 2px solid rgba(204,0,0,0.6); color: #FF8080; }
+        .btn-extend-dare:hover { background: rgba(204,0,0,0.35); }
+        .btn-extend-no { background: transparent; border: 1.5px solid var(--gold-dim); color: var(--text-dim); }
+        .btn-extend-no:hover { border-color: var(--gold); color: var(--gold); }
+        .ext-waiting { font-size: 13px; color: var(--text-dim); display: none; }
+
+        /* ── CREATOR EXTENSION CONSENT ── */
+        .creator-consent { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(13,4,0,0.97); border-top: 2px solid var(--gold); padding: 20px 24px; display: none; flex-direction: column; align-items: center; gap: 14px; z-index: 300; }
+        .creator-consent.show { display: flex; }
+        .consent-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--cream); text-align: center; }
+        .consent-sub { font-size: 13px; color: var(--text-dim); text-align: center; }
+        .consent-countdown { font-size: 13px; color: #FF8080; font-weight: 700; }
+        .consent-buttons { display: flex; gap: 12px; }
+        .btn-consent-yes { padding: 12px 28px; background: linear-gradient(135deg,#C49050,#D4A574); color: #1A0800; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .btn-consent-no { padding: 12px 28px; background: transparent; border: 1.5px solid rgba(204,0,0,0.5); color: #FF8080; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+
+        /* ── OVERLAYS ── */
         .ended-overlay { position: fixed; inset: 0; background: rgba(8,2,0,0.97); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 100; }
         .ended-overlay.show { display: flex; }
         .ended-icon { font-size: 56px; }
         .ended-title { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--cream); }
         .ended-sub { font-size: 14px; color: var(--text-dim); text-align: center; max-width: 320px; line-height: 1.7; }
         .btn-home { padding: 14px 32px; background: linear-gradient(135deg,#C49050,#D4A574); color: #1A0800; border: none; border-radius: 6px; font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; text-decoration: none; }
-        @media (max-width: 640px) { .main-area { flex-direction: column; } .chat-side { width: 100%; height: 280px; border-left: none; border-top: 1px solid var(--gold-dim); } }
-        /* Refuse Challenge button */
         .btn-refuse { padding: 7px 14px; background: transparent; border: 1.5px solid rgba(204,0,0,0.5); border-radius: 6px; color: #FF8080; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
         .btn-refuse:hover { background: rgba(204,0,0,0.15); border-color: #CC0000; color: #FF6060; }
-        /* Refuse confirm modal */
         .refuse-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 200; }
         .refuse-modal.show { display: flex; }
         .refuse-box { background: #1A0800; border: 1px solid rgba(204,0,0,0.4); border-radius: 12px; padding: 32px; max-width: 380px; width: 90%; text-align: center; }
@@ -97,20 +148,39 @@
         .btn-confirm-refuse:hover { background: #990000; }
         .btn-cancel-refuse { padding: 12px 24px; background: transparent; color: var(--text); border: 1.5px solid var(--gold-dim); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
         .btn-cancel-refuse:hover { border-color: var(--gold); color: var(--gold); }
-        /* Refunded overlay */
         .refunded-overlay { position: fixed; inset: 0; background: rgba(8,2,0,0.97); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 100; }
         .refunded-overlay.show { display: flex; }
+
+        @media (max-width: 640px) { .main-area { flex-direction: column; } .chat-side { width: 100%; height: 240px; border-left: none; border-top: 1px solid var(--gold-dim); } .pin-digit { width: 52px; height: 64px; font-size: 28px; } }
     </style>
 </head>
 <body>
+
+<!-- ── PIN GATE ── -->
+<div class="pin-gate" id="pinGate">
+    <div class="pin-logo">🎯 Truth or Dare For My Fans</div>
+    <div class="pin-title">Enter Your Session PIN</div>
+    <div class="pin-sub">Your 4-digit PIN was sent to your email and is visible in your dashboard.</div>
+    <div class="pin-inputs">
+        <input class="pin-digit" id="pin0" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="pin-digit" id="pin1" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="pin-digit" id="pin2" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="pin-digit" id="pin3" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]">
+    </div>
+    <div class="pin-error" id="pinError"></div>
+    <button class="btn-pin-enter" id="btnPinEnter" onclick="submitPin()">Enter Room</button>
+    <div class="pin-hint">Check your confirmation email or dashboard for your PIN.</div>
+</div>
+
+<!-- ── MAIN ROOM ── -->
 <div class="top-bar">
     <div class="session-info">
         <span class="session-type-badge badge-truth" id="typeBadge">Truth</span>
         <div class="session-names"><strong id="creatorLabel">Creator</strong> &amp; <strong id="fanLabel">Fan</strong></div>
     </div>
     <div class="timer-box">
-        <div class="timer-label">Time Remaining</div>
-        <div class="timer-display" id="timerDisplay">--:--</div>
+        <div class="timer-label" id="timerLabel">Waiting…</div>
+        <div class="timer-display paused" id="timerDisplay">--:--</div>
     </div>
     <div class="top-bar-right">
         <div class="live-dot" id="liveDot" style="display:none"></div>
@@ -118,18 +188,19 @@
         <button class="btn-refuse" id="btnRefuse" style="display:none" onclick="showRefuseModal()">⚠️ Refuse Challenge</button>
     </div>
 </div>
+
 <div class="main-area">
     <div class="video-side">
-        <div class="locked-overlay" id="lockedOverlay">
+        <div class="locked-overlay hidden" id="lockedOverlay">
             <div class="lock-icon">🔒</div>
             <div class="lock-title">Room Locked</div>
             <div class="lock-sub">This room opens at your scheduled session time.</div>
             <div class="lock-time" id="lockTimeLabel"></div>
         </div>
-        <div class="waiting-overlay hidden" id="waitingOverlay">
+        <div class="waiting-overlay" id="waitingOverlay">
             <div class="waiting-spinner"></div>
             <div class="waiting-title">Waiting for <span id="waitingFor">the other person</span>…</div>
-            <div class="waiting-sub">Your session room is ready. The other person will join shortly.</div>
+            <div class="waiting-sub">You're in! The timer will start once both of you have joined.</div>
         </div>
         <div id="videoContainer" style="flex:1; display:flex; flex-direction:column;">
             <div class="video-placeholder" id="videoPlaceholder">
@@ -152,7 +223,31 @@
         </div>
     </div>
 </div>
-<!-- Refuse Challenge Confirmation Modal -->
+
+<!-- ── EXTENSION PROMPT (fan sees this) ── -->
+<div class="extension-prompt" id="extensionPrompt">
+    <div class="ext-title">⏱ Your session ends soon!</div>
+    <div class="ext-countdown" id="extCountdown">30 seconds remaining</div>
+    <div class="ext-buttons" id="extButtons">
+        <button class="btn-extend btn-extend-truth" id="btnExtendTruth" onclick="requestExtension('truth')">🤔 Continue Truth — $15 (+5 min)</button>
+        <button class="btn-extend btn-extend-dare" id="btnExtendDare" onclick="requestExtension('dare')">🔥 Upgrade to Dare — $45 (+15 min)</button>
+        <button class="btn-extend btn-extend-no" onclick="dismissExtension()">No thanks, end session</button>
+    </div>
+    <div class="ext-waiting" id="extWaiting">⏳ Waiting for creator to accept…</div>
+</div>
+
+<!-- ── CREATOR CONSENT PROMPT ── -->
+<div class="creator-consent" id="creatorConsent">
+    <div class="consent-title">🔔 Fan wants to extend!</div>
+    <div class="consent-sub" id="consentSub">The fan wants to extend as a Truth session (+5 min, $15)</div>
+    <div class="consent-countdown" id="consentCountdown">30 seconds to respond</div>
+    <div class="consent-buttons">
+        <button class="btn-consent-yes" onclick="respondExtension(true)">✅ Yes, I'm available</button>
+        <button class="btn-consent-no" onclick="respondExtension(false)">✕ No, end session</button>
+    </div>
+</div>
+
+<!-- ── REFUSE MODAL ── -->
 <div class="refuse-modal" id="refuseModal">
     <div class="refuse-box">
         <div class="refuse-icon">⚠️</div>
@@ -165,38 +260,140 @@
         </div>
     </div>
 </div>
-<!-- Refunded Overlay -->
+
+<!-- ── REFUNDED OVERLAY ── -->
 <div class="refunded-overlay" id="refundedOverlay">
     <div class="ended-icon">💸</div>
     <div class="ended-title" style="font-family:'Playfair Display',serif;font-size:28px;color:var(--cream);">Challenge Refused</div>
     <div class="ended-sub" style="font-size:14px;color:var(--text-dim);text-align:center;max-width:320px;line-height:1.7;">The session has ended. The fan has been fully refunded and will receive a confirmation email.</div>
     <a href="/dashboard" class="btn-home">← Back to Dashboard</a>
 </div>
+
+<!-- ── ENDED OVERLAY ── -->
 <div class="ended-overlay" id="endedOverlay">
     <div class="ended-icon">⭐</div>
     <div class="ended-title">Session Complete!</div>
     <div class="ended-sub">Your session has ended. Thank you for using Truth or Dare For My Fans!</div>
     <a href="/" class="btn-home">← Back to Homepage</a>
 </div>
+
 <script>
     const BACKEND = 'https://truthordare-backend.onrender.com';
     const params = new URLSearchParams(window.location.search);
-    const roomId = params.get('room');
+    const roomId = params.get('id') || params.get('room');
     const sessionType = params.get('type') || 'truth';
-    const creatorName = params.get('creator') || 'Creator';
+    const creatorName = decodeURIComponent(params.get('creator') || 'Creator');
     const fanName = params.get('fan') || 'Fan';
+    const bookingId = params.get('booking') || params.get('bookingId');
+    const urlPin = params.get('pin'); // PIN passed in URL (from email link)
     const scheduledAt = params.get('time') ? new Date(params.get('time')) : null;
+
     const SESSION_DURATION = sessionType === 'dare' ? 15 * 60 : 5 * 60;
+    const EXTENSION_WARN_AT = 30; // Show extension prompt at 30 seconds
+
     document.getElementById('creatorLabel').textContent = creatorName;
     document.getElementById('fanLabel').textContent = fanName;
     const badge = document.getElementById('typeBadge');
     badge.textContent = sessionType === 'dare' ? '🔥 Dare' : '🤔 Truth';
     badge.className = 'session-type-badge ' + (sessionType === 'dare' ? 'badge-dare' : 'badge-truth');
-    let sessionStarted = false, timerInterval = null, secondsLeft = SESSION_DURATION, callFrame = null;
+
     const userInfo = localStorage.getItem('tod_user') ? JSON.parse(localStorage.getItem('tod_user')) : null;
     const isCreator = userInfo && userInfo.role === 'creator';
-    let lastMsgCount = 0;
 
+    let sessionStarted = false;
+    let timerRunning = false;
+    let timerInterval = null;
+    let secondsLeft = SESSION_DURATION;
+    let callFrame = null;
+    let lastMsgCount = 0;
+    let participantCount = 0;
+    let extensionPromptShown = false;
+    let extensionCountdownInterval = null;
+    let extensionSecondsLeft = 30;
+    let pendingExtensionType = null;
+    let consentPollInterval = null;
+
+    // ── PIN GATE ──
+    // Auto-fill PIN from URL if present (creator gets PIN in URL too)
+    if (urlPin && urlPin.length === 4) {
+        ['pin0','pin1','pin2','pin3'].forEach((id, i) => {
+            document.getElementById(id).value = urlPin[i];
+            document.getElementById(id).classList.add('filled');
+        });
+    }
+
+    // PIN digit auto-advance
+    document.querySelectorAll('.pin-digit').forEach((input, idx) => {
+        input.addEventListener('input', () => {
+            const val = input.value.replace(/\D/g,'');
+            input.value = val ? val[val.length-1] : '';
+            if (input.value) {
+                input.classList.add('filled');
+                if (idx < 3) document.getElementById(`pin${idx+1}`).focus();
+            } else {
+                input.classList.remove('filled');
+            }
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !input.value && idx > 0) {
+                document.getElementById(`pin${idx-1}`).focus();
+            }
+            if (e.key === 'Enter') submitPin();
+        });
+        input.addEventListener('paste', (e) => {
+            const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'');
+            if (pasted.length === 4) {
+                ['pin0','pin1','pin2','pin3'].forEach((id, i) => {
+                    document.getElementById(id).value = pasted[i];
+                    document.getElementById(id).classList.add('filled');
+                });
+                e.preventDefault();
+            }
+        });
+    });
+
+    async function submitPin() {
+        const entered = ['pin0','pin1','pin2','pin3'].map(id => document.getElementById(id).value).join('');
+        if (entered.length < 4) {
+            document.getElementById('pinError').textContent = 'Please enter all 4 digits.';
+            return;
+        }
+        document.getElementById('btnPinEnter').disabled = true;
+        document.getElementById('pinError').textContent = '';
+
+        // Verify PIN against backend
+        try {
+            const res = await fetch(`${BACKEND}/booking/${bookingId}/verify-pin`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin: entered })
+            });
+            const data = await res.json();
+            if (data.valid) {
+                document.getElementById('pinGate').classList.add('hidden');
+                checkLockStatus();
+            } else {
+                document.getElementById('pinError').textContent = 'Incorrect PIN. Check your email or dashboard.';
+                document.getElementById('btnPinEnter').disabled = false;
+                // Shake animation
+                document.querySelectorAll('.pin-digit').forEach(d => {
+                    d.style.borderColor = '#FF8080';
+                    setTimeout(() => d.style.borderColor = '', 1000);
+                });
+            }
+        } catch(e) {
+            // If backend is down, allow entry with URL pin as fallback
+            if (urlPin && entered === urlPin) {
+                document.getElementById('pinGate').classList.add('hidden');
+                checkLockStatus();
+            } else {
+                document.getElementById('pinError').textContent = 'Could not verify PIN. Please try again.';
+                document.getElementById('btnPinEnter').disabled = false;
+            }
+        }
+    }
+
+    // ── LOCK STATUS ──
     function checkLockStatus() {
         const now = new Date();
         if (scheduledAt && now < scheduledAt) {
@@ -206,42 +403,70 @@
             setTimeout(checkLockStatus, 30000);
         } else {
             document.getElementById('lockedOverlay').classList.add('hidden');
-            startSession();
+            enterRoom();
         }
     }
 
-    // Set creator inSession status (only called for creator)
-    async function setSessionStatus(inSession) {
-        if (!isCreator) return;
-        try {
-            const token = localStorage.getItem('tod_token');
-            if (!token) return;
-            await fetch(`${BACKEND}/creator/session-status`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ inSession })
-            });
-        } catch(e) {}
-    }
-
-    async function startSession() {
+    // ── ENTER ROOM (after PIN verified) ──
+    async function enterRoom() {
         if (sessionStarted) return;
         sessionStarted = true;
-        document.getElementById('liveDot').style.display = 'block';
-        document.getElementById('liveLabel').style.display = 'block';
         document.getElementById('chatInput').disabled = false;
         document.getElementById('chatSendBtn').disabled = false;
-        addSystemMessage('Session started! ' + (isCreator ? 'You are live.' : 'The creator will go live shortly.'));
-        setSessionStatus(true); // Mark creator as In Session
+        addSystemMessage('You\'re in the room! Waiting for ' + (isCreator ? 'the fan' : 'the creator') + ' to join…');
+        setSessionStatus(true);
         if (isCreator) document.getElementById('btnRefuse').style.display = 'block';
-        startTimer();
         if (roomId) await initDailyRoom();
         startChatPolling();
+        // Start polling for both participants
+        pollPresence();
     }
 
+    // ── PRESENCE DETECTION ──
+    // Timer only starts when both parties have joined
+    function pollPresence() {
+        if (callFrame) {
+            // Use Daily.co participant count
+            const participants = callFrame.participants();
+            const count = Object.keys(participants).length;
+            if (count >= 2) {
+                onBothJoined();
+            } else {
+                setTimeout(pollPresence, 2000);
+            }
+        } else {
+            // No video — start after 10 seconds as fallback
+            setTimeout(onBothJoined, 10000);
+        }
+    }
+
+    function onBothJoined() {
+        document.getElementById('waitingOverlay').classList.add('hidden');
+        document.getElementById('liveDot').style.display = 'block';
+        document.getElementById('liveLabel').style.display = 'block';
+        document.getElementById('timerLabel').textContent = 'Time Remaining';
+        document.getElementById('timerDisplay').classList.remove('paused');
+        addSystemMessage('Both parties joined — session timer started!');
+        startTimer();
+    }
+
+    // ── TIMER ──
     function startTimer() {
+        timerRunning = true;
         updateTimerDisplay();
-        timerInterval = setInterval(() => { secondsLeft--; updateTimerDisplay(); if (secondsLeft <= 0) { clearInterval(timerInterval); endSession(); } }, 1000);
+        timerInterval = setInterval(() => {
+            secondsLeft--;
+            updateTimerDisplay();
+            // Show extension prompt at 30 seconds
+            if (secondsLeft === EXTENSION_WARN_AT && !extensionPromptShown) {
+                if (!isCreator) showExtensionPrompt();
+                else showCreatorCountdown();
+            }
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                endSession();
+            }
+        }, 1000);
     }
 
     function updateTimerDisplay() {
@@ -249,9 +474,146 @@
         const s = (secondsLeft % 60).toString().padStart(2, '0');
         const el = document.getElementById('timerDisplay');
         el.textContent = `${m}:${s}`;
-        el.classList.toggle('warning', secondsLeft <= 60);
+        el.classList.toggle('warning', secondsLeft <= 60 && secondsLeft > 0);
     }
 
+    // ── EXTENSION PROMPT (fan) ──
+    function showExtensionPrompt() {
+        extensionPromptShown = true;
+        // Hide dare button if already in dare session
+        if (sessionType === 'dare') {
+            document.getElementById('btnExtendTruth').style.display = 'none';
+        }
+        document.getElementById('extensionPrompt').classList.add('show');
+        extensionSecondsLeft = secondsLeft;
+        extensionCountdownInterval = setInterval(() => {
+            extensionSecondsLeft = secondsLeft;
+            document.getElementById('extCountdown').textContent = `${extensionSecondsLeft} seconds remaining`;
+            if (extensionSecondsLeft <= 0) {
+                clearInterval(extensionCountdownInterval);
+                document.getElementById('extensionPrompt').classList.remove('show');
+            }
+        }, 1000);
+    }
+
+    function dismissExtension() {
+        clearInterval(extensionCountdownInterval);
+        document.getElementById('extensionPrompt').classList.remove('show');
+    }
+
+    async function requestExtension(type) {
+        pendingExtensionType = type;
+        document.getElementById('extButtons').style.display = 'none';
+        document.getElementById('extWaiting').style.display = 'block';
+        // Notify backend — creator will see consent prompt
+        try {
+            await fetch(`${BACKEND}/booking/${bookingId}/request-extension`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ extensionType: type })
+            });
+        } catch(e) {}
+        // Poll for creator response
+        consentPollInterval = setInterval(async () => {
+            try {
+                const res = await fetch(`${BACKEND}/booking/${bookingId}/extension-status`);
+                const data = await res.json();
+                if (data.status === 'accepted') {
+                    clearInterval(consentPollInterval);
+                    dismissExtension();
+                    processExtensionPayment(type);
+                } else if (data.status === 'declined') {
+                    clearInterval(consentPollInterval);
+                    dismissExtension();
+                    addSystemMessage('Creator is not available to extend. Session will end when timer reaches 0.');
+                }
+            } catch(e) {}
+        }, 2000);
+    }
+
+    async function processExtensionPayment(type) {
+        try {
+            const token = localStorage.getItem('tod_token');
+            const res = await fetch(`${BACKEND}/booking/${bookingId}/extend-checkout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ extensionType: type })
+            });
+            const data = await res.json();
+            if (data.url) {
+                // Open Stripe checkout in popup
+                const popup = window.open(data.url, 'stripe_extension', 'width=500,height=700');
+                // Poll for payment completion
+                const payPoll = setInterval(async () => {
+                    try {
+                        const statusRes = await fetch(`${BACKEND}/booking/${bookingId}/extension-status`);
+                        const statusData = await statusRes.json();
+                        if (statusData.status === 'extended') {
+                            clearInterval(payPoll);
+                            if (popup) popup.close();
+                            const addedTime = type === 'dare' ? 15 * 60 : 5 * 60;
+                            secondsLeft += addedTime;
+                            addSystemMessage(`✅ Session extended! ${type === 'dare' ? '+15 minutes (Dare)' : '+5 minutes (Truth)'}`);
+                        }
+                    } catch(e) {}
+                }, 3000);
+            }
+        } catch(e) {
+            addSystemMessage('Could not process extension payment. Session will end normally.');
+        }
+    }
+
+    // ── CREATOR CONSENT ──
+    function showCreatorCountdown() {
+        // Creator just sees a subtle note that time is running out
+        addSystemMessage('⏱ 30 seconds remaining — fan may request an extension.');
+        // Poll for extension request from fan
+        const extPoll = setInterval(async () => {
+            try {
+                const res = await fetch(`${BACKEND}/booking/${bookingId}/extension-status`);
+                const data = await res.json();
+                if (data.status === 'requested') {
+                    clearInterval(extPoll);
+                    showCreatorConsent(data.extensionType);
+                }
+            } catch(e) {}
+        }, 2000);
+        // Stop polling when session ends
+        setTimeout(() => clearInterval(extPoll), 35000);
+    }
+
+    function showCreatorConsent(type) {
+        const label = type === 'dare' ? 'Dare (+15 min, $45)' : 'Truth (+5 min, $15)';
+        document.getElementById('consentSub').textContent = `Fan wants to extend as ${label}`;
+        document.getElementById('creatorConsent').classList.add('show');
+        let consentSeconds = secondsLeft;
+        const consentTimer = setInterval(() => {
+            consentSeconds = secondsLeft;
+            document.getElementById('consentCountdown').textContent = `${consentSeconds} seconds to respond`;
+            if (consentSeconds <= 0) {
+                clearInterval(consentTimer);
+                document.getElementById('creatorConsent').classList.remove('show');
+            }
+        }, 1000);
+    }
+
+    async function respondExtension(accepted) {
+        document.getElementById('creatorConsent').classList.remove('show');
+        try {
+            await fetch(`${BACKEND}/booking/${bookingId}/respond-extension`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('tod_token')}` },
+                body: JSON.stringify({ accepted })
+            });
+        } catch(e) {}
+        if (accepted) {
+            addSystemMessage('✅ You accepted the extension. Waiting for fan to complete payment…');
+        } else {
+            addSystemMessage('You declined the extension. Session will end when timer reaches 0.');
+        }
+    }
+
+    // ── DAILY.CO VIDEO ──
     async function initDailyRoom() {
         try {
             const token = localStorage.getItem('tod_token');
@@ -260,13 +622,36 @@
             if (!data.url) return;
             const container = document.getElementById('videoContainer');
             document.getElementById('videoPlaceholder').style.display = 'none';
-            callFrame = window.DailyIframe.createFrame(container, { iframeStyle: { width: '100%', height: '100%', border: 'none', flex: '1' }, showLeaveButton: false, showFullscreenButton: true });
-            await callFrame.join({ url: data.url, startVideoOff: !isCreator, startAudioOff: !isCreator, userName: isCreator ? creatorName : fanName });
-            callFrame.on('participant-joined', (e) => { document.getElementById('waitingOverlay').classList.add('hidden'); addSystemMessage(`${e.participant.user_name} joined the room.`); });
-            callFrame.on('participant-left', (e) => { addSystemMessage(`${e.participant.user_name} left the room.`); });
-        } catch (err) { addSystemMessage('Video could not load. Chat is still available.'); }
+            callFrame = window.DailyIframe.createFrame(container, {
+                iframeStyle: { width: '100%', height: '100%', border: 'none', flex: '1' },
+                showLeaveButton: false,
+                showFullscreenButton: true
+            });
+            await callFrame.join({
+                url: data.url,
+                startVideoOff: false,
+                startAudioOff: false,
+                userName: isCreator ? creatorName : fanName
+            });
+            callFrame.on('participant-joined', (e) => {
+                participantCount++;
+                addSystemMessage(`${e.participant.user_name} joined the room.`);
+                if (participantCount >= 2) onBothJoined();
+            });
+            callFrame.on('participant-left', (e) => {
+                participantCount = Math.max(0, participantCount - 1);
+                addSystemMessage(`${e.participant.user_name} left the room.`);
+            });
+            // Count self as participant 1
+            participantCount = 1;
+        } catch (err) {
+            addSystemMessage('Video could not load. Chat is still available.');
+            // Start timer after 10s fallback
+            setTimeout(onBothJoined, 10000);
+        }
     }
 
+    // ── CHAT ──
     async function sendMessage() {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
@@ -275,7 +660,13 @@
         const token = localStorage.getItem('tod_token');
         const name = userInfo ? userInfo.name : (isCreator ? creatorName : fanName);
         addMessage(name, text, isCreator ? 'creator' : 'fan');
-        try { await fetch(`${BACKEND}/room-chat/${roomId}`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ message: text, name, role: isCreator ? 'creator' : 'fan' }) }); } catch(e) {}
+        try {
+            await fetch(`${BACKEND}/room-chat/${roomId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ message: text, name, role: isCreator ? 'creator' : 'fan' })
+            });
+        } catch(e) {}
     }
 
     function startChatPolling() {
@@ -284,7 +675,8 @@
                 const res = await fetch(`${BACKEND}/room-chat/${roomId}?since=${lastMsgCount}`);
                 const data = await res.json();
                 if (data.messages && data.messages.length > 0) {
-                    data.messages.forEach(m => { const myName = userInfo ? userInfo.name : ''; if (m.name !== myName) addMessage(m.name, m.message, m.role); });
+                    const myName = userInfo ? userInfo.name : '';
+                    data.messages.forEach(m => { if (m.name !== myName) addMessage(m.name, m.message, m.role); });
                     lastMsgCount += data.messages.length;
                 }
             } catch(e) {}
@@ -312,26 +704,22 @@
     function escapeHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
     document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
 
-    function endSession() {
-        setSessionStatus(false); // Clear In Session status
-        if (callFrame) callFrame.destroy();
-        document.getElementById('liveDot').style.display = 'none';
-        document.getElementById('liveLabel').style.display = 'none';
-        document.getElementById('btnRefuse').style.display = 'none';
-        document.getElementById('chatInput').disabled = true;
-        document.getElementById('chatSendBtn').disabled = true;
-        document.getElementById('endedOverlay').classList.add('show');
+    // ── SESSION STATUS ──
+    async function setSessionStatus(inSession) {
+        if (!isCreator) return;
+        try {
+            const token = localStorage.getItem('tod_token');
+            if (!token) return;
+            await fetch(`${BACKEND}/creator/session-status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ inSession })
+            });
+        } catch(e) {}
     }
 
-    function showRefuseModal() {
-        document.getElementById('refuseModal').classList.add('show');
-    }
-    function hideRefuseModal() {
-        document.getElementById('refuseModal').classList.remove('show');
-    }
-    async function confirmRefuse() {
-        hideRefuseModal();
-        // Stop session immediately
+    // ── END SESSION ──
+    function endSession() {
         clearInterval(timerInterval);
         setSessionStatus(false);
         if (callFrame) callFrame.destroy();
@@ -340,8 +728,25 @@
         document.getElementById('btnRefuse').style.display = 'none';
         document.getElementById('chatInput').disabled = true;
         document.getElementById('chatSendBtn').disabled = true;
-        // Call backend to issue refund
-        const bookingId = params.get('bookingId');
+        document.getElementById('extensionPrompt').classList.remove('show');
+        document.getElementById('creatorConsent').classList.remove('show');
+        document.getElementById('endedOverlay').classList.add('show');
+    }
+
+    // ── REFUSE CHALLENGE ──
+    function showRefuseModal() { document.getElementById('refuseModal').classList.add('show'); }
+    function hideRefuseModal() { document.getElementById('refuseModal').classList.remove('show'); }
+
+    async function confirmRefuse() {
+        hideRefuseModal();
+        clearInterval(timerInterval);
+        setSessionStatus(false);
+        if (callFrame) callFrame.destroy();
+        document.getElementById('liveDot').style.display = 'none';
+        document.getElementById('liveLabel').style.display = 'none';
+        document.getElementById('btnRefuse').style.display = 'none';
+        document.getElementById('chatInput').disabled = true;
+        document.getElementById('chatSendBtn').disabled = true;
         if (bookingId) {
             try {
                 const token = localStorage.getItem('tod_token');
@@ -351,14 +756,15 @@
                 });
             } catch(e) { console.error('Refund request failed:', e); }
         }
-        // Show refunded overlay
         document.getElementById('refundedOverlay').classList.add('show');
     }
 
-    if (!roomId) {
-        document.getElementById('lockedOverlay').innerHTML = '<div class="lock-icon">⚠️</div><div class="lock-title">Invalid Room</div><div class="lock-sub">This room link is invalid.</div><a href="/" class="btn-home" style="margin-top:8px;">← Homepage</a>';
-    } else {
-        checkLockStatus();
+    // ── INIT ──
+    if (!roomId && !bookingId) {
+        document.getElementById('pinGate').innerHTML = '<div style="text-align:center;padding:40px;"><div style="font-size:56px;">⚠️</div><div style="font-family:Playfair Display,serif;font-size:24px;color:var(--cream);margin:16px 0;">Invalid Room</div><div style="color:var(--text-dim);margin-bottom:24px;">This room link is invalid or has expired.</div><a href="/" style="padding:14px 32px;background:linear-gradient(135deg,#C49050,#D4A574);color:#1A0800;border:none;border-radius:6px;font-weight:700;text-decoration:none;">← Homepage</a></div>';
+    } else if (urlPin && urlPin.length === 4) {
+        // Auto-submit PIN if it came in the URL (from email link)
+        setTimeout(submitPin, 500);
     }
 </script>
 </body>

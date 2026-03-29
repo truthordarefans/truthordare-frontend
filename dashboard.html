@@ -350,6 +350,7 @@
                     </div>
                     <button class="stripe-connect-btn" id="stripe-connect-btn" onclick="connectStripe()">Connect Stripe →</button>
                 </div>
+                <div id="earnings-breakdown"></div>
             </div>
 
             <!-- Sessions Section -->
@@ -706,6 +707,47 @@
             document.getElementById('stat-sessions').textContent = data.totalSessions;
             document.getElementById('stat-gross').textContent = `$${data.totalGrossUSD}`;
             document.getElementById('stat-earnings').textContent = `$${data.totalEarningsUSD}`;
+
+            // Per-session breakdown
+            const breakdownEl = document.getElementById('earnings-breakdown');
+            if (!breakdownEl) return;
+            if (!data.sessions || data.sessions.length === 0) {
+                breakdownEl.innerHTML = '<div style="color:#666;font-size:13px;text-align:center;padding:16px;">No completed sessions yet.</div>';
+                return;
+            }
+            const rows = data.sessions.map(s => {
+                const d = new Date(s.date);
+                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const typeLabel = s.sessionType === 'dare' ? '🔥 Dare (15 min)' : '💬 Truth (5 min)';
+                const statusBadge = s.status === 'paid' || s.status === 'confirmed' ? '<span style="background:rgba(80,200,120,0.15);color:#50C878;border:1px solid rgba(80,200,120,0.3);padding:2px 8px;border-radius:4px;font-size:11px;">Paid</span>' : `<span style="color:#aaa;font-size:11px;">${s.status}</span>`;
+                return `<tr style="border-bottom:1px solid rgba(212,165,116,0.1);">
+                    <td style="padding:10px 8px;color:#ccc;font-size:13px;">${dateStr}</td>
+                    <td style="padding:10px 8px;color:#D4A574;font-size:13px;">${esc(s.fanName)}</td>
+                    <td style="padding:10px 8px;color:#ccc;font-size:13px;">${typeLabel}</td>
+                    <td style="padding:10px 8px;color:#aaa;font-size:13px;">$${s.gross.toFixed(2)}</td>
+                    <td style="padding:10px 8px;color:#50C878;font-size:13px;font-weight:700;">$${s.payout.toFixed(2)}</td>
+                    <td style="padding:10px 8px;">${statusBadge}</td>
+                </tr>`;
+            }).join('');
+            breakdownEl.innerHTML = `
+                <div style="margin-top:20px;">
+                    <div style="font-size:12px;color:#9A8A72;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Session Breakdown (for tax records)</div>
+                    <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="border-bottom:1px solid rgba(212,165,116,0.3);">
+                                <th style="padding:8px;color:#9A8A72;font-size:11px;text-align:left;font-weight:600;">Date</th>
+                                <th style="padding:8px;color:#9A8A72;font-size:11px;text-align:left;font-weight:600;">Fan</th>
+                                <th style="padding:8px;color:#9A8A72;font-size:11px;text-align:left;font-weight:600;">Type</th>
+                                <th style="padding:8px;color:#9A8A72;font-size:11px;text-align:left;font-weight:600;">Gross</th>
+                                <th style="padding:8px;color:#9A8A72;font-size:11px;text-align:left;font-weight:600;">Your Payout (85%)</th>
+                                <th style="padding:8px;color:#9A8A72;font-size:11px;text-align:left;font-weight:600;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    </div>
+                </div>`;
         }
 
         function renderStripeStatus(status) {
@@ -906,7 +948,13 @@
             const rows = bookings.map(b => {
                 const sessionLabel = b.sessionType === 'truth' ? '🤔 Truth ($15)' : '🔥 Dare ($45)';
                 const dateStr = b.proposedDate ? `${b.proposedDate} @ ${b.proposedTime} <span style="color:#D4A574;font-size:11px;">(proposed)</span>` : (b.requestedDate ? `${b.requestedDate} @ ${b.requestedTime || ''}` : 'Flexible');
-                const roomBtn = b.roomId ? `<a href="/room?id=${b.roomId}&type=${b.sessionType}" target="_blank" style="display:inline-block;background:var(--gold);color:var(--dark);padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;margin-right:6px;">▶ Start Session</a>` : '';
+                const roomBtn = b.roomId ? `<a href="/room.html?id=${b.roomId}&booking=${b._id}&type=${b.sessionType}&pin=${b.sessionPin||''}" target="_blank" style="display:inline-block;background:var(--gold);color:var(--dark);padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;margin-right:6px;">▶ Join Session Room</a>` : '';
+                const pinBlock = (b.status === 'paid' || b.status === 'confirmed') && b.sessionPin ? `
+                    <div style="margin-top:10px;padding:12px;background:rgba(212,165,116,0.1);border:2px solid rgba(212,165,116,0.4);border-radius:8px;text-align:center;">
+                        <div style="font-size:11px;color:#9A8A72;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Your Session PIN</div>
+                        <div style="font-size:28px;font-weight:900;color:#D4A574;letter-spacing:8px;">${b.sessionPin}</div>
+                        <div style="font-size:11px;color:#9A8A72;margin-top:4px;">Enter this PIN when joining the session room</div>
+                    </div>` : '';
                 const isPending = b.status === 'pending' || b.status === 'proposed';
                 return `
                 <div style="background:rgba(0,0,0,0.2);border:1px solid var(--gold-dim);border-radius:8px;padding:16px;margin-bottom:12px;">
@@ -920,9 +968,10 @@
                             <span class="badge ${b.status}">${b.status}</span>
                         </div>
                     </div>
+                    ${pinBlock}
                     <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
                         ${roomBtn}
-                        ${isPending ? `<button onclick="acceptBooking('${b._id}')" style="background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#22c55e;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✅ Accept &amp; Send Payment Link</button>` : ''}
+                        ${isPending ? `<button onclick="acceptBooking('${b._id}')" style="background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#22c55e;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✅ Accept Booking</button>` : ''}
                         ${isPending ? `<button onclick="openProposeModal('${b._id}')" style="background:rgba(212,165,116,0.15);border:1px solid rgba(212,165,116,0.3);color:#D4A574;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">📅 Propose New Time</button>` : ''}
                         ${b.status !== 'declined' && b.status !== 'paid' ? `<button onclick="respondBooking('${b._id}','decline')" style="background:rgba(204,0,0,0.15);border:1px solid rgba(204,0,0,0.3);color:#FF6B6B;padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;">✕ Decline</button>` : ''}
                     </div>
@@ -939,7 +988,7 @@
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    showToast('✅ Accepted! Payment link sent to fan.', 'success');
+                    showToast('✅ Booking accepted! The fan will receive a payment link by email.', 'success');
                     reloadBookings();
                 } else { showToast(data.error || 'Failed to generate payment link.', 'error'); }
             } catch (err) { showToast('Network error.', 'error'); }

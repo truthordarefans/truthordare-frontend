@@ -177,15 +177,15 @@
 
     <!-- Stats -->
     <div class="stats">
-        <div class="stat">
+        <div class="stat" onclick="document.getElementById('allList').scrollIntoView({behavior:'smooth'})" style="cursor:pointer;" title="View all bookings">
             <div class="stat-val" id="statTotal">—</div>
             <div class="stat-lbl">Total Bookings</div>
         </div>
-        <div class="stat">
+        <div class="stat" onclick="document.getElementById('upcomingList').scrollIntoView({behavior:'smooth'})" style="cursor:pointer;" title="View upcoming sessions">
             <div class="stat-val" id="statUpcoming">—</div>
             <div class="stat-lbl">Upcoming</div>
         </div>
-        <div class="stat">
+        <div class="stat" onclick="document.getElementById('allList').scrollIntoView({behavior:'smooth'})" style="cursor:pointer;" title="View completed sessions">
             <div class="stat-val" id="statCompleted">—</div>
             <div class="stat-lbl">Completed</div>
         </div>
@@ -358,8 +358,15 @@
         } else if (b.status === 'accepted' && b.token) {
             actionBtn = `<a href="/confirm.html?id=${b._id}&token=${encodeURIComponent(b.token)}" class="btn-pay">💳 Pay Now</a>`;
         } else if ((b.status === 'paid' || b.status === 'confirmed') && b.roomUrl) {
-            actionBtn = `<a href="${b.roomUrl}" class="btn-join" target="_blank">🎥 Join Room</a>`;
+            actionBtn = `<a href="/room.html?id=${b.roomId}&booking=${b._id}&type=${b.sessionType}&pin=${b.sessionPin||''}" class="btn-join" target="_blank">🎥 Join Room</a>`;
         }
+
+        const pinBlock = (b.status === 'paid' || b.status === 'confirmed') && b.sessionPin ? `
+            <div style="margin-top:10px;padding:12px;background:rgba(212,165,116,0.1);border:2px solid rgba(212,165,116,0.4);border-radius:8px;text-align:center;">
+                <div style="font-size:11px;color:#9A8A72;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Your Session PIN</div>
+                <div style="font-size:28px;font-weight:900;color:#D4A574;letter-spacing:8px;">${b.sessionPin}</div>
+                <div style="font-size:11px;color:#9A8A72;margin-top:4px;">Enter this PIN when joining the session room</div>
+            </div>` : '';
 
         const statusLabel = b.status === 'proposed' ? '📅 New Times Proposed' : b.status;
 
@@ -373,6 +380,7 @@
                     ${b.note ? `<span style="color:#666;font-size:12px;">"${esc(b.note)}"</span>` : ''}
                 </div>
                 ${counterBlock}
+                ${pinBlock}
             </div>
             <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
                 <span class="badge ${b.status}">${statusLabel}</span>
