@@ -7,21 +7,33 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.truthordareformyfans.com/how-it-works</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://www.truthordareformyfans.com/how-it-works.html</loc>
+    <lastmod>2026-03-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.truthordareformyfans.com/terms</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://www.truthordareformyfans.com/terms.html</loc>
+    <lastmod>2026-03-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://www.truthordareformyfans.com/privacy</loc>
-    <lastmod>2026-03-28</lastmod>
+    <loc>https://www.truthordareformyfans.com/privacy.html</loc>
+    <lastmod>2026-03-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.truthordareformyfans.com/creator.html</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.truthordareformyfans.com/featured-apply.html</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>
