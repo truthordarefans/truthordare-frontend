@@ -192,7 +192,9 @@
 
         <!-- Loading State -->
         <div id="loading-state">
-            <p>Loading your dashboard...</p>
+            <p id="loading-msg">Loading your dashboard...</p>
+            <button id="retry-btn" onclick="retryLoad()" style="display:none;margin-top:16px;background:var(--gold);color:#120500;border:none;padding:12px 28px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;">🔄 Retry</button>
+            <button id="relogin-btn" onclick="window.location.href='/?login=1'" style="display:none;margin-top:16px;background:transparent;color:var(--gold);border:1px solid var(--gold);padding:12px 28px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;">Log In Again</button>
         </div>
 
         <!-- Dashboard Content (shown after auth check) -->
@@ -495,6 +497,13 @@
             await loadDashboard();
         }
 
+        async function retryLoad() {
+            document.getElementById('loading-msg').textContent = 'Loading your dashboard...';
+            document.getElementById('retry-btn').style.display = 'none';
+            document.getElementById('relogin-btn').style.display = 'none';
+            await loadDashboard();
+        }
+
         // ── LOAD DASHBOARD ────────────────────────────────────────────────────
         async function loadDashboard() {
             try {
@@ -506,7 +515,20 @@
                     fetch(`${BACKEND}/creator/bookings`, { headers: { 'Authorization': `Bearer ${authToken}` } }),
                 ]);
 
-                if (!profileRes.ok) { logout(); return; }
+                if (!profileRes.ok) {
+                    const errData = await profileRes.json().catch(() => ({}));
+                    if (profileRes.status === 403 || profileRes.status === 401) {
+                        // Token invalid or expired — show login prompt instead of silent logout
+                        document.getElementById('loading-msg').textContent = 'Your session has expired. Please log in again.';
+                        document.getElementById('relogin-btn').style.display = 'inline-block';
+                        localStorage.removeItem('tod_token');
+                        localStorage.removeItem('tod_role');
+                    } else {
+                        document.getElementById('loading-msg').textContent = 'Could not load dashboard. Check your connection and try again.';
+                        document.getElementById('retry-btn').style.display = 'inline-block';
+                    }
+                    return;
+                }
 
                 const { user } = await profileRes.json();
                 const earnings = earningsRes.ok ? await earningsRes.json() : null;
@@ -541,7 +563,8 @@
 
             } catch (err) {
                 console.error('Dashboard load error:', err);
-                showToast('Failed to load dashboard. Please try again.', 'error');
+                document.getElementById('loading-msg').textContent = 'Could not connect to server. Check your connection and try again.';
+                document.getElementById('retry-btn').style.display = 'inline-block';
             }
         }
 
