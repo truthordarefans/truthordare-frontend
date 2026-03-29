@@ -502,8 +502,8 @@
                 return;
             }
             await loadDashboard();
-            // Auto-set creator online when they log in
-            await updateAvailability(true);
+            // Auto-set creator online when they log in (non-blocking)
+            updateAvailability(true).catch(() => {});
         }
 
         async function retryLoad() {
