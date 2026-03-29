@@ -798,19 +798,40 @@
         <div class="loading-state">Loading creator profile...</div>
     </main>
 
-    <!-- Booking Modal -->
+    <!-- Booking Modal (4-slot version) -->
     <div class="modal-overlay" id="bookingModal">
-        <div class="modal-box">
+        <div class="modal-box" style="max-width:540px;overflow-y:auto;max-height:90vh;">
             <h3 id="bookingModalTitle">Book Your Session</h3>
-            <p class="modal-subtitle" id="bookingModalSubtitle">Choose a date and time. The creator will confirm shortly.</p>
+            <p class="modal-subtitle" id="bookingModalSubtitle">Offer up to 4 time options. The creator will confirm one or suggest alternatives.</p>
 
-            <div class="modal-section-label">📅 Pick a Date</div>
-            <div class="date-grid" id="dateGrid"></div>
+            <!-- Slot 1: Now / Immediately (only shown if creator is live) -->
+            <div id="slotNowRow" style="display:none;margin-bottom:16px;">
+                <div class="modal-section-label" style="margin-top:0;">⚡ Option 1 — Right Now</div>
+                <button id="slotNowBtn" class="slot-btn" style="width:100%;padding:12px;font-size:14px;" onclick="toggleNowSlot(this)">⚡ Now / Immediately — Creator is Live!</button>
+            </div>
 
-            <div class="modal-section-label">⏰ Pick a Time</div>
-            <div class="time-grid" id="timeGrid"></div>
+            <!-- Slot 2 -->
+            <div class="modal-section-label" id="slot2Label">📅 Option 1 — Pick a date &amp; time</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+                <input type="date" class="modal-input" id="slotDate1" style="color-scheme:dark;">
+                <input type="time" class="modal-input" id="slotTime1" style="color-scheme:dark;">
+            </div>
 
-            <div class="fan-info-row">
+            <!-- Slot 3 -->
+            <div class="modal-section-label">📅 Option 2 — Another time (optional)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+                <input type="date" class="modal-input" id="slotDate2" style="color-scheme:dark;">
+                <input type="time" class="modal-input" id="slotTime2" style="color-scheme:dark;">
+            </div>
+
+            <!-- Slot 4 -->
+            <div class="modal-section-label">📅 Option 3 — Another time (optional)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+                <input type="date" class="modal-input" id="slotDate3" style="color-scheme:dark;">
+                <input type="time" class="modal-input" id="slotTime3" style="color-scheme:dark;">
+            </div>
+
+            <div class="fan-info-row" style="margin-top:4px;">
                 <input type="text" class="modal-input" id="fanName" placeholder="Your name">
                 <input type="email" class="modal-input" id="fanEmail" placeholder="Your email">
             </div>
@@ -908,9 +929,9 @@
         };
 
         let currentCreator = null;
-        let selectedDate = null;
-        let selectedTime = null;
         let pendingSessionType = null;
+        // Multi-slot booking state
+        let nowSlotSelected = false;   // slot 1: Now/Immediately
 
         // ── LOAD CREATOR ──────────────────────────────────────────────────────────
         async function loadCreator() {
@@ -1255,10 +1276,21 @@
             document.getElementById('bookingModalTitle').textContent = title;
             document.getElementById('bookingModalSubtitle').textContent =
                 `Pick a date and time. ${currentCreator.name} will confirm or suggest an alternative.`;
-            buildDateGrid();
-            buildTimeGrid();
-            selectedDate = null;
-            selectedTime = null;
+            // Reset state
+            nowSlotSelected = false;
+            // Reset date/time inputs
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById('slotDate' + i).value = '';
+                document.getElementById('slotTime' + i).value = '';
+            }
+            // Show/hide Now slot based on creator live status
+            const isLive = currentCreator && (currentCreator.online || currentCreator.isLive);
+            document.getElementById('slotNowRow').style.display = isLive ? 'block' : 'none';
+            document.getElementById('slotNowBtn').classList.remove('selected');
+            // Update option labels based on whether Now slot is visible
+            document.getElementById('slot2Label').textContent = isLive
+                ? '📅 Option 2 — Pick a date & time'
+                : '📅 Option 1 — Pick a date & time';
             document.getElementById('bookingModal').classList.add('active');
         }
 
@@ -1267,54 +1299,9 @@
             pendingSessionType = null;
         }
 
-        function buildDateGrid() {
-            const grid = document.getElementById('dateGrid');
-            grid.innerHTML = '';
-            const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            for (let i = 0; i < 7; i++) {
-                const d = new Date();
-                d.setDate(d.getDate() + i);
-                const label = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
-                const value = d.toISOString().split('T')[0];
-                const btn = document.createElement('button');
-                btn.className = 'slot-btn';
-                btn.textContent = label;
-                btn.dataset.value = value;
-                btn.onclick = () => {
-                    document.querySelectorAll('#dateGrid .slot-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    selectedDate = value;
-                };
-                grid.appendChild(btn);
-            }
-        }
-
-        function buildTimeGrid() {
-            const grid = document.getElementById('timeGrid');
-            grid.innerHTML = '';
-            // Generate all 48 half-hour slots across 24 hours (12:00 AM through 11:30 PM)
-            const slots = [];
-            for (let h = 0; h < 24; h++) {
-                for (let m = 0; m < 60; m += 30) {
-                    const period = h < 12 ? 'AM' : 'PM';
-                    const displayH = h === 0 ? 12 : h > 12 ? h - 12 : h;
-                    const displayM = m === 0 ? '00' : '30';
-                    slots.push(`${displayH}:${displayM} ${period}`);
-                }
-            }
-            slots.forEach(slot => {
-                const btn = document.createElement('button');
-                btn.className = 'slot-btn';
-                btn.textContent = slot;
-                btn.dataset.value = slot;
-                btn.onclick = () => {
-                    document.querySelectorAll('#timeGrid .slot-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    selectedTime = slot;
-                };
-                grid.appendChild(btn);
-            });
+        function toggleNowSlot(btn) {
+            nowSlotSelected = !nowSlotSelected;
+            btn.classList.toggle('selected', nowSlotSelected);
         }
 
         async function submitBooking() {
@@ -1322,17 +1309,31 @@
             const fanEmail = document.getElementById('fanEmail').value.trim();
             const note = document.getElementById('bookingNote').value.trim();
 
-            if (!selectedDate) { showToast('Please select a date.', 'error'); return; }
-            if (!selectedTime) { showToast('Please select a time.', 'error'); return; }
             if (!fanName) { showToast('Please enter your name.', 'error'); return; }
             if (!fanEmail) { showToast('Please enter your email.', 'error'); return; }
+
+            // Collect all slots
+            const slots = [];
+            if (nowSlotSelected) slots.push({ date: 'now', time: 'now' });
+            for (let i = 1; i <= 3; i++) {
+                const d = document.getElementById('slotDate' + i).value;
+                const t = document.getElementById('slotTime' + i).value;
+                if (d && t) slots.push({ date: d, time: t });
+            }
+
+            if (slots.length === 0) {
+                showToast('Please pick at least one time option.', 'error');
+                return;
+            }
 
             const btn = document.getElementById('confirmBookingBtn');
             btn.disabled = true;
             btn.textContent = 'Sending Request...';
 
+            // Use first slot as primary for backward compat
+            const primary = slots[0];
+
             try {
-                // Submit booking REQUEST (no payment yet — creator confirms first)
                 const res = await fetch(`${CONFIG.backendUrl}/booking`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1341,16 +1342,16 @@
                         fanEmail,
                         creatorHandle: currentCreator.handle,
                         sessionType: pendingSessionType,
-                        requestedDate: selectedDate,
-                        requestedTime: selectedTime,
+                        requestedDate: primary.date,
+                        requestedTime: primary.time,
+                        fanSlots: slots,
                         note,
                     }),
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Request failed.');
-                // Show success — no redirect to Stripe yet
                 closeBookingModal();
-                showToast('✅ Booking request sent! You\'ll receive an email once the creator confirms your time.', 'success');
+                showToast('✅ Request sent! You\'ll get an email once the creator confirms your time.', 'success');
             } catch (e) {
                 showToast('Booking failed: ' + e.message, 'error');
                 btn.disabled = false;
