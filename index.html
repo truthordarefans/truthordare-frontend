@@ -1248,6 +1248,8 @@
                     const handle = c.handle || '';
                     card.className = 'browse-card';
                     const isFav = isFavourite(handle);
+                    const photoArg = c.photo ? "'" + c.photo.replace(/'/g, "\\'") + "'" : 'null';
+                    const safeName = c.name.replace(/'/g, "\\'");
                     // Determine status badge
                     let statusBadgeHtml = '';
                     if (isInSession) {
@@ -1257,13 +1259,12 @@
                     } else {
                         statusBadgeHtml = `<div class="status-badge offline"><span class="status-dot offline"></span> OFFLINE</div>`;
                     }
+                    const photoHtml = c.photo ? `<img src="${c.photo}" alt="${c.name}" loading="lazy">` : '<div class="no-photo">👤</div>';
                     card.innerHTML = `
                         <div class="browse-card-photo">
-                            ${c.photo
-                                ? `<img src="${c.photo}" alt="${c.name}" loading="lazy">`
-                                : `<div class="no-photo">👤</div>`}
+                            ${photoHtml}
                             ${statusBadgeHtml}
-                            <button class="fav-btn ${isFav ? 'active' : ''}" id="fav-btn-${handle}" onclick="event.stopPropagation(); toggleFavourite('${handle}','${c.name.replace(/'/g,\"\\'\")}',${ c.photo ? `'${c.photo}'` : 'null' })" title="${isFav ? 'Remove from favourites' : 'Add to favourites'}">
+                            <button class="fav-btn ${isFav ? 'active' : ''}" id="fav-btn-${handle}" onclick="event.stopPropagation(); toggleFavourite('${handle}','${safeName}',${photoArg})" title="${isFav ? 'Remove from favourites' : 'Add to favourites'}">
                                 <span class="star-icon">${isFav ? '&#9733;' : '&#9734;'}</span>
                             </button>
                         </div>
