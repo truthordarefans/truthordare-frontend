@@ -879,8 +879,8 @@
                 localStorage.setItem('tod_token', data.token);
                 localStorage.setItem('tod_role', 'fan');
                 localStorage.setItem('tod_user', JSON.stringify({ name, email, role: 'fan' }));
-                showToast('✅ Account created! Taking you to your dashboard...', 'success');
-                setTimeout(() => window.location.href = '/fan-dashboard.html', 1200);
+                showToast('✅ Account created! Welcome — browse creators and book a session!', 'success');
+                setTimeout(() => window.location.href = '/', 1200);
             } catch (e) {
                 showToast(e.message || 'Registration failed. Please try again.', 'error');
                 btn.disabled = false;
@@ -1410,8 +1410,8 @@
                     setTimeout(() => window.location.href = '/dashboard', 1200);
                 } else {
                     localStorage.setItem('tod_user', JSON.stringify({ name: data.name || '', email, role: 'fan' }));
-                    showToast('Welcome back! Taking you to your dashboard...', 'success');
-                    setTimeout(() => window.location.href = '/fan-dashboard.html', 1200);
+                    showToast('Welcome back! Browse creators and book a session!', 'success');
+                    setTimeout(() => window.location.href = '/', 1200);
                 }
             } catch (err) {
                 showToast(err.message || 'Login failed.', 'error');
@@ -1440,8 +1440,8 @@
                 localStorage.setItem('tod_role', 'fan');
                 localStorage.setItem('tod_user', JSON.stringify({ name, email, role: 'fan' }));
                 document.getElementById('fan-modal').remove();
-                showToast('✅ Account created! Taking you to your dashboard...', 'success');
-                setTimeout(() => window.location.href = '/fan-dashboard.html', 1200);
+                showToast('✅ Account created! Welcome — browse creators and book a session!', 'success');
+                setTimeout(() => window.location.href = '/', 1200);
             } catch (err) {
                 showToast(err.message || 'Registration failed.', 'error');
                 btn.disabled = false; btn.textContent = 'CREATE FREE ACCOUNT →';
