@@ -323,6 +323,20 @@
                         </div>
                     </div>
                     <div style="font-size:12px;color:var(--text-dim);margin-top:10px;">Notifications are sent automatically — no action needed. Saved with your profile.</div>
+                    <!-- Push Notification Bell -->
+                    <div id="push-notif-row" style="display:flex;align-items:center;gap:14px;background:rgba(212,165,116,0.08);border:1px solid var(--gold-dim);border-radius:8px;padding:16px 18px;margin-top:12px;">
+                        <button id="push-bell-btn" onclick="togglePushNotifications()" title="Enable browser push notifications" style="background:none;border:none;cursor:pointer;padding:0;line-height:1;">
+                            <svg id="push-bell-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#B8860B" stroke="#B8860B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                        </button>
+                        <div style="flex:1;">
+                            <div style="font-size:15px;color:var(--cream);font-weight:600;">🔔 Browser Push Notifications</div>
+                            <div id="push-notif-status" style="font-size:13px;color:var(--text-dim);margin-top:3px;">Click the bell to get instant booking alerts — even when this tab is closed.</div>
+                        </div>
+                        <div id="push-notif-badge" style="display:none;background:#B8860B;color:#120500;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;">ON</div>
+                    </div>
                 </div>
             </div>
 
@@ -517,6 +531,12 @@
 
                 document.getElementById('loading-state').style.display = 'none';
                 document.getElementById('dashboard-content').style.display = 'block';
+
+                // Start heartbeat to keep creator online
+                startHeartbeat();
+
+                // Init push notification UI
+                initPushNotifications(user);
 
             } catch (err) {
                 console.error('Dashboard load error:', err);
@@ -1023,7 +1043,121 @@
             setTimeout(() => toast.remove(), 4000);
         }
 
-        // ── INIT ──────────────────────────────────────────────────────────────
+        // ── HEARTBEAT ─────────────────────────────────────────────────────────────────────────────────────
+        let heartbeatInterval = null;
+        function startHeartbeat() {
+            // Send immediately, then every 60 seconds
+            sendHeartbeat();
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
+            heartbeatInterval = setInterval(sendHeartbeat, 60 * 1000);
+            // Stop heartbeat when tab is closed/hidden for a long time
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    clearInterval(heartbeatInterval);
+                } else {
+                    sendHeartbeat();
+                    heartbeatInterval = setInterval(sendHeartbeat, 60 * 1000);
+                }
+            });
+        }
+        async function sendHeartbeat() {
+            try {
+                await fetch(`${BACKEND}/creator/heartbeat`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+            } catch(e) { /* silent fail */ }
+        }
+
+        // ── PUSH NOTIFICATIONS ─────────────────────────────────────────────────────────────────────────────────────
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+        }
+
+        function initPushNotifications(user) {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                document.getElementById('push-notif-row').style.display = 'none';
+                return;
+            }
+            // Register service worker
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+            // Check current permission state
+            const perm = Notification.permission;
+            if (perm === 'granted') {
+                setPushBellActive(true);
+            } else if (perm === 'denied') {
+                document.getElementById('push-notif-status').textContent = 'Notifications blocked. Please allow them in your browser settings.';
+                document.getElementById('push-bell-btn').style.opacity = '0.4';
+                document.getElementById('push-bell-btn').style.cursor = 'not-allowed';
+            }
+        }
+
+        function setPushBellActive(active) {
+            const icon = document.getElementById('push-bell-icon');
+            const status = document.getElementById('push-notif-status');
+            const badge = document.getElementById('push-notif-badge');
+            if (active) {
+                icon.setAttribute('fill', '#D4A574');
+                icon.setAttribute('stroke', '#D4A574');
+                status.textContent = 'Push notifications are ON — you\'ll get instant alerts for new bookings.';
+                status.style.color = '#D4A574';
+                badge.style.display = 'inline-block';
+            } else {
+                icon.setAttribute('fill', '#B8860B');
+                icon.setAttribute('stroke', '#B8860B');
+                status.textContent = 'Click the bell to get instant booking alerts — even when this tab is closed.';
+                status.style.color = '';
+                badge.style.display = 'none';
+            }
+        }
+
+        async function togglePushNotifications() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                showToast('Push notifications are not supported in this browser.', 'error');
+                return;
+            }
+            if (Notification.permission === 'denied') {
+                showToast('Notifications are blocked. Please enable them in your browser settings.', 'error');
+                return;
+            }
+            try {
+                const reg = await navigator.serviceWorker.ready;
+                const existing = await reg.pushManager.getSubscription();
+                if (existing) {
+                    // Already subscribed — unsubscribe
+                    await existing.unsubscribe();
+                    await fetch(`${BACKEND}/creator/push-subscribe`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
+                    setPushBellActive(false);
+                    showToast('Push notifications turned off.', 'info');
+                } else {
+                    // Subscribe
+                    const vapidRes = await fetch(`${BACKEND}/vapid-public-key`);
+                    const { publicKey } = await vapidRes.json();
+                    const subscription = await reg.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(publicKey)
+                    });
+                    await fetch(`${BACKEND}/creator/push-subscribe`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ subscription })
+                    });
+                    setPushBellActive(true);
+                    showToast('🔔 Push notifications enabled! You\'ll be alerted instantly for new bookings.', 'success');
+                }
+            } catch(err) {
+                console.error('Push toggle error:', err);
+                showToast('Could not enable notifications: ' + err.message, 'error');
+            }
+        }
+
+        // ── INIT ─────────────────────────────────────────────────────────────────────────────────────
         checkAuth();
     </script>
 </body>
