@@ -513,7 +513,21 @@
             <div class="hero-card">
                 <iframe width="100%" height="315" src="https://www.youtube.com/embed/IXd3wG5Erzk" title="Truth or Dare Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display:block; border-radius:8px;"></iframe>
             </div>
-        </section>
+         </section>
+
+        <!-- Scroll-to-signup CTA links -->
+        <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin:28px auto 8px;max-width:860px;padding:0 20px;">
+            <a href="#fan-signup" onclick="document.getElementById('fan-signup').scrollIntoView({behavior:'smooth'});return false;"
+               style="color:#D4A574;font-size:17px;font-weight:900;text-decoration:none;border:2px solid #D4A574;padding:14px 28px;border-radius:10px;letter-spacing:0.4px;transition:all 0.2s;text-align:center;flex:1;max-width:340px;"
+               onmouseover="this.style.background='rgba(212,165,116,0.12)'" onmouseout="this.style.background='transparent'">
+                👤 New Fan? Sign Up Free &nbsp;↓
+            </a>
+            <a href="#creator-signup" onclick="document.getElementById('creator-signup').scrollIntoView({behavior:'smooth'});return false;"
+               style="color:#D4A574;font-size:17px;font-weight:900;text-decoration:none;border:2px solid #D4A574;padding:14px 28px;border-radius:10px;letter-spacing:0.4px;transition:all 0.2s;text-align:center;flex:1;max-width:340px;"
+               onmouseover="this.style.background='rgba(212,165,116,0.12)'" onmouseout="this.style.background='transparent'">
+                ⭐ Become a Creator &nbsp;↓
+            </a>
+        </div>
 
         <!-- Hidden payment form — still used by JS payment flow -->
         <div class="challenge-form" id="challenge-form-hidden">
