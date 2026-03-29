@@ -742,16 +742,8 @@
 
         // ── AVAILABILITY ──────────────────────────────────────────────────────
         function renderAvailability(isLive) {
-            const toggle = document.getElementById('availability-toggle');
-            const label = document.getElementById('availability-label');
-            toggle.checked = isLive;
-            if (isLive) {
-                label.textContent = '🔴 LIVE — Fans can book you right now!';
-                label.className = 'status-text live';
-            } else {
-                label.textContent = '⚫ Offline — Fans cannot book you right now';
-                label.className = 'status-text offline';
-            }
+            // Toggle removed — status is always Live while logged in
+            // No UI update needed
         }
 
         async function updateAvailability(isLive) {
