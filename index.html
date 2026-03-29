@@ -1225,8 +1225,11 @@
                             <h3>${c.name}</h3>
                             <p>${c.bio ? c.bio.substring(0, 90) + (c.bio.length > 90 ? '…' : '') : 'Available for Truth or Dare sessions.'}</p>
                             <div class="browse-card-btns">
-                                <button class="btn-truth" onclick="event.stopPropagation(); openBookingModal('${handle}','truth',${isLive})">🤔 Truth — $15</button>
-                                <button class="btn-dare" onclick="event.stopPropagation(); openBookingModal('${handle}','dare',${isLive})">🔥 Dare — $45</button>
+                                ${localStorage.getItem('tod_role') === 'creator'
+                                    ? `<button class="btn-truth" style="flex:2;" onclick="event.stopPropagation(); window.location.href='/creator/${handle}'">View Profile</button>`
+                                    : `<button class="btn-truth" onclick="event.stopPropagation(); openBookingModal('${handle}','truth',${isLive})">🤔 Truth — $15</button>
+                                <button class="btn-dare" onclick="event.stopPropagation(); openBookingModal('${handle}','dare',${isLive})">🔥 Dare — $45</button>`
+                                }
                             </div>
                         </div>
                     `;
