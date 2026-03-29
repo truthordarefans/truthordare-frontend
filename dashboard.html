@@ -997,8 +997,8 @@
                 const dateStr = b.proposedDate ? `${b.proposedDate} @ ${b.proposedTime} <span style="color:#D4A574;font-size:11px;">(proposed)</span>` : (b.requestedDate ? `${b.requestedDate} @ ${b.requestedTime || ''}` : 'Flexible');
                 const fanWaiting = b.fanInRoom === true;
                 const roomBtn = b.roomId ? (fanWaiting
-                    ? `<a href="/room.html?id=${b.roomId}&booking=${b._id}&type=${b.sessionType}&pin=${b.sessionPin||\'\'}" target="_blank" style="display:inline-block;background:#cc0000;color:#fff;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:800;text-decoration:none;margin-right:6px;animation:pulse-red 1s infinite;box-shadow:0 0 12px rgba(204,0,0,0.6);">🔴 FAN IS WAITING — JOIN NOW</a>`
-                    : `<a href="/room.html?id=${b.roomId}&booking=${b._id}&type=${b.sessionType}&pin=${b.sessionPin||\'\'}" target="_blank" style="display:inline-block;background:var(--gold);color:var(--dark);padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;margin-right:6px;">▶ Join Session Room</a>`
+                    ? `<a href="/room.html?id=${b.roomId}&booking=${b._id}&type=${b.sessionType}&pin=${b.sessionPin || ''}" target="_blank" style="display:inline-block;background:#cc0000;color:#fff;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:800;text-decoration:none;margin-right:6px;animation:pulse-red 1s infinite;box-shadow:0 0 12px rgba(204,0,0,0.6);">🔴 FAN IS WAITING — JOIN NOW</a>`
+                    : `<a href="/room.html?id=${b.roomId}&booking=${b._id}&type=${b.sessionType}&pin=${b.sessionPin || ''}" target="_blank" style="display:inline-block;background:var(--gold);color:var(--dark);padding:5px 12px;border-radius:4px;font-size:12px;font-weight:700;text-decoration:none;margin-right:6px;">▶ Join Session Room</a>`
                 ) : '';
                 const pinBlock = (b.status === 'paid' || b.status === 'confirmed') && b.sessionPin ? `
                     <div style="margin-top:10px;padding:12px;background:rgba(212,165,116,0.1);border:2px solid rgba(212,165,116,0.4);border-radius:8px;text-align:center;">
