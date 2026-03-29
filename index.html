@@ -522,6 +522,33 @@
             <button class="btn btn-stripe" id="payBtn" onclick="handlePayment()">💳 PAY WITH STRIPE</button>
         </div>
 
+        <!-- Fan Welcome Instructions (shown only when fan is logged in) -->
+        <div id="fan-welcome-banner" style="display:none; background:rgba(212,165,116,0.1); border:1.5px solid rgba(212,165,116,0.35); border-radius:14px; padding:20px 24px; margin:0 auto 24px; max-width:860px; text-align:center;">
+            <p style="font-size:17px; font-weight:800; color:#D4A574; margin:0 0 10px;">🎉 You're in! Here's how to book a session:</p>
+            <div style="display:flex; justify-content:center; gap:18px; flex-wrap:wrap; margin-top:8px;">
+                <div style="background:rgba(0,0,0,0.25); border-radius:10px; padding:12px 18px; min-width:140px;">
+                    <div style="font-size:22px;">👇</div>
+                    <div style="font-size:13px; color:#F5EDD6; font-weight:700; margin-top:4px;">1. Pick a Creator</div>
+                    <div style="font-size:11px; color:#aaa; margin-top:2px;">Browse the grid below</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.25); border-radius:10px; padding:12px 18px; min-width:140px;">
+                    <div style="font-size:22px;">🤔🔥</div>
+                    <div style="font-size:13px; color:#F5EDD6; font-weight:700; margin-top:4px;">2. Choose Truth or Dare</div>
+                    <div style="font-size:11px; color:#aaa; margin-top:2px;">Tap the button on their card</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.25); border-radius:10px; padding:12px 18px; min-width:140px;">
+                    <div style="font-size:22px;">📅</div>
+                    <div style="font-size:13px; color:#F5EDD6; font-weight:700; margin-top:4px;">3. Pick a Time Slot</div>
+                    <div style="font-size:11px; color:#aaa; margin-top:2px;">Now or schedule ahead</div>
+                </div>
+                <div style="background:rgba(0,0,0,0.25); border-radius:10px; padding:12px 18px; min-width:140px;">
+                    <div style="font-size:22px;">💳</div>
+                    <div style="font-size:13px; color:#F5EDD6; font-weight:700; margin-top:4px;">4. Pay to Confirm</div>
+                    <div style="font-size:11px; color:#aaa; margin-top:2px;">Once creator accepts</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Browse Creators Section -->
         <section class="browse-creators-section">
             <h2>🎭 Choose a Creator</h2>
@@ -1589,6 +1616,7 @@
             const header = document.getElementById('site-header-loggedout');
             const dashLink = document.getElementById('loggedin-dash-link');
             const nameEl = document.getElementById('loggedin-name');
+            const fanBanner = document.getElementById('fan-welcome-banner');
             if (token && role) {
                 // Show logged-in bar, hide login/signup header
                 bar.classList.add('visible');
@@ -1597,9 +1625,11 @@
                 if (role === 'creator') {
                     dashLink.href = '/dashboard';
                     dashLink.textContent = '🌟 Creator Dashboard';
+                    if (fanBanner) fanBanner.style.display = 'none';
                 } else {
                     dashLink.href = '/fan-dashboard';
                     dashLink.textContent = '👤 My Dashboard';
+                    if (fanBanner) fanBanner.style.display = 'block';
                 }
                 // Set name
                 if (userRaw) {
@@ -1611,6 +1641,7 @@
             } else {
                 bar.classList.remove('visible');
                 header.style.display = '';
+                if (fanBanner) fanBanner.style.display = 'none';
             }
         }
 
