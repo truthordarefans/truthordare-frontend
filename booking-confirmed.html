@@ -158,6 +158,19 @@
             document.head.appendChild(style);
         }
 
+        async function notifyCreator(bookingId, btn) {
+            btn.disabled = true;
+            btn.textContent = '⏳ Notifying...';
+            try {
+                await fetch(`${BACKEND}/booking/${bookingId}/fan-in-room`, { method: 'POST' });
+                btn.textContent = '✅ Creator Notified!';
+                btn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+            } catch(e) {
+                btn.textContent = '🔔 Notify Creator';
+                btn.disabled = false;
+            }
+        }
+
         function showSuccess(data) {
             launchConfetti();
             const dashUrl = (localStorage.getItem('tod_role') === 'creator') ? '/dashboard' : '/fan-dashboard.html';
@@ -168,14 +181,15 @@
                     <div class="pin-note">You'll need this PIN to enter the session room. It's also in your email.</div>
                 </div>` : '';
             const roomBtn = data.roomId ? `<a href="/room.html?id=${data.roomId}&type=${data.sessionType || 'truth'}&pin=${data.sessionPin || ''}&booking=${bookingId}" class="btn" style="margin-right:10px;">▶ Join Session Room</a>` : '';
+            const notifyBtn = bookingId ? `<button id="notify-btn" onclick="notifyCreator('${bookingId}', this)" class="btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;margin-right:10px;">🔔 Notify Creator</button>` : '';
             document.getElementById('card').innerHTML = `
                 <div class="logo">Truth or Dare Fans</div>
                 <div class="icon">🎉</div>
                 <h1>Payment Confirmed!</h1>
                 <p>Your <strong style="color:var(--cream);">${data.sessionType === 'dare' ? 'Dare Session ($45)' : 'Truth Session ($15)'}</strong> with <strong style="color:var(--gold);">${data.creatorName || 'your creator'}</strong> is booked and paid.</p>
                 ${pinHtml}
-                <p>Check your email for full details and your room link.</p>
-                ${roomBtn}
+                <p>Tap <strong style="color:var(--gold);">Notify Creator</strong> to alert them you're ready — they'll get a push notification and email instantly.</p>
+                <div style="margin:16px 0;">${notifyBtn}${roomBtn}</div>
                 <a href="${dashUrl}" class="btn">📊 Go to My Dashboard</a>
                 <p class="note">Questions? Email us at <a href="mailto:truthordarefans@gmail.com" style="color:var(--gold);">truthordarefans@gmail.com</a></p>
             `;
