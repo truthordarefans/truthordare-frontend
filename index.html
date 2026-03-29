@@ -1405,6 +1405,7 @@
                 localStorage.setItem('tod_role', data.role);
                 document.getElementById('fan-modal').remove();
                 if (data.role === 'creator') {
+                    localStorage.setItem('tod_user', JSON.stringify({ name: data.name || '', email, role: 'creator' }));
                     showToast('Welcome back! Redirecting to your dashboard...', 'success');
                     setTimeout(() => window.location.href = '/dashboard', 1200);
                 } else {
@@ -1494,6 +1495,7 @@
                 }
                 localStorage.setItem('tod_token', data.token);
                 localStorage.setItem('tod_role', data.role);
+                localStorage.setItem('tod_user', JSON.stringify({ name: data.name || '', email, role: data.role }));
                 document.getElementById('login-modal').remove();
                 showToast('Welcome back! Redirecting to your dashboard...', 'success');
                 setTimeout(() => window.location.href = '/dashboard', 1200);
