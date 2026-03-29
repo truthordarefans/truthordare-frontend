@@ -321,10 +321,8 @@
         .fav-btn { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.55); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: all 0.2s; z-index: 2; backdrop-filter: blur(4px); }
         .fav-btn:hover { background: rgba(0,0,0,0.75); transform: scale(1.15); }
         .fav-btn.active { background: rgba(180,130,20,0.25); }
-        .fav-btn .star-icon { line-height: 1; display: flex; align-items: center; justify-content: center; }
-        .fav-btn .star-icon svg { width: 17px; height: 17px; }
-        .fav-btn .star-icon svg.star-empty { fill: none; stroke: #B8860B; stroke-width: 2; }
-        .fav-btn .star-icon svg.star-filled { fill: #B8860B; stroke: #B8860B; stroke-width: 1.5; }
+        .fav-btn .star-icon { color: #B8860B; font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+        .fav-btn.active .star-icon { color: #B8860B; }
 
         /* My Favourites bar */
         .favourites-bar { background: rgba(0,0,0,0.3); border: 1px solid var(--gold-dim); border-radius: 12px; padding: 18px 20px; margin-bottom: 28px; display: none; }
@@ -1266,11 +1264,9 @@
                                 : `<div class="no-photo">👤</div>`}
                             ${statusBadgeHtml}
                             <button class="fav-btn ${isFav ? 'active' : ''}" id="fav-btn-${handle}" onclick="event.stopPropagation(); toggleFavourite('${handle}','${c.name.replace(/'/g,\"\\'\")}',${ c.photo ? `'${c.photo}'` : 'null' })" title="${isFav ? 'Remove from favourites' : 'Add to favourites'}">
-                                <span class="star-icon">${isFav
-                                    ? '<svg class="star-filled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
-                                    : '<svg class="star-empty" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
-                                }</span>
-                            </button>                       </div>
+                                <span class="star-icon">${isFav ? '&#9733;' : '&#9734;'}</span>
+                            </button>
+                        </div>
                         <div class="browse-card-info">
                             <h3>${c.name}</h3>
                             <p>${c.bio ? c.bio.substring(0, 90) + (c.bio.length > 90 ? '…' : '') : 'Available for Truth or Dare sessions.'}</p>
