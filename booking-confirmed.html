@@ -76,6 +76,40 @@
             text-decoration: none;
             margin-top: 8px;
         }
+        .pin-box {
+            background: rgba(212,165,116,0.1);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .pin-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .pin-number {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--gold);
+            letter-spacing: 10px;
+        }
+        .pin-note {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 8px;
+        }
+        .spinner {
+            width: 48px; height: 48px;
+            border: 4px solid rgba(212,165,116,0.2);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .confetti {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -84,47 +118,121 @@
             z-index: 0;
         }
         .card { position: relative; z-index: 1; }
+        .error-state { color: #ff6b6b; }
     </style>
 </head>
 <body>
     <div class="confetti" id="confetti"></div>
-    <div class="card">
+    <div class="card" id="card">
         <div class="logo">Truth or Dare Fans</div>
-        <div class="icon">🎉</div>
-        <h1>Payment Confirmed!</h1>
-        <p>Your session is booked and paid. You'll receive an email shortly with your room link and session details.</p>
-        <p>Keep an eye on your inbox — the creator will be in touch before your session starts.</p>
-        <a href="/" class="btn">Browse More Creators →</a>
-        <p class="note">Questions? Email us at <a href="mailto:truthordarefans@gmail.com" style="color:var(--gold);">truthordarefans@gmail.com</a></p>
+        <div class="spinner"></div>
+        <h1>Verifying Payment...</h1>
+        <p>Please wait while we confirm your payment.</p>
     </div>
 
     <script>
-        // Simple confetti animation
-        const container = document.getElementById('confetti');
-        const colors = ['#D4A574', '#F5EDD6', '#c49060', '#fff', '#ffd700'];
-        for (let i = 0; i < 60; i++) {
-            const el = document.createElement('div');
-            const size = Math.random() * 10 + 5;
-            el.style.cssText = `
-                position: absolute;
-                width: ${size}px;
-                height: ${size}px;
-                background: ${colors[Math.floor(Math.random() * colors.length)]};
-                border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-                left: ${Math.random() * 100}%;
-                top: -20px;
-                opacity: ${Math.random() * 0.8 + 0.2};
-                animation: fall ${Math.random() * 3 + 2}s linear ${Math.random() * 2}s forwards;
-            `;
-            container.appendChild(el);
-        }
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fall {
-                to { transform: translateY(110vh) rotate(${Math.random() * 720}deg); opacity: 0; }
+        const BACKEND = 'https://truthordare-backend.onrender.com';
+        const params = new URLSearchParams(window.location.search);
+        const bookingId = params.get('booking');
+
+        function launchConfetti() {
+            const container = document.getElementById('confetti');
+            const colors = ['#D4A574', '#F5EDD6', '#c49060', '#fff', '#ffd700'];
+            for (let i = 0; i < 60; i++) {
+                const el = document.createElement('div');
+                const size = Math.random() * 10 + 5;
+                el.style.cssText = `
+                    position: absolute;
+                    width: ${size}px; height: ${size}px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                    left: ${Math.random() * 100}%;
+                    top: -20px;
+                    opacity: ${Math.random() * 0.8 + 0.2};
+                    animation: fall ${Math.random() * 3 + 2}s linear ${Math.random() * 2}s forwards;
+                `;
+                container.appendChild(el);
             }
-        `;
-        document.head.appendChild(style);
+            const style = document.createElement('style');
+            style.textContent = `@keyframes fall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }`;
+            document.head.appendChild(style);
+        }
+
+        function showSuccess(data) {
+            launchConfetti();
+            const dashUrl = (localStorage.getItem('tod_role') === 'creator') ? '/dashboard' : '/fan-dashboard.html';
+            const pinHtml = data.sessionPin ? `
+                <div class="pin-box">
+                    <div class="pin-label">Your Session PIN</div>
+                    <div class="pin-number">${data.sessionPin}</div>
+                    <div class="pin-note">You'll need this PIN to enter the session room. It's also in your email.</div>
+                </div>` : '';
+            const roomBtn = data.roomId ? `<a href="/room.html?id=${data.roomId}&type=${data.sessionType || 'truth'}&pin=${data.sessionPin || ''}&booking=${bookingId}" class="btn" style="margin-right:10px;">▶ Join Session Room</a>` : '';
+            document.getElementById('card').innerHTML = `
+                <div class="logo">Truth or Dare Fans</div>
+                <div class="icon">🎉</div>
+                <h1>Payment Confirmed!</h1>
+                <p>Your <strong style="color:var(--cream);">${data.sessionType === 'dare' ? 'Dare Session ($45)' : 'Truth Session ($15)'}</strong> with <strong style="color:var(--gold);">${data.creatorName || 'your creator'}</strong> is booked and paid.</p>
+                ${pinHtml}
+                <p>Check your email for full details and your room link.</p>
+                ${roomBtn}
+                <a href="${dashUrl}" class="btn">📊 Go to My Dashboard</a>
+                <p class="note">Questions? Email us at <a href="mailto:truthordarefans@gmail.com" style="color:var(--gold);">truthordarefans@gmail.com</a></p>
+            `;
+        }
+
+        function showPending() {
+            document.getElementById('card').innerHTML = `
+                <div class="logo">Truth or Dare Fans</div>
+                <div class="icon">⏳</div>
+                <h1>Payment Processing...</h1>
+                <p>Your payment is being processed. This usually takes just a few seconds.</p>
+                <p>You'll receive a confirmation email shortly. You can also check your dashboard for updates.</p>
+                <a href="/fan-dashboard.html" class="btn">📊 Go to My Dashboard</a>
+                <p class="note">Questions? Email us at <a href="mailto:truthordarefans@gmail.com" style="color:var(--gold);">truthordarefans@gmail.com</a></p>
+            `;
+        }
+
+        function showError(msg) {
+            document.getElementById('card').innerHTML = `
+                <div class="logo">Truth or Dare Fans</div>
+                <div class="icon">⚠️</div>
+                <h1 class="error-state">Something went wrong</h1>
+                <p>${msg}</p>
+                <a href="/fan-dashboard.html" class="btn">📊 Go to My Dashboard</a>
+                <p class="note">Questions? Email us at <a href="mailto:truthordarefans@gmail.com" style="color:var(--gold);">truthordarefans@gmail.com</a></p>
+            `;
+        }
+
+        async function verifyPayment(attempts) {
+            if (!bookingId) {
+                // No booking ID — show generic success (legacy flow)
+                showSuccess({ sessionType: 'truth', creatorName: '' });
+                return;
+            }
+            try {
+                const res = await fetch(`${BACKEND}/booking/${bookingId}/confirm-payment`);
+                const data = await res.json();
+                if (data.paid) {
+                    showSuccess(data);
+                } else if (attempts > 0) {
+                    // Webhook may not have fired yet — poll up to 10 times (20 seconds)
+                    setTimeout(() => verifyPayment(attempts - 1), 2000);
+                } else {
+                    // After 20 seconds still not paid — show pending state
+                    showPending();
+                }
+            } catch (err) {
+                if (attempts > 0) {
+                    setTimeout(() => verifyPayment(attempts - 1), 2000);
+                } else {
+                    showPending();
+                }
+            }
+        }
+
+        // Start verifying — poll up to 10 times (every 2s = 20s total)
+        verifyPayment(10);
     </script>
 
     <!-- FLOATING DASHBOARD BUTTON: shown on all pages when logged in -->
@@ -151,29 +259,23 @@
         align-items: center;
         gap: 8px;
     }
-    #floating-dash-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 28px rgba(212,165,116,0.7);
-    }
+    #floating-dash-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(212,165,116,0.7); }
     #floating-dash-btn.visible { display: flex; }
     </style>
-    <a id="floating-dash-btn" href="/dashboard">My Dashboard</a>
+    <a id="floating-dash-btn" href="/fan-dashboard.html">My Dashboard</a>
     <script>
     (function() {
         var token = localStorage.getItem('tod_token');
         var role = localStorage.getItem('tod_role');
         var btn = document.getElementById('floating-dash-btn');
         if (token && role && btn) {
-            btn.href = role === 'creator' ? '/dashboard' : '/fan-dashboard';
+            btn.href = role === 'creator' ? '/dashboard' : '/fan-dashboard.html';
             var userRaw = localStorage.getItem('tod_user');
             var label = role === 'creator' ? '\u2b50 My Dashboard' : '\ud83d\udc64 My Dashboard';
             if (userRaw) {
                 try {
                     var u = JSON.parse(userRaw);
-                    if (u.name) {
-                        var first = u.name.split(' ')[0];
-                        label = (role === 'creator' ? '\u2b50 ' : '\ud83d\udc64 ') + first + "\u2019s Dashboard";
-                    }
+                    if (u.name) { var first = u.name.split(' ')[0]; label = (role === 'creator' ? '\u2b50 ' : '\ud83d\udc64 ') + first + '\u2019s Dashboard'; }
                 } catch(e) {}
             }
             btn.textContent = label;
@@ -181,6 +283,5 @@
         }
     })();
     </script>
-
 </body>
 </html>
