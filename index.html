@@ -1186,11 +1186,18 @@
                     }),
                 });
                 if (!res.ok) throw new Error('Booking failed.');
-                if (btn) { btn.textContent = '✅ Sent!'; btn.style.background = '#22c55e'; btn.style.color = '#fff'; btn.style.fontSize = '16px'; btn.style.fontWeight = '700'; }
+                if (btn) {
+                    btn.textContent = '✅ Request Sent!';
+                    btn.style.background = '#22c55e';
+                    btn.style.color = '#fff';
+                    btn.style.fontSize = '16px';
+                    btn.style.fontWeight = '700';
+                    btn.onclick = null;
+                }
                 setTimeout(() => {
                     document.querySelectorAll('.booking-step').forEach(s => s.classList.remove('active'));
                     document.getElementById('booking-step-4').classList.add('active');
-                }, 2000);
+                }, 3000);
             } catch (e) {
                 showToast('Booking failed: ' + e.message, 'error');
                 const btn = document.getElementById('sendRequestBtn');
