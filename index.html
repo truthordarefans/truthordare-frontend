@@ -1168,9 +1168,28 @@
 
         async function submitBooking() {
             const todUser = JSON.parse(localStorage.getItem('tod_user') || '{}');
-            const fanName = todUser.name || localStorage.getItem('fanName') || 'Fan';
+            let fanName = todUser.name || localStorage.getItem('fanName') || '';
             const fanEmail = todUser.email || localStorage.getItem('fanEmail') || '';
             const note = document.getElementById('booking-note').value.trim();
+            // Always fetch real name from server to avoid stale localStorage data
+            try {
+                const authToken = localStorage.getItem('tod_token');
+                if (authToken) {
+                    const profileRes = await fetch(`${CONFIG.backendUrl}/fan/profile`, {
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
+                    if (profileRes.ok) {
+                        const profileData = await profileRes.json();
+                        if (profileData.user && profileData.user.name) {
+                            fanName = profileData.user.name;
+                            const stored = JSON.parse(localStorage.getItem('tod_user') || '{}');
+                            stored.name = fanName;
+                            localStorage.setItem('tod_user', JSON.stringify(stored));
+                        }
+                    }
+                }
+            } catch(e) { /* use localStorage name as fallback */ }
+            if (!fanName) fanName = 'Fan';
             try {
                 const btn = document.getElementById('sendRequestBtn');
                 if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
