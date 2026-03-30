@@ -241,12 +241,35 @@
 
     const userInfo = localStorage.getItem('tod_user') ? JSON.parse(localStorage.getItem('tod_user')) : {};
 
-    // Set name in topbar / avatar pill
-    if (userInfo.name) {
-        const firstName = userInfo.name.split(' ')[0];
-        document.getElementById('topbarName').textContent = firstName;
-        document.getElementById('welcomeHeading').textContent = `Welcome back, ${firstName} 👋`;
+    // Set name in topbar / avatar pill — fetch from server to ensure it's always correct
+    async function loadFanProfile() {
+        try {
+            const res = await fetch(`${BACKEND}/fan/profile`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const serverName = data.user && data.user.name ? data.user.name : '';
+                if (serverName) {
+                    // Update localStorage with correct name from server
+                    const stored = localStorage.getItem('tod_user') ? JSON.parse(localStorage.getItem('tod_user')) : {};
+                    stored.name = serverName;
+                    localStorage.setItem('tod_user', JSON.stringify(stored));
+                    const firstName = serverName.split(' ')[0];
+                    document.getElementById('topbarName').textContent = firstName;
+                    document.getElementById('welcomeHeading').textContent = `Welcome back, ${firstName} 👋`;
+                    return;
+                }
+            }
+        } catch(e) { /* fall through to localStorage */ }
+        // Fallback to localStorage
+        if (userInfo.name) {
+            const firstName = userInfo.name.split(' ')[0];
+            document.getElementById('topbarName').textContent = firstName;
+            document.getElementById('welcomeHeading').textContent = `Welcome back, ${firstName} 👋`;
+        }
     }
+    loadFanProfile();
 
     function openDeleteModal() {
         const modal = document.getElementById('deleteModal');
