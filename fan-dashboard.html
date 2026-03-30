@@ -358,8 +358,10 @@
         } else if (b.status === 'accepted' && b.token) {
             actionBtn = `<a href="/confirm.html?id=${b._id}&token=${encodeURIComponent(b.token)}" class="btn-pay">💳 Pay Now</a>`;
         } else if (b.status === 'paid' || b.status === 'confirmed') {
-            if (b.roomUrl) {
-                actionBtn = `<button onclick="fanJoinRoom('${b._id}','${b.roomId}','${b.sessionType}','${b.sessionPin||''}')" class="btn-join">🎥 Join Session</button>`;
+            if (b.roomUrl && b.token) {
+                actionBtn = `<button onclick="fanJoinRoom('${b._id}','${encodeURIComponent(b.token)}')" class="btn-join">🎥 Join Session</button>`;
+            } else if (b.roomUrl) {
+                actionBtn = `<a href="${b.roomUrl}" target="_blank" class="btn-join">🎥 Join Session</a>`;
             } else {
                 actionBtn = `<span style="color:#22c55e;font-weight:700;font-size:13px;">✅ Paid — Room link coming soon</span>`;
             }
@@ -446,15 +448,14 @@
         return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    async function fanJoinRoom(bookingId, roomId, sessionType, pin) {
+    async function fanJoinRoom(bookingId, bookingToken) {
         const BACKEND = 'https://truthordare-backend.onrender.com';
         // Signal to backend that fan is entering the room (notifies creator)
         try {
             await fetch(`${BACKEND}/booking/${bookingId}/fan-in-room`, { method: 'POST' });
         } catch(e) { console.warn('fan-in-room signal failed:', e); }
-        // Navigate to the room
-        const creatorHandle = encodeURIComponent(document.title || '');
-        window.location.href = `/room.html?id=${roomId}&booking=${bookingId}&type=${sessionType}&pin=${pin || ''}`;
+        // Navigate to the room using token-gated URL (no login required)
+        window.location.href = `/room.html?booking=${bookingId}&token=${bookingToken}`;
     }
 
     loadBookings();

@@ -17,7 +17,7 @@
     <style>
         :root { --red: #CC0000; --dark-red: #990000; --gold: #D4A574; --gold-light: #F0C890; --gold-dim: rgba(212,165,116,0.35); --cream: #FDF6EC; --text: #C9B99A; --text-dim: #9A8A72; --dark: #120500; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: #0D0400; color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        body { font-family: 'DM Sans', sans-serif; background: #0D0400; color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
 
         /* ── PIN GATE ── */
         .pin-gate { position: fixed; inset: 0; background: #0D0400; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 500; padding: 24px; }
@@ -151,7 +151,14 @@
         .refunded-overlay { position: fixed; inset: 0; background: rgba(8,2,0,0.97); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 100; }
         .refunded-overlay.show { display: flex; }
 
-        @media (max-width: 640px) { .main-area { flex-direction: column; } .chat-side { width: 100%; height: 240px; border-left: none; border-top: 1px solid var(--gold-dim); } .pin-digit { width: 52px; height: 64px; font-size: 28px; } }
+        @media (max-width: 640px) {
+            .main-area { flex-direction: column; }
+            .chat-side { width: 100%; height: 260px; border-left: none; border-top: 1px solid var(--gold-dim); flex-shrink: 0; }
+            .chat-input-area { padding: 10px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+            .pin-digit { width: 52px; height: 64px; font-size: 28px; }
+            .pin-gate { padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+            .extension-prompt, .creator-consent { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+        }
     </style>
 </head>
 <body>
@@ -280,12 +287,13 @@
 <script>
     const BACKEND = 'https://truthordare-backend.onrender.com';
     const params = new URLSearchParams(window.location.search);
-    const roomId = params.get('id') || params.get('room');
-    const sessionType = params.get('type') || 'truth';
-    const creatorName = decodeURIComponent(params.get('creator') || 'Creator');
-    const fanName = params.get('fan') || 'Fan';
+    let roomId = params.get('id') || params.get('room');
+    let sessionType = params.get('type') || 'truth';
+    let creatorName = decodeURIComponent(params.get('creator') || 'Creator');
+    let fanName = params.get('fan') || 'Fan';
     const bookingId = params.get('booking') || params.get('bookingId');
     const urlPin = params.get('pin'); // PIN passed in URL (from email link)
+    const fanToken = params.get('token'); // Fan booking token for tokenless access
     const scheduledAt = params.get('time') ? new Date(params.get('time')) : null;
 
     const SESSION_DURATION = sessionType === 'dare' ? 15 * 60 : 5 * 60;
@@ -299,6 +307,26 @@
 
     const userInfo = localStorage.getItem('tod_user') ? JSON.parse(localStorage.getItem('tod_user')) : null;
     const isCreator = userInfo && userInfo.role === 'creator';
+    // If fan has a token but no roomId, fetch room details from backend
+    if (fanToken && bookingId && !roomId) {
+        fetch(`${BACKEND}/fan-room/${bookingId}?token=${fanToken}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.url) {
+                    roomId = data.roomId;
+                    if (data.sessionType) sessionType = data.sessionType;
+                    if (data.creatorName) { creatorName = data.creatorName; document.getElementById('creatorLabel').textContent = creatorName; }
+                    if (data.fanName) { fanName = data.fanName; document.getElementById('fanLabel').textContent = fanName; }
+                    // Auto-fill PIN if returned
+                    if (data.sessionPin && data.sessionPin.length === 4) {
+                        ['pin0','pin1','pin2','pin3'].forEach((id, i) => {
+                            document.getElementById(id).value = data.sessionPin[i];
+                            document.getElementById(id).classList.add('filled');
+                        });
+                    }
+                }
+            }).catch(() => {});
+    }
 
     let sessionStarted = false;
     let timerRunning = false;
@@ -616,10 +644,23 @@
     // ── DAILY.CO VIDEO ──
     async function initDailyRoom() {
         try {
-            const token = localStorage.getItem('tod_token');
-            const res = await fetch(`${BACKEND}/get-room/${roomId}`, { headers: { 'Authorization': `Bearer ${token}` } });
-            const data = await res.json();
-            if (!data.url) return;
+            let roomUrl = null;
+            if (fanToken && bookingId) {
+                // Fan access via booking token (no login required)
+                const res = await fetch(`${BACKEND}/fan-room/${bookingId}?token=${fanToken}`);
+                const data = await res.json();
+                if (!data.url) { addSystemMessage('Could not load room. Please check your link.'); return; }
+                roomUrl = data.url;
+                if (!roomId) roomId = data.roomId;
+            } else {
+                // Creator access via auth token
+                const token = localStorage.getItem('tod_token');
+                const res = await fetch(`${BACKEND}/get-room/${roomId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                if (!data.url) return;
+                roomUrl = data.url;
+            }
+            if (!roomUrl) return;
             const container = document.getElementById('videoContainer');
             document.getElementById('videoPlaceholder').style.display = 'none';
             callFrame = window.DailyIframe.createFrame(container, {
@@ -628,7 +669,7 @@
                 showFullscreenButton: true
             });
             await callFrame.join({
-                url: data.url,
+                url: roomUrl,
                 startVideoOff: false,
                 startAudioOff: false,
                 userName: isCreator ? creatorName : fanName
@@ -657,15 +698,25 @@
         const text = input.value.trim();
         if (!text) return;
         input.value = '';
-        const token = localStorage.getItem('tod_token');
-        const name = userInfo ? userInfo.name : (isCreator ? creatorName : fanName);
+        const authToken = localStorage.getItem('tod_token');
+        const name = userInfo ? userInfo.name : fanName;
         addMessage(name, text, isCreator ? 'creator' : 'fan');
         try {
-            await fetch(`${BACKEND}/room-chat/${roomId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ message: text, name, role: isCreator ? 'creator' : 'fan' })
-            });
+            if (fanToken && bookingId) {
+                // Fan sends via token-gated endpoint
+                await fetch(`${BACKEND}/fan-room-chat/${roomId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, name, token: fanToken, bookingId })
+                });
+            } else {
+                // Creator sends via auth endpoint
+                await fetch(`${BACKEND}/room-chat/${roomId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+                    body: JSON.stringify({ message: text, name, role: isCreator ? 'creator' : 'fan' })
+                });
+            }
         } catch(e) {}
     }
 
