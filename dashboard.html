@@ -177,6 +177,8 @@
             <h1>🌟 Creator Dashboard</h1>
             <div style="display:flex;gap:10px;align-items:center;">
                 <a href="/" class="back-link">← Back to Site</a>
+                <!-- Logout button — always visible -->
+                <button class="logout-btn" onclick="logout()">🚪 Sign Out</button>
                 <!-- Avatar pill with dropdown -->
                 <div class="avatar-pill" id="avatar-pill" onclick="toggleAvatarMenu(event)">
                     <div class="avatar-pill-img" id="avatar-pill-img">👤</div>
@@ -204,7 +206,7 @@
             <div class="availability-banner">
                 <div>
                     <div style="font-size:12px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Availability Status</div>
-                    <div class="status-text live" id="availability-label">🔴 LIVE — Fans can book you right now!</div>
+                    <div class="status-text" id="availability-label">⏳ Loading...</div>
                 </div>
                 <div style="font-size:12px;color:var(--text-dim);">Auto-managed — goes Live when you log in, Offline when you log out</div>
             </div>
@@ -430,13 +432,22 @@
         }
 
         async function logout() {
-            // Set creator offline before logging out
+            // Set creator offline and clear inSession before logging out
             if (authToken) {
                 try {
+                    // Set offline
                     await fetch(`${BACKEND}/creator/availability`, {
                         method: 'PUT',
                         headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ isLive: false }),
+                    });
+                } catch (e) { /* ignore */ }
+                try {
+                    // Clear inSession
+                    await fetch(`${BACKEND}/creator/session-status`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ inSession: false }),
                     });
                 } catch (e) { /* ignore */ }
             }
@@ -565,8 +576,21 @@
                     window.history.replaceState({}, '', '/dashboard.html');
                 }
 
+                // Set creator LIVE now that dashboard is loaded
+                try {
+                    await fetch(`${BACKEND}/creator/availability`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ isLive: true }),
+                    });
+                    renderAvailability(true);
+                } catch(e) { console.warn('Could not set live status:', e); }
+
                 // Start heartbeat to keep creator online
                 startHeartbeat();
+
+                // Note: if tab is closed without logout, the heartbeat auto-offline
+                // (server-side, every 2 min) will mark creator offline within 5 minutes.
 
                 // Init push notification UI
                 initPushNotifications(user);
@@ -743,8 +767,15 @@
 
         // ── AVAILABILITY ──────────────────────────────────────────────────────
         function renderAvailability(isLive) {
-            // Toggle removed — status is always Live while logged in
-            // No UI update needed
+            const label = document.getElementById('availability-label');
+            if (!label) return;
+            if (isLive) {
+                label.textContent = '🟢 LIVE — Fans can book you right now!';
+                label.className = 'status-text live';
+            } else {
+                label.textContent = '⚫ OFFLINE — You are not visible to fans';
+                label.className = 'status-text offline';
+            }
         }
 
         async function updateAvailability(isLive) {
