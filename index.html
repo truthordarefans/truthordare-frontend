@@ -1167,8 +1167,9 @@
         }
 
         async function submitBooking() {
-            const fanName = localStorage.getItem('fanName') || 'Fan';
-            const fanEmail = localStorage.getItem('fanEmail') || '';
+            const todUser = JSON.parse(localStorage.getItem('tod_user') || '{}');
+            const fanName = todUser.name || localStorage.getItem('fanName') || 'Fan';
+            const fanEmail = todUser.email || localStorage.getItem('fanEmail') || '';
             const note = document.getElementById('booking-note').value.trim();
             try {
                 const btn = document.getElementById('sendRequestBtn');
