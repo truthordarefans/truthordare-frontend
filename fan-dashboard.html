@@ -357,8 +357,12 @@
             </div>`;
         } else if (b.status === 'accepted' && b.token) {
             actionBtn = `<a href="/confirm.html?id=${b._id}&token=${encodeURIComponent(b.token)}" class="btn-pay">💳 Pay Now</a>`;
-        } else if ((b.status === 'paid' || b.status === 'confirmed') && b.roomUrl) {
-            actionBtn = `<button onclick="fanJoinRoom('${b._id}','${b.roomId}','${b.sessionType}','${b.sessionPin||''}')" class="btn-join">🎥 Join Session</button>`;
+        } else if (b.status === 'paid' || b.status === 'confirmed') {
+            if (b.roomUrl) {
+                actionBtn = `<button onclick="fanJoinRoom('${b._id}','${b.roomId}','${b.sessionType}','${b.sessionPin||''}')" class="btn-join">🎥 Join Session</button>`;
+            } else {
+                actionBtn = `<span style="color:#22c55e;font-weight:700;font-size:13px;">✅ Paid — Room link coming soon</span>`;
+            }
         }
 
         const pinBlock = (b.status === 'paid' || b.status === 'confirmed') && b.sessionPin ? `
@@ -368,7 +372,13 @@
                 <div style="font-size:11px;color:#9A8A72;margin-top:4px;">Enter this PIN when joining the session room</div>
             </div>` : '';
 
-        const statusLabel = b.status === 'proposed' ? '📅 New Times Proposed' : b.status;
+        const statusLabel = b.status === 'proposed' ? '📅 New Times Proposed'
+            : b.status === 'paid' ? '✅ Paid'
+            : b.status === 'confirmed' ? '✅ Confirmed'
+            : b.status === 'accepted' ? 'ACCEPTED'
+            : b.status === 'pending' ? 'PENDING'
+            : b.status === 'declined' ? 'DECLINED'
+            : b.status;
 
         return `
         <div class="booking-card ${b.status}">
